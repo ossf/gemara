@@ -19,18 +19,18 @@ type ControlEvaluation struct {
 	Message string `yaml:"message"`
 	// CorruptedState is true if the control evaluation was interrupted and changes were not reverted
 	CorruptedState bool `yaml:"corrupted-state"`
-	// Assessments is a map of pointers to Assessment objects to establish idempotency
-	Assessments []*Assessment `yaml:"assessments"`
+	// AssessmentLogs is a map of pointers to AssessmentLog objects to establish idempotency
+	AssessmentLogs []*AssessmentLog `yaml:"assessmentlogs"`
 }
 
-// AddAssessment creates a new Assessment object and adds it to the ControlEvaluation.
-func (c *ControlEvaluation) AddAssessment(requirementId string, description string, applicability []string, steps []AssessmentStep) (assessment *Assessment) {
+// AddAssessment creates a new AssessmentLog object and adds it to the ControlEvaluation.
+func (c *ControlEvaluation) AddAssessment(requirementId string, description string, applicability []string, steps []AssessmentStep) (assessment *AssessmentLog) {
 	assessment, err := NewAssessment(requirementId, description, applicability, steps)
 	if err != nil {
 		c.Result = Failed
 		c.Message = err.Error()
 	}
-	c.Assessments = append(c.Assessments, assessment)
+	c.AssessmentLogs = append(c.AssessmentLogs, assessment)
 	return
 }
 
@@ -39,12 +39,12 @@ func (c *ControlEvaluation) AddAssessment(requirementId string, description stri
 // The userApplicability is a slice of strings that determine when the assessment is applicable. The changesAllowed
 // determines whether the assessment is allowed to execute its changes.
 func (c *ControlEvaluation) Evaluate(targetData interface{}, userApplicability []string, changesAllowed bool) {
-	if len(c.Assessments) == 0 {
+	if len(c.AssessmentLogs) == 0 {
 		c.Result = NeedsReview
 		return
 	}
 	c.closeHandler()
-	for _, assessment := range c.Assessments {
+	for _, assessment := range c.AssessmentLogs {
 		var applicable bool
 		for _, aa := range assessment.Applicability {
 			for _, ua := range userApplicability {
@@ -68,7 +68,7 @@ func (c *ControlEvaluation) Evaluate(targetData interface{}, userApplicability [
 
 // Cleanup reverts all changes made by the ControlEvaluation.
 func (c *ControlEvaluation) Cleanup() {
-	for _, assessment := range c.Assessments {
+	for _, assessment := range c.AssessmentLogs {
 		corrupted := assessment.RevertChanges()
 		if corrupted {
 			c.CorruptedState = true

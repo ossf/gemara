@@ -10,85 +10,85 @@ var controlEvaluationTestData = []struct {
 	expectedCorrupted bool
 }{
 	{
-		testName:          "ControlEvaluation with no Assessments",
+		testName:          "ControlEvaluation with no AssessmentLogs",
 		expectedResult:    NeedsReview,
 		expectedCorrupted: false,
 		control: &ControlEvaluation{
-			Assessments: []*Assessment{},
+			AssessmentLogs: []*AssessmentLog{},
 		},
 	},
 	{
-		testName:          "ControlEvaluation with one passing Assessment",
+		testName:          "ControlEvaluation with one passing AssessmentLog",
 		expectedResult:    Passed,
 		expectedCorrupted: false,
 		control: &ControlEvaluation{
-			Assessments: []*Assessment{passingAssessmentPtr()},
+			AssessmentLogs: []*AssessmentLog{passingAssessmentPtr()},
 		},
 	},
 	{
-		testName:          "ControlEvaluation with one failing Assessment",
+		testName:          "ControlEvaluation with one failing AssessmentLog",
 		expectedResult:    Failed,
 		expectedCorrupted: false,
 		control: &ControlEvaluation{
-			Assessments: []*Assessment{failingAssessmentPtr()},
+			AssessmentLogs: []*AssessmentLog{failingAssessmentPtr()},
 		},
 	},
 	{
-		testName:          "ControlEvaluation with one NeedsReview Assessment",
+		testName:          "ControlEvaluation with one NeedsReview AssessmentLog",
 		expectedResult:    NeedsReview,
 		expectedCorrupted: false,
 		control: &ControlEvaluation{
-			Assessments: []*Assessment{needsReviewAssessmentPtr()},
+			AssessmentLogs: []*AssessmentLog{needsReviewAssessmentPtr()},
 		},
 	},
 	{
-		testName:          "ControlEvaluation with one Unknown Assessment",
+		testName:          "ControlEvaluation with one Unknown AssessmentLog",
 		expectedResult:    Unknown,
 		expectedCorrupted: false,
 		control: &ControlEvaluation{
-			Assessments: []*Assessment{unknownAssessmentPtr()},
+			AssessmentLogs: []*AssessmentLog{unknownAssessmentPtr()},
 		},
 	},
 	{
-		testName:          "ControlEvaluation with first NeedsReview and then Unknown Assessment",
+		testName:          "ControlEvaluation with first NeedsReview and then Unknown AssessmentLog",
 		expectedResult:    Unknown,
 		expectedCorrupted: false,
 		control: &ControlEvaluation{
-			Assessments: []*Assessment{
+			AssessmentLogs: []*AssessmentLog{
 				needsReviewAssessmentPtr(),
 				unknownAssessmentPtr(),
 			},
 		},
 	},
 	{
-		testName:          "ControlEvaluation with first Unknown and then NeedsReview Assessment",
+		testName:          "ControlEvaluation with first Unknown and then NeedsReview AssessmentLog",
 		expectedResult:    Unknown,
 		expectedCorrupted: false,
 		control: &ControlEvaluation{
-			Assessments: []*Assessment{
+			AssessmentLogs: []*AssessmentLog{
 				unknownAssessmentPtr(),
 				needsReviewAssessmentPtr(),
 			},
 		},
 	},
 	{
-		testName:          "ControlEvaluation with first Failed and then NeedsReview Assessment",
+		testName:          "ControlEvaluation with first Failed and then NeedsReview AssessmentLog",
 		expectedResult:    Failed,
 		expectedCorrupted: false,
 		control: &ControlEvaluation{
-			Assessments: []*Assessment{
+			AssessmentLogs: []*AssessmentLog{
 				failingAssessmentPtr(),
 				needsReviewAssessmentPtr(),
 			},
 		},
 	},
 	{
-		testName:          "ControlEvaluation with first Failing and then Passing Assessment",
+		testName:          "ControlEvaluation with first Failing and then Passing AssessmentLog",
 		expectedResult:    Failed,
 		failBeforePass:    true,
 		expectedCorrupted: false,
 		control: &ControlEvaluation{
-			Assessments: []*Assessment{
+			AssessmentLogs: []*AssessmentLog{
 				failingAssessmentPtr(),
 				passingAssessmentPtr(),
 			},
@@ -115,7 +115,7 @@ func TestEvaluate(t *testing.T) {
 			c := test.control // copy the control to avoid duplication in the next test
 			c.Evaluate(nil, testingApplicability, false)
 
-			for _, assessment := range c.Assessments {
+			for _, assessment := range c.AssessmentLogs {
 				if assessment.Changes != nil {
 					for _, change := range assessment.Changes {
 						if change.Applied {
@@ -145,8 +145,8 @@ func TestAddAssesment(t *testing.T) {
 		t.Errorf("Expected Result to be Failed, but it was %v", controlEvaluationTestData[0].control.Result)
 	}
 
-	if controlEvaluationTestData[0].control.Message != "expected all Assessment fields to have a value, but got: requirementId=len(4), description=len=(4), applicability=len(0), steps=len(0)" {
-		t.Errorf("Expected error message to be 'expected all Assessment fields to have a value, but got: requirementId=len(4), description=len=(4), applicability=len(0), steps=len(0)', but instead it was '%v'", controlEvaluationTestData[0].control.Message)
+	if controlEvaluationTestData[0].control.Message != "expected all AssessmentLog fields to have a value, but got: requirementId=len(4), description=len=(4), applicability=len(0), steps=len(0)" {
+		t.Errorf("Expected error message to be 'expected all AssessmentLog fields to have a value, but got: requirementId=len(4), description=len=(4), applicability=len(0), steps=len(0)', but instead it was '%v'", controlEvaluationTestData[0].control.Message)
 	}
 
 }
