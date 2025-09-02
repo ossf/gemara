@@ -27,11 +27,11 @@ import "time"
 	"assessment-logs": [...#AssessmentLog] @go(AssessmentLogs)
 }
 
-// AssessmentPlan defines all testing procedures for a requirement.
+// Assessment defines all testing procedures for a requirement.
 #Assessment: {
-	// RequirementID is the unique identifier for the requirement being tested
+	// RequirementID is the unique identifier for the requirement being tested.
 	"requirement-id": string @go(RequirementId)
-	// Procedures defined possible testing procedures to evaluate the requirement.
+	// Procedures defines possible testing procedures to evaluate the requirement.
 	procedures: [...#AssessmentProcedure] @go(Procedures)
 }
 
