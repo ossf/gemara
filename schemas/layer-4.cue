@@ -50,7 +50,7 @@ import "time"
 #AssessmentLog: {
 	"requirement-id": string @go(RequirementId)
 	// ProcedureId uniquely identifies the assessment procedure associated with the log
-	"procedure-id"?:  string @go(ProcedureId)
+	"procedure-id"?: string @go(ProcedureId)
 	applicability: [...string]
 	description: string
 	result:      #Result
@@ -80,9 +80,9 @@ import "time"
 #Datetime: time.Format("2006-01-02T15:04:05Z07:00") @go(Datetime,format="date-time")
 
 #Metadata: {
-	id:      string
+	id:       string
 	version?: string
-	author:  #Contact
+	author:   #Contact
 }
 
 #Contact: {
