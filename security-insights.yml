@@ -20,7 +20,7 @@ project:
     quickstart-guide: https://github.com/ossf/gemara/blob/main/README.md#usage
     code-of-conduct: https://github.com/ossf/gemara?tab=coc-ov-file#readme
   repositories:
-    - name: sci
+    - name: gemara
       url: https://github.com/ossf/gemara
       comment: |
         The main repository for the GRC Engineering Model for Automated Risk Assessment (Gemara) project.
