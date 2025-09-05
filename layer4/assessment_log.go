@@ -9,10 +9,12 @@ import (
 	"time"
 )
 
-// Assessment is a struct that contains the results of a single step within a ControlEvaluation.
-type Assessment struct {
+// AssessmentLog is a struct that contains the results of a single step within a ControlEvaluation.
+type AssessmentLog struct {
 	// RequirementID is the unique identifier for the requirement being tested
 	RequirementId string `yaml:"requirement-id"`
+	// ProcedureId uniquely identifies the assessment procedure associated with the log
+	ProcedureId string `json:"procedure-id,omitempty"`
 	// Applicability is a slice of identifier strings to determine when this test is applicable
 	Applicability []string `yaml:"applicability"`
 	// Description is a human-readable description of the test
@@ -59,9 +61,9 @@ func (as AssessmentStep) MarshalYAML() (interface{}, error) {
 	return as.String(), nil
 }
 
-// NewAssessment creates a new Assessment object and returns a pointer to it.
-func NewAssessment(requirementId string, description string, applicability []string, steps []AssessmentStep) (*Assessment, error) {
-	a := &Assessment{
+// NewAssessment creates a new AssessmentLog object and returns a pointer to it.
+func NewAssessment(requirementId string, description string, applicability []string, steps []AssessmentStep) (*AssessmentLog, error) {
+	a := &AssessmentLog{
 		RequirementId: requirementId,
 		Description:   description,
 		Applicability: applicability,
@@ -72,12 +74,12 @@ func NewAssessment(requirementId string, description string, applicability []str
 	return a, err
 }
 
-// AddStep queues a new step in the Assessment
-func (a *Assessment) AddStep(step AssessmentStep) {
+// AddStep queues a new step in the AssessmentLog
+func (a *AssessmentLog) AddStep(step AssessmentStep) {
 	a.Steps = append(a.Steps, step)
 }
 
-func (a *Assessment) runStep(targetData interface{}, step AssessmentStep) Result {
+func (a *AssessmentLog) runStep(targetData interface{}, step AssessmentStep) Result {
 	a.StepsExecuted++
 	result, message := step(targetData, a.Changes)
 	a.Result = UpdateAggregateResult(a.Result, result)
@@ -86,7 +88,7 @@ func (a *Assessment) runStep(targetData interface{}, step AssessmentStep) Result
 }
 
 // Run will execute all steps, halting if any step does not return layer4.Passed.
-func (a *Assessment) Run(targetData interface{}, changesAllowed bool) Result {
+func (a *AssessmentLog) Run(targetData interface{}, changesAllowed bool) Result {
 	if a.Result != NotRun {
 		return a.Result
 	}
@@ -111,8 +113,8 @@ func (a *Assessment) Run(targetData interface{}, changesAllowed bool) Result {
 	return a.Result
 }
 
-// NewChange creates a new Change object and adds it to the Assessment.
-func (a *Assessment) NewChange(
+// NewChange creates a new Change object and adds it to the AssessmentLog.
+func (a *AssessmentLog) NewChange(
 	changeName,
 	targetName,
 	description string,
@@ -130,7 +132,7 @@ func (a *Assessment) NewChange(
 
 // RevertChanges reverts all changes made by the assessment.
 // It will not revert changes that have not been applied.
-func (a *Assessment) RevertChanges() (corrupted bool) {
+func (a *AssessmentLog) RevertChanges() (corrupted bool) {
 	for _, change := range a.Changes {
 		if !corrupted && (change.Applied || change.Error != nil) {
 			if !change.Reverted {
@@ -146,10 +148,10 @@ func (a *Assessment) RevertChanges() (corrupted bool) {
 
 // precheck verifies that the assessment has all the required fields.
 // It returns an error if the assessment is not valid.
-func (a *Assessment) precheck() error {
+func (a *AssessmentLog) precheck() error {
 	if a.RequirementId == "" || a.Description == "" || a.Applicability == nil || a.Steps == nil || len(a.Applicability) == 0 || len(a.Steps) == 0 {
 		message := fmt.Sprintf(
-			"expected all Assessment fields to have a value, but got: requirementId=len(%v), description=len=(%v), applicability=len(%v), steps=len(%v)",
+			"expected all AssessmentLog fields to have a value, but got: requirementId=len(%v), description=len=(%v), applicability=len(%v), steps=len(%v)",
 			len(a.RequirementId), len(a.Description), len(a.Applicability), len(a.Steps),
 		)
 		a.Result = Unknown
