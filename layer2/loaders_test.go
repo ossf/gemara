@@ -85,37 +85,68 @@ func Test_LoadNestedCatalog(t *testing.T) {
 		})
 	}
 
-	t.Run("Test bad nested catalog", func(t *testing.T) {
-		c := &Catalog{}
-		expectedErr := c.LoadNestedCatalog("./test-data/bad-ccc-nested.yaml", "catalog")
-		if expectedErr == nil {
-			t.Errorf("Expected error due to malformed catalog, but got none")
-		}
-	})
+	nestedTests := []struct {
+		name            string
+		sourcePath      string
+		nestedFieldName string
+		wantErr         bool
+	}{
+		{
+			name:            "Malformed URI",
+			sourcePath:      "https://",
+			nestedFieldName: "catalog",
+			wantErr:         true,
+		},
+		{
+			name:            "Non-conformant URI response",
+			sourcePath:      "https://google.com",
+			nestedFieldName: "catalog",
+			wantErr:         true,
+		},
+		{
+			name:            "Local file does not exist",
+			sourcePath:      "wonky-file-name.yaml",
+			nestedFieldName: "catalog",
+			wantErr:         true,
+		},
+		{
+			name:            "Empty nested catalog",
+			sourcePath:      "./test-data/nested-empty.yaml",
+			nestedFieldName: "catalog",
+			wantErr:         true,
+		},
+		{
+			name:            "Nested field name not provided",
+			sourcePath:      "./test-data/nested-good-ccc.yaml",
+			nestedFieldName: "",
+			wantErr:         true,
+		},
+		{
+			name:            "Nested field name not present in target file",
+			sourcePath:      "./test-data/nested-good-ccc.yaml",
+			nestedFieldName: "doesnt-exist",
+			wantErr:         true,
+		},
+	}
 
-	t.Run("Test good nested catalog", func(t *testing.T) {
-		c := &Catalog{}
-		expectedErr := c.LoadNestedCatalog("./test-data/good-ccc-nested.yaml", "")
-		if expectedErr == nil {
-			t.Errorf("Expected error with empty field name, but got none")
-		}
-
-		expectedErr = c.LoadNestedCatalog("./test-data/good-ccc-nested.yaml", "doesnt-exist")
-		if expectedErr == nil {
-			t.Errorf("Expected error with non-extant field name, but got none")
-		}
-
-		err := c.LoadNestedCatalog("./test-data/good-ccc-nested.yaml", "catalog")
-		if err != nil {
-			t.Errorf("Did not expect error, but got '%s'", err.Error())
-		}
-		if len(c.ControlFamilies) == 0 {
-			t.Errorf("Catalog.LoadControlFamily() did not load any control families")
-		} else if len(c.ControlFamilies) > 0 {
-			assert.NotEmpty(t, c.ControlFamilies[0].Title, "Control family title should not be empty")
-			assert.NotEmpty(t, c.ControlFamilies[0].Description, "Control family description should not be empty")
-		}
-	})
+	for _, tt := range nestedTests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &Catalog{}
+			err := c.LoadNestedCatalog(tt.sourcePath, tt.nestedFieldName)
+			if tt.wantErr && err == nil {
+				t.Errorf("Expected error, but got none")
+			} else if !tt.wantErr && err != nil {
+				t.Errorf("Did not expect error, but got '%s'", err.Error())
+			} else if !tt.wantErr {
+				if len(c.ControlFamilies) == 0 {
+					t.Errorf("Catalog.LoadControlFamily() did not load any control families")
+				} else if len(c.ControlFamilies) > 0 {
+					assert.NotEmpty(t, c.ControlFamilies[0].Title, "Control family title should not be empty")
+					assert.NotEmpty(t, c.ControlFamilies[0].Description, "Control family description should not be empty")
+				}
+			}
+		})
+	}
 }
 
 func Test_LoadFiles(t *testing.T) {
