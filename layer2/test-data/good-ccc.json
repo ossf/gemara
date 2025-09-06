@@ -1,0 +1,441 @@
+{
+    "metadata": {
+        "id": "FINOS-CCC",
+        "title": "FINOS Cloud Control Catalog",
+        "description": "FINOS CCC is an open standard project that describes consistent controls for\ncompliant public cloud deployments in the financial services sector.\n",
+        "applicability-categories": [
+            {
+                "id": "tlp_clear",
+                "title": "TLP:Clear",
+                "description": "Information may be shared without restriction.\n"
+            },
+            {
+                "id": "tlp_green",
+                "title": "TLP:Green",
+                "description": "Information may be shared with partners and restricted to the\norganization.\n"
+            },
+            {
+                "id": "tlp_amber",
+                "title": "TLP:Amber",
+                "description": "Information may be shared with partners and restricted to the\norganization.\n"
+            },
+            {
+                "id": "tlp_red",
+                "title": "TLP:Red",
+                "description": "Information is restricted to the organization.\n"
+            }
+        ]
+    },
+    "control-families": [
+        {
+            "id": "data-protection",
+            "title": "Data Protection",
+            "description": "Data protection controls ensure that data is protected from unauthorized\naccess, disclosure, and tampering. This includes encryption of data at\nrest and in transit, access controls, and data retention policies.\n",
+            "controls": [
+                {
+                    "id": "CCC.C01",
+                    "title": "Prevent Unencrypted Requests",
+                    "objective": "Ensure that all communications are encrypted in transit to protect data\nintegrity and confidentiality.\n",
+                    "threat-mappings": [
+                        {
+                            "reference-id": "CCC",
+                            "entries": [
+                                {
+                                    "reference-id": "CCC.TH02",
+                                    "strength": 7,
+                                    "remarks": "Data is Intercepted in Transit"
+                                }
+                            ]
+                        }
+                    ],
+                    "guideline-mappings": [
+                        {
+                            "reference-id": "CSF",
+                            "entries": [
+                                {
+                                    "reference-id": "PR.DS-02",
+                                    "strength": 7,
+                                    "remarks": "Data-in-transit is protected"
+                                }
+                            ]
+                        },
+                        {
+                            "reference-id": "CCM",
+                            "entries": [
+                                {
+                                    "reference-id": "IVS-03",
+                                    "strength": 7
+                                },
+                                {
+                                    "reference-id": "IVS-07",
+                                    "strength": 7
+                                }
+                            ]
+                        },
+                        {
+                            "reference-id": "ISO-27001",
+                            "entries": [
+                                {
+                                    "reference-id": "2013 A.13.1.1",
+                                    "strength": 7,
+                                    "remarks": "This control is closely related to 2013 A.13.1.1."
+                                }
+                            ]
+                        },
+                        {
+                            "reference-id": "NIST-800-53",
+                            "entries": [
+                                {
+                                    "reference-id": "SC-8",
+                                    "strength": 7
+                                },
+                                {
+                                    "reference-id": "SC-13",
+                                    "strength": 7
+                                }
+                            ]
+                        }
+                    ],
+                    "assessment-requirements": [
+                        {
+                            "id": "CCC.C01.TR01",
+                            "text": "When a port is exposed for non-SSH network traffic, all traffic MUST\ninclude a TLS handshake AND be encrypted using TLS 1.2 or higher.\n",
+                            "applicability": [
+                                "tlp_clear",
+                                "tlp_green",
+                                "tlp_amber",
+                                "tlp_red"
+                            ]
+                        },
+                        {
+                            "id": "CCC.C01.TR02",
+                            "text": "When a port is exposed for SSH network traffic, all traffic MUST\ninclude a SSH handshake AND be encrypted using SSHv2 or higher.\n",
+                            "applicability": [
+                                "tlp_clear",
+                                "tlp_green",
+                                "tlp_amber",
+                                "tlp_red"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "CCC.C06",
+                    "title": "Prevent Deployment in Restricted Regions",
+                    "objective": "Ensure that resources are not provisioned or deployed in\ngeographic regions or cloud availability zones that have been\ndesignated as restricted or prohibited, to comply with\nregulatory requirements and reduce exposure to geopolitical\nrisks.\n",
+                    "threat-mappings": [
+                        {
+                            "reference-id": "CCC",
+                            "entries": [
+                                {
+                                    "reference-id": "CCC.TH03",
+                                    "strength": 7,
+                                    "remarks": "Deployment Region Network is Untrusted"
+                                }
+                            ]
+                        }
+                    ],
+                    "guideline-mappings": [
+                        {
+                            "reference-id": "CCM",
+                            "entries": [
+                                {
+                                    "reference-id": "DSI-06",
+                                    "strength": 7,
+                                    "remarks": "This control is closely related to DSI-06."
+                                },
+                                {
+                                    "reference-id": "DSI-08",
+                                    "strength": 7,
+                                    "remarks": "This control is closely related to DSI-08."
+                                }
+                            ]
+                        },
+                        {
+                            "reference-id": "ISO-27001",
+                            "entries": [
+                                {
+                                    "reference-id": "2013 A.11.1.1",
+                                    "strength": 7,
+                                    "remarks": "This control is closely related to 2013 A.11.1.1."
+                                }
+                            ]
+                        },
+                        {
+                            "reference-id": "NIST-800-53",
+                            "entries": [
+                                {
+                                    "reference-id": "AC-6",
+                                    "strength": 7,
+                                    "remarks": "This control is closely related to AC-6."
+                                }
+                            ]
+                        },
+                        {
+                            "reference-id": "CSF",
+                            "entries": [
+                                {
+                                    "reference-id": "PR.DS-1",
+                                    "strength": 7,
+                                    "remarks": "Data-at-rest is protected"
+                                }
+                            ]
+                        }
+                    ],
+                    "assessment-requirements": [
+                        {
+                            "id": "CCC.C06.TR01",
+                            "text": "When a deployment request is made, the service MUST validate\nthat the deployment region is not to a restricted or regions\nor availability zones.\n",
+                            "applicability": [
+                                "tlp_clear",
+                                "tlp_green",
+                                "tlp_amber",
+                                "tlp_red"
+                            ]
+                        },
+                        {
+                            "id": "CCC.C06.TR02",
+                            "text": "When a deployment request is made, the service MUST validate that\nreplication of data, backups, and disaster recovery operations\nwill not occur in restricted regions or availability zones.\n",
+                            "applicability": [
+                                "tlp_clear",
+                                "tlp_green",
+                                "tlp_amber",
+                                "tlp_red"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "CCC.C08",
+                    "title": "Enable Multi-zone or Multi-region Data Replication",
+                    "objective": "Ensure that data is replicated across multiple\nzones or regions to protect against data loss due to hardware\nfailures, natural disasters, or other catastrophic events.\n",
+                    "threat-mappings": [
+                        {
+                            "reference-id": "CCC",
+                            "entries": [
+                                {
+                                    "reference-id": "CCC.TH06",
+                                    "strength": 7,
+                                    "remarks": "Data is Lost or Corrupted"
+                                }
+                            ]
+                        }
+                    ],
+                    "guideline-mappings": [
+                        {
+                            "reference-id": "CSF",
+                            "entries": [
+                                {
+                                    "reference-id": "PR.DS-5",
+                                    "strength": 7,
+                                    "remarks": "Protections against data leaks are implemented"
+                                }
+                            ]
+                        },
+                        {
+                            "reference-id": "CCM",
+                            "entries": [
+                                {
+                                    "reference-id": "BCR-08",
+                                    "strength": 7,
+                                    "remarks": "Backup"
+                                }
+                            ]
+                        },
+                        {
+                            "reference-id": "NIST-800-53",
+                            "entries": [
+                                {
+                                    "reference-id": "CP-2",
+                                    "strength": 7,
+                                    "remarks": "Contingency plan"
+                                },
+                                {
+                                    "reference-id": "CP-10",
+                                    "strength": 7,
+                                    "remarks": "Information system recovery and reconstitution"
+                                }
+                            ]
+                        }
+                    ],
+                    "assessment-requirements": [
+                        {
+                            "id": "CCC.C08.TR01",
+                            "text": "When data is stored, the service MUST ensure that data is\nreplicated across multiple availability zones or regions.\n",
+                            "applicability": [
+                                "tlp_green",
+                                "tlp_amber",
+                                "tlp_red"
+                            ]
+                        },
+                        {
+                            "id": "CCC.C08.TR02",
+                            "text": "When data is replicated across multiple zones or regions,\nthe service MUST be able to verify the replication state,\nincluding the replication locations and data synchronization\nstatus.\n",
+                            "applicability": [
+                                "tlp_green",
+                                "tlp_amber",
+                                "tlp_red"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "CCC.C09",
+                    "title": "Prevent Tampering, Deletion, or Unauthorized Access to Access Logs",
+                    "objective": "Access logs should always be considered sensitive.\nEnsure that access logs are protected against unauthorized\naccess, tampering, or deletion.\n",
+                    "threat-mappings": [
+                        {
+                            "reference-id": "CCC",
+                            "entries": [
+                                {
+                                    "reference-id": "CCC.TH07",
+                                    "strength": 7,
+                                    "remarks": "Logs are Tampered with or Deleted"
+                                },
+                                {
+                                    "reference-id": "CCC.TH09",
+                                    "strength": 7,
+                                    "remarks": "Logs or Monitoring Data are Read by Unauthorized Users"
+                                },
+                                {
+                                    "reference-id": "CCC.TH04",
+                                    "strength": 7,
+                                    "remarks": "Data is Replicated to Untrusted or External Locations"
+                                }
+                            ]
+                        }
+                    ],
+                    "guideline-mappings": [
+                        {
+                            "reference-id": "CCM",
+                            "entries": [
+                                {
+                                    "reference-id": "LOG-02",
+                                    "strength": 7,
+                                    "remarks": "Audit log protection"
+                                },
+                                {
+                                    "reference-id": "LOG-04",
+                                    "strength": 7,
+                                    "remarks": "Audit log access and accountability"
+                                },
+                                {
+                                    "reference-id": "LOG-09",
+                                    "strength": 7,
+                                    "remarks": "Log protection"
+                                }
+                            ]
+                        },
+                        {
+                            "reference-id": "NIST-800-53",
+                            "entries": [
+                                {
+                                    "reference-id": "AU-9",
+                                    "strength": 7,
+                                    "remarks": "Protection of audit information"
+                                }
+                            ]
+                        }
+                    ],
+                    "assessment-requirements": [
+                        {
+                            "id": "CCC.C09.TR01",
+                            "text": "When access logs are stored, the service MUST ensure that\naccess logs cannot be accessed without proper authorization.\n",
+                            "applicability": [
+                                "tlp_amber",
+                                "tlp_red",
+                                "tlp_green",
+                                "tlp_clear"
+                            ]
+                        },
+                        {
+                            "id": "CCC.C09.TR02",
+                            "text": "When access logs are stored, the service MUST ensure that\naccess logs cannot be modified without proper authorization.\n",
+                            "applicability": [
+                                "tlp_amber",
+                                "tlp_red",
+                                "tlp_green",
+                                "tlp_clear"
+                            ]
+                        },
+                        {
+                            "id": "CCC.C09.TR03",
+                            "text": "When access logs are stored, the service MUST ensure that\naccess logs cannot be deleted without proper authorization.\n",
+                            "applicability": [
+                                "tlp_amber",
+                                "tlp_red",
+                                "tlp_green",
+                                "tlp_clear"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "CCC.C10",
+                    "title": "Prevent Data Replication to Destinations Outside of Defined\nTrust Perimeter\n",
+                    "objective": "Prevent replication of data to untrusted destinations outside\nof defined trust perimeter. An untrusted destination is defined\nas a resource that exists outside of a specified trusted\nidentity or network or data perimeter.\n",
+                    "threat-mappings": [
+                        {
+                            "reference-id": "CCC",
+                            "entries": [
+                                {
+                                    "reference-id": "CCC.TH04",
+                                    "strength": 7,
+                                    "remarks": "Data is Replicated to Untrusted or External Locations"
+                                }
+                            ]
+                        }
+                    ],
+                    "guideline-mappings": [
+                        {
+                            "reference-id": "CSF",
+                            "entries": [
+                                {
+                                    "reference-id": "PR.DS-5",
+                                    "strength": 7,
+                                    "remarks": "Protections against data leaks are implemented"
+                                }
+                            ]
+                        },
+                        {
+                            "reference-id": "CCM",
+                            "entries": [
+                                {
+                                    "reference-id": "DSP-10",
+                                    "strength": 7,
+                                    "remarks": "Sensitive data transfer"
+                                },
+                                {
+                                    "reference-id": "DSP-19",
+                                    "strength": 7,
+                                    "remarks": "Data location"
+                                }
+                            ]
+                        },
+                        {
+                            "reference-id": "NIST-800-53",
+                            "entries": [
+                                {
+                                    "reference-id": "AC-4",
+                                    "strength": 7,
+                                    "remarks": "Information flow enforcement"
+                                }
+                            ]
+                        }
+                    ],
+                    "assessment-requirements": [
+                        {
+                            "id": "CCC.C10.TR01",
+                            "text": "When data is replicated, the service MUST ensure that\nreplication is restricted to explicitly trusted destinations.\n",
+                            "applicability": [
+                                "tlp_green",
+                                "tlp_amber",
+                                "tlp_red"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

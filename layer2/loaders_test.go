@@ -5,7 +5,7 @@ package layer2
 // - LoadControlFamily
 // - LoadControlFamilyFiles
 // - LoadControlFamiliesFile
-// - loadYamlFromURL (placeholder, pending a URL to test against)
+// - decodeYAMLFromURL (use decodeYAMLFromURL for URL-based YAML decoding)
 // - loadJson (placeholder, pending implementation)
 // - LoadThreat (placeholder, pending implementation)
 // - LoadCapability (placeholder, pending implementation)
@@ -13,35 +13,42 @@ package layer2
 // The test data is pulled from ./test-data.yaml
 
 import (
+	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 var tests = []struct {
-	name       string
-	sourcePath string
-	wantErr    bool
+	name          string
+	sourcePath    string
+	wantErr       bool
+	errorExpected string
 }{
 	{
 		name:       "Bad path",
-		sourcePath: "./bad-path.yaml",
+		sourcePath: "file://bad-path.yaml",
 		wantErr:    true,
 	},
 	{
 		name:       "Bad YAML",
-		sourcePath: "./test-data/bad.yaml",
+		sourcePath: "file://test-data/bad.yaml",
 		wantErr:    true,
 	},
 	{
 		name:       "Good YAML — CCC",
-		sourcePath: "./test-data/good-ccc.yaml",
+		sourcePath: "file://test-data/good-ccc.yaml",
 		wantErr:    false,
 	},
 	{
 		name:       "Good YAML — OSPS",
-		sourcePath: "./test-data/good-osps.yml",
+		sourcePath: "file://test-data/good-osps.yml",
 		wantErr:    false,
+	},
+	{
+		name:       "Unrecognized file extension",
+		sourcePath: "file://test-data/unknown.ext",
+		wantErr:    true,
 	},
 }
 
@@ -49,8 +56,18 @@ func Test_loadYaml(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			data := &Catalog{}
-			if err := loadYaml(tt.sourcePath, data); (err == nil) == tt.wantErr {
-				t.Errorf("loadYaml() error = %v, wantErr %v", err, tt.wantErr)
+			url, _ := url.Parse(tt.sourcePath)
+			err := loadYaml(url, data)
+			if tt.wantErr {
+				if err == nil {
+					t.Errorf("loadYaml() expected error, got nil")
+				} else if tt.errorExpected != "" {
+					assert.Equalf(t, err.Error(), tt.errorExpected, "expected error containing %q, got %s", tt.errorExpected, err)
+				}
+			} else {
+				if err != nil {
+					t.Errorf("loadYaml() unexpected error: %v", err)
+				}
 			}
 		})
 	}
@@ -62,10 +79,10 @@ func Test_LoadFile(t *testing.T) {
 			c := &Catalog{}
 			err := c.LoadFile(tt.sourcePath)
 			if (err == nil) == tt.wantErr {
-				t.Errorf("Catalog.LoadControlFamily() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Catalog.LoadFile() error = %v, wantErr %v", err, tt.wantErr)
 			}
 			if !tt.wantErr && len(c.ControlFamilies) == 0 {
-				t.Errorf("Catalog.LoadControlFamily() did not load any control families")
+				t.Errorf("Catalog.LoadFile() did not load any control families")
 			} else if !tt.wantErr && len(c.ControlFamilies) > 0 {
 				assert.NotEmpty(t, c.ControlFamilies[0].Title, "Control family title should not be empty")
 				assert.NotEmpty(t, c.ControlFamilies[0].Description, "Control family description should not be empty")
@@ -164,7 +181,7 @@ func Test_LoadFiles(t *testing.T) {
 	}
 }
 
-func Test_loadYamlFromURL(t *testing.T) {
+func Test_decodeYAMLFromURL(t *testing.T) {
 	tests := []struct {
 		name          string
 		sourcePath    string
@@ -192,11 +209,12 @@ func Test_loadYamlFromURL(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			data := &Catalog{}
-			err := loadYamlFromURL(tt.sourcePath, data)
+			url, _ := url.Parse(tt.sourcePath)
+			err := decodeYAMLFromURL(url, data)
 			if err != nil && tt.wantErr {
 				assert.Containsf(t, err.Error(), tt.errorExpected, "expected error containing %q, got %s", tt.errorExpected, err)
 			} else if err == nil && tt.wantErr {
-				t.Error("loadYamlFromURL() expected error, got none.")
+				t.Errorf("decodeYAMLFromURL() expected error matching %s, got nil.", tt.errorExpected)
 			}
 		})
 	}
@@ -209,13 +227,13 @@ func Test_loadJson(t *testing.T) {
 		wantErr    bool
 	}{
 		{
-			name:       "Unsupported JSON file",
-			sourcePath: "./test-data/good.json",
-			wantErr:    true,
+			name:       "Good JSON file",
+			sourcePath: "file://test-data/good-ccc.json",
+			wantErr:    false,
 		},
 		{
 			name:       "Invalid JSON file",
-			sourcePath: "./test-data/bad.json",
+			sourcePath: "file://test-data/bad.json",
 			wantErr:    true,
 		},
 	}
@@ -223,7 +241,8 @@ func Test_loadJson(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			data := &Catalog{}
-			err := loadJson(tt.sourcePath, data)
+			url, _ := url.Parse(tt.sourcePath)
+			err := loadJson(url, data)
 			if (err == nil) == tt.wantErr {
 				t.Errorf("loadJson() error = %v, wantErr %v", err, tt.wantErr)
 			}

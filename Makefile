@@ -20,6 +20,10 @@ cuefmtcheck:
 	@echo "  >  Verifying CUE formatting in ./schemas ..."
 	@cue fmt --check --files ./schemas
 
+lint:
+	@echo "  >  Linting Go files ..."
+	@golangci-lint run
+
 lintcue:
 	@echo "  >  Linting CUE files ..."
 	@cue eval ./schemas/layer-1.cue --all-errors --verbose
