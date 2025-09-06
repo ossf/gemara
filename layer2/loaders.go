@@ -93,6 +93,69 @@ func (c *Catalog) LoadFile(sourcePath string) error {
 	return nil
 }
 
+// Load a yaml file that contains a nested catalog
+// Only supports a single layer of nesting
+func (c *Catalog) LoadNestedCatalog(sourcePath, fieldName string) error {
+	if fieldName == "" {
+		return fmt.Errorf("fieldName cannot be empty")
+	}
+
+	var yamlData map[string]interface{}
+
+	if strings.HasPrefix(sourcePath, "http") {
+		resp, err := http.Get(sourcePath)
+		if err != nil {
+			return fmt.Errorf("failed to fetch URL: %v", err)
+		}
+		defer func() {
+			_ = resp.Body.Close()
+		}()
+		if resp.StatusCode != http.StatusOK {
+			return fmt.Errorf("failed to fetch URL; response status: %v", resp.Status)
+		}
+
+		decoder := yaml.NewDecoder(resp.Body)
+		err = decoder.Decode(&yamlData)
+		if err != nil {
+			return fmt.Errorf("failed to decode YAML from URL: %v", err)
+		}
+	} else {
+		file, err := os.Open(sourcePath)
+		if err != nil {
+			return fmt.Errorf("error opening file: %w", err)
+		}
+		defer func() {
+			_ = file.Close()
+		}()
+
+		decoder := yaml.NewDecoder(file)
+		err = decoder.Decode(&yamlData)
+		if err != nil {
+			return fmt.Errorf("error decoding YAML: %w (%s)", err, sourcePath)
+		}
+	}
+
+	// Now that we've decoded the data, we need to un-nest it and re-marshal it to finally decode into the Catalog struct
+
+	fieldData, exists := yamlData[fieldName]
+	if !exists {
+		return fmt.Errorf("field '%s' not found in YAML file", fieldName)
+	}
+
+	fieldYamlBytes, err := yaml.Marshal(fieldData)
+	if err != nil {
+		return fmt.Errorf("error marshaling field data to YAML: %w", err)
+	}
+
+	decoder := yaml.NewDecoder(strings.NewReader(string(fieldYamlBytes)))
+	err = decoder.Decode(c)
+	if err != nil {
+		return fmt.Errorf("error decoding field '%s' into Catalog: %w", fieldName, err)
+	}
+
+	return nil
+}
+
 // decode unmarshals the provided reader into the provided Catalog object.
 func decode(reader io.Reader, data *Catalog) error {
 	decoder := yaml.NewDecoder(reader, yaml.DisallowUnknownField())
