@@ -1,0 +1,7 @@
+{
+  "metadata": {
+    "id": "test-policy",
+    "title": "Test Policy",
+    "objective": "Test objective",
+    "version": "1.0.0"
+    // Missing closing brace
