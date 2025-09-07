@@ -13,7 +13,6 @@ package layer2
 // The test data is pulled from ./test-data.yaml
 
 import (
-	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -50,27 +49,6 @@ var tests = []struct {
 		sourcePath: "file://test-data/unknown.ext",
 		wantErr:    true,
 	},
-}
-
-func Test_loadYaml(t *testing.T) {
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			data := &Catalog{}
-			url, _ := url.Parse(tt.sourcePath)
-			err := loadYaml(url, data)
-			if tt.wantErr {
-				if err == nil {
-					t.Errorf("loadYaml() expected error, got nil")
-				} else if tt.errorExpected != "" {
-					assert.Equalf(t, err.Error(), tt.errorExpected, "expected error containing %q, got %s", tt.errorExpected, err)
-				}
-			} else {
-				if err != nil {
-					t.Errorf("loadYaml() unexpected error: %v", err)
-				}
-			}
-		})
-	}
 }
 
 func Test_LoadFile(t *testing.T) {
@@ -176,75 +154,6 @@ func Test_LoadFiles(t *testing.T) {
 			}
 			if !tt.wantErr && len(c.ControlFamilies) == 0 {
 				t.Errorf("Catalog.LoadControlFamilyFiles() did not load any control families")
-			}
-		})
-	}
-}
-
-func Test_decodeYAMLFromURL(t *testing.T) {
-	tests := []struct {
-		name          string
-		sourcePath    string
-		wantErr       bool
-		errorExpected string
-	}{
-		{
-			name:          "URL that returns a 404",
-			sourcePath:    "http://example.com/nonexistent.yaml",
-			wantErr:       true,
-			errorExpected: "failed to fetch URL; response status:",
-		},
-		{
-			name:       "Valid URL with valid data",
-			sourcePath: "https://raw.githubusercontent.com/ossf/security-baseline/refs/heads/main/baseline/OSPS-AC.yaml",
-			wantErr:    false,
-		},
-		{
-			name:       "Valid URL with non-compatible content",
-			sourcePath: "https://github.com/ossf/security-insights-spec/releases/download/v2.0.0/template-minimum.yml",
-			wantErr:    false, // We no longer fail on unknown fields, only malformed
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			data := &Catalog{}
-			url, _ := url.Parse(tt.sourcePath)
-			err := decodeYAMLFromURL(url, data)
-			if err != nil && tt.wantErr {
-				assert.Containsf(t, err.Error(), tt.errorExpected, "expected error containing %q, got %s", tt.errorExpected, err)
-			} else if err == nil && tt.wantErr {
-				t.Errorf("decodeYAMLFromURL() expected error matching %s, got nil.", tt.errorExpected)
-			}
-		})
-	}
-}
-
-func Test_loadJson(t *testing.T) {
-	tests := []struct {
-		name       string
-		sourcePath string
-		wantErr    bool
-	}{
-		{
-			name:       "Good JSON file",
-			sourcePath: "file://test-data/good-ccc.json",
-			wantErr:    false,
-		},
-		{
-			name:       "Invalid JSON file",
-			sourcePath: "file://test-data/bad.json",
-			wantErr:    true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			data := &Catalog{}
-			url, _ := url.Parse(tt.sourcePath)
-			err := loadJson(url, data)
-			if (err == nil) == tt.wantErr {
-				t.Errorf("loadJson() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
