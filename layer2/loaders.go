@@ -95,7 +95,7 @@ func (c *Catalog) LoadFile(sourcePath string) error {
 
 // decode unmarshals the provided reader into the provided Catalog object.
 func decode(reader io.Reader, data *Catalog) error {
-	decoder := yaml.NewDecoder(reader, yaml.DisallowUnknownField())
+	decoder := yaml.NewDecoder(reader)
 	err := decoder.Decode(data)
 	if err != nil {
 		return fmt.Errorf("error decoding YAML: %w", err)
