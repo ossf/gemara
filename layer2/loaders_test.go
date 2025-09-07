@@ -111,6 +111,12 @@ func Test_LoadNestedCatalog(t *testing.T) {
 			wantErr:         true,
 		},
 		{
+			name:            "Nested field name present",
+			sourcePath:      "file://test-data/nested-good-ccc.yaml",
+			nestedFieldName: "catalog",
+			wantErr:         false,
+		},
+		{
 			name:            "Nested field name not provided",
 			sourcePath:      "file://test-data/nested-good-ccc.yaml",
 			nestedFieldName: "",
@@ -133,6 +139,7 @@ func Test_LoadNestedCatalog(t *testing.T) {
 			} else if !tt.wantErr && err != nil {
 				t.Errorf("Did not expect error, but got '%s'", err.Error())
 			} else if !tt.wantErr {
+				assert.Equal(t, "FINOS Cloud Control Catalog", c.Metadata.Title, "Catalog title should match expected value")
 				if len(c.ControlFamilies) == 0 {
 					t.Errorf("Catalog.LoadControlFamily() did not load any control families")
 				} else if len(c.ControlFamilies) > 0 {
