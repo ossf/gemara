@@ -22,7 +22,7 @@ func goodAIGFExample() GuidanceDocument {
 				},
 			},
 			DocumentType: "Framework",
-			Applicabilty: &Applicability{
+			Applicability: &Applicability{
 				TechnologyDomains: []string{
 					"artificial-intelligence",
 				},

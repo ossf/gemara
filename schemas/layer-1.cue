@@ -29,7 +29,7 @@ package schemas
 	resources?: [...#ResourceReference] @go(Resources)
 
 	"document-type"?: #DocumentType  @go(DocumentType)
-	applicability?:   #Applicability @go(Applicabilty,optional=nillable)
+	applicability?:   #Applicability @go(Applicability,optional=nillable)
 	exemptions?: [...string]
 }
 

@@ -38,7 +38,7 @@ type Metadata struct {
 
 	DocumentType	DocumentType	`json:"document-type,omitempty" yaml:"document-type,omitempty"`
 
-	Applicabilty	*Applicability	`json:"applicability,omitempty" yaml:"applicability,omitempty"`
+	Applicability	*Applicability	`json:"applicability,omitempty" yaml:"applicability,omitempty"`
 
 	Exemptions	[]string	`json:"exemptions,omitempty" yaml:"exemptions,omitempty"`
 }
