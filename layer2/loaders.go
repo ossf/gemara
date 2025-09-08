@@ -23,6 +23,9 @@ func (c *Catalog) LoadFiles(sourcePaths []string) error {
 		c.ControlFamilies = append(c.ControlFamilies, catalog.ControlFamilies...)
 		c.Capabilities = append(c.Capabilities, catalog.Capabilities...)
 		c.Threats = append(c.Threats, catalog.Threats...)
+		c.ImportedControls = append(c.ImportedControls, catalog.ImportedControls...)
+		c.ImportedCapabilities = append(c.ImportedCapabilities, catalog.ImportedCapabilities...)
+		c.ImportedThreats = append(c.ImportedThreats, catalog.ImportedThreats...)
 	}
 	return nil
 }
