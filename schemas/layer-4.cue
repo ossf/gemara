@@ -74,7 +74,7 @@ import "time"
 
 // Assessment defines all testing procedures for a requirement.
 #Assessment: {
-	// RequirementID is the unique identifier for the requirement being tested.
+	// RequirementId is the unique identifier for the requirement being tested.
 	"requirement-id": string @go(RequirementId)
 	// Procedures defines possible testing procedures to evaluate the requirement.
 	procedures: [...#AssessmentProcedure] @go(Procedures)
