@@ -17,6 +17,9 @@ func (c *Catalog) LoadFiles(sourcePaths []string) error {
 		if err != nil {
 			return err
 		}
+		if c.Metadata.Id == "" {
+			c.Metadata = catalog.Metadata
+		}
 		c.ControlFamilies = append(c.ControlFamilies, catalog.ControlFamilies...)
 		c.Capabilities = append(c.Capabilities, catalog.Capabilities...)
 		c.Threats = append(c.Threats, catalog.Threats...)
