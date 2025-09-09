@@ -7,7 +7,7 @@ evaluation-set:
     result: Passed
     message: Two-factor authentication is configured as required by the parent organization
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-AC-01.01
       applicability:
       - Maturity Level 1
@@ -28,7 +28,7 @@ evaluation-set:
     result: Passed
     message: This control is enforced by GitHub for all projects
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-AC-02.01
       applicability:
       - Maturity Level 1
@@ -49,7 +49,7 @@ evaluation-set:
     result: Passed
     message: Branch protection rule prevents deletions
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-AC-03.01
       applicability:
       - Maturity Level 1
@@ -86,7 +86,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-AC-04.01
       applicability:
       - Maturity Level 2
@@ -105,7 +105,7 @@ evaluation-set:
     result: Needs Review
     message: Not implemented
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-BR-01.01
       applicability:
       - Maturity Level 1
@@ -142,7 +142,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-BR-02.01
       applicability:
       - Maturity Level 2
@@ -162,7 +162,7 @@ evaluation-set:
     result: Needs Review
     message: No official distribution points found in Security Insights data
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-BR-03.01
       applicability:
       - Maturity Level 1
@@ -199,7 +199,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-BR-04.01
       applicability:
       - Maturity Level 2
@@ -219,7 +219,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-BR-05.01
       applicability:
       - Maturity Level 2
@@ -238,7 +238,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-BR-06.01
       applicability:
       - Maturity Level 2
@@ -259,7 +259,7 @@ evaluation-set:
     result: Failed
     message: User guide was NOT specified in Security Insights data
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-DO-01.01
       applicability:
       - Maturity Level 1
@@ -281,7 +281,7 @@ evaluation-set:
     result: Failed
     message: Repository does not accept vulnerability reports
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-DO-02.01
       applicability:
       - Maturity Level 1
@@ -303,7 +303,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-DO-03.01
       applicability:
       - Maturity Level 3
@@ -323,7 +323,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-DO-04.01
       applicability:
       - Maturity Level 3
@@ -341,7 +341,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-DO-05.01
       applicability:
       - Maturity Level 3
@@ -359,7 +359,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-DO-06.01
       applicability:
       - Maturity Level 2
@@ -381,7 +381,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-GV-01.01
       applicability:
       - Maturity Level 2
@@ -416,7 +416,7 @@ evaluation-set:
     result: Passed
     message: Issues are enabled for the repository
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-GV-02.01
       applicability:
       - Maturity Level 1
@@ -437,7 +437,7 @@ evaluation-set:
     result: Needs Review
     message: "Contributing guide was found via GitHub API (Recommendation: Add code of conduct location to Security Insights data)"
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-GV-03.01
       applicability:
       - Maturity Level 1
@@ -474,7 +474,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-GV-04.01
       applicability:
       - Maturity Level 3
@@ -492,7 +492,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-LE-01.01
       applicability:
       - Maturity Level 2
@@ -511,7 +511,7 @@ evaluation-set:
     result: Needs Review
     message: All license found are OSI or FSF approved
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-LE-02.01
       applicability:
       - Maturity Level 1
@@ -533,7 +533,7 @@ evaluation-set:
     result: Passed
     message: GitHub releases include the license(s) in the released source code.
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-LE-03.01
       applicability:
       - Maturity Level 1
@@ -569,7 +569,7 @@ evaluation-set:
     result: Passed
     message: This control is enforced by GitHub for all projects
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-QA-01.01
       applicability:
       - Maturity Level 1
@@ -605,7 +605,7 @@ evaluation-set:
     result: Passed
     message: Found 8 dependency manifests from GitHub API
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-QA-02.01
       applicability:
       - Maturity Level 1
@@ -638,7 +638,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-QA-03.01
       applicability:
       - Maturity Level 2
@@ -658,7 +658,7 @@ evaluation-set:
     result: Failed
     message: Insights does NOT contains a list of repositories
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-QA-04.01
       applicability:
       - Maturity Level 1
@@ -681,7 +681,7 @@ evaluation-set:
     result: Passed
     message: No common binary file extensions were found in the repository
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-QA-05.01
       applicability:
       - Maturity Level 1
@@ -702,7 +702,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-QA-06.01
       applicability:
       - Maturity Level 2
@@ -747,7 +747,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-QA-07.01
       applicability:
       - Maturity Level 3
@@ -765,7 +765,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-SA-01.01
       applicability:
       - Maturity Level 2
@@ -784,7 +784,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-SA-02.01
       applicability:
       - Maturity Level 2
@@ -803,7 +803,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-SA-03.01
       applicability:
       - Maturity Level 2
@@ -834,7 +834,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-VM-01.01
       applicability:
       - Maturity Level 2
@@ -853,7 +853,7 @@ evaluation-set:
     result: Failed
     message: Security contacts were not specified in Security Insights data
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-VM-02.01
       applicability:
       - Maturity Level 1
@@ -872,7 +872,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-VM-03.01
       applicability:
       - Maturity Level 2
@@ -891,7 +891,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-VM-04.01
       applicability:
       - Maturity Level 2
@@ -922,7 +922,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-VM-05.01
       applicability:
       - Maturity Level 3
@@ -964,7 +964,7 @@ evaluation-set:
     result: Not Run
     message: ""
     corrupted-state: false
-    assessments:
+    assessment-logs:
     - requirement-id: OSPS-VM-06.01
       applicability:
       - Maturity Level 3

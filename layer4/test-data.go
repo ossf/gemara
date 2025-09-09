@@ -146,13 +146,13 @@ func disallowedChange() Change {
 	}
 }
 
-func failingAssessmentPtr() *Assessment {
+func failingAssessmentPtr() *AssessmentLog {
 	a := failingAssessment()
 	return &a
 }
 
-func failingAssessment() Assessment {
-	return Assessment{
+func failingAssessment() AssessmentLog {
+	return AssessmentLog{
 		RequirementId: "failingAssessment()",
 		Description:   "failing assessment",
 		Steps: []AssessmentStep{
@@ -162,13 +162,13 @@ func failingAssessment() Assessment {
 		Applicability: testingApplicability,
 	}
 }
-func passingAssessmentPtr() *Assessment {
+func passingAssessmentPtr() *AssessmentLog {
 	a := passingAssessment()
 	return &a
 }
 
-func passingAssessment() Assessment {
-	return Assessment{
+func passingAssessment() AssessmentLog {
+	return AssessmentLog{
 		RequirementId: "passingAssessment()",
 		Description:   "passing assessment",
 		Steps: []AssessmentStep{
@@ -180,13 +180,13 @@ func passingAssessment() Assessment {
 		},
 	}
 }
-func needsReviewAssessmentPtr() *Assessment {
+func needsReviewAssessmentPtr() *AssessmentLog {
 	a := needsReviewAssessment()
 	return &a
 }
 
-func needsReviewAssessment() Assessment {
-	return Assessment{
+func needsReviewAssessment() AssessmentLog {
+	return AssessmentLog{
 		RequirementId: "needsReviewAssessment()",
 		Description:   "needs review assessment",
 		Steps: []AssessmentStep{
@@ -197,13 +197,13 @@ func needsReviewAssessment() Assessment {
 		Applicability: testingApplicability,
 	}
 }
-func unknownAssessmentPtr() *Assessment {
+func unknownAssessmentPtr() *AssessmentLog {
 	a := unknownAssessment()
 	return &a
 }
 
-func unknownAssessment() Assessment {
-	return Assessment{
+func unknownAssessment() AssessmentLog {
+	return AssessmentLog{
 		RequirementId: "unknownAssessment()",
 		Description:   "unknown assessment",
 		Steps: []AssessmentStep{
@@ -215,8 +215,8 @@ func unknownAssessment() Assessment {
 	}
 }
 
-func badRevertPassingAssessment() Assessment {
-	return Assessment{
+func badRevertPassingAssessment() AssessmentLog {
+	return AssessmentLog{
 		RequirementId: "badRevertPassingAssessment()",
 		Description:   "bad revert passing assessment",
 		Changes: map[string]*Change{

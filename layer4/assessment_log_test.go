@@ -6,45 +6,45 @@ import (
 
 func getAssessmentsTestData() []struct {
 	testName           string
-	assessment         Assessment
+	assessment         AssessmentLog
 	numberOfSteps      int
 	numberOfStepsToRun int
 	expectedResult     Result
 } {
 	return []struct {
 		testName           string
-		assessment         Assessment
+		assessment         AssessmentLog
 		numberOfSteps      int
 		numberOfStepsToRun int
 		expectedResult     Result
 	}{
 		{
-			testName:   "Assessment with no steps",
-			assessment: Assessment{},
+			testName:   "AssessmentLog with no steps",
+			assessment: AssessmentLog{},
 		},
 		{
-			testName:           "Assessment with one step",
+			testName:           "AssessmentLog with one step",
 			assessment:         passingAssessment(),
 			numberOfSteps:      1,
 			numberOfStepsToRun: 1,
 			expectedResult:     Passed,
 		},
 		{
-			testName:           "Assessment with two steps",
+			testName:           "AssessmentLog with two steps",
 			assessment:         failingAssessment(),
 			numberOfSteps:      2,
 			numberOfStepsToRun: 1,
 			expectedResult:     Failed,
 		},
 		{
-			testName:           "Assessment with three steps",
+			testName:           "AssessmentLog with three steps",
 			assessment:         needsReviewAssessment(),
 			numberOfSteps:      3,
 			numberOfStepsToRun: 3,
 			expectedResult:     NeedsReview,
 		},
 		{
-			testName:           "Assessment with four steps",
+			testName:           "AssessmentLog with four steps",
 			assessment:         badRevertPassingAssessment(),
 			numberOfSteps:      4,
 			numberOfStepsToRun: 4,
@@ -53,7 +53,7 @@ func getAssessmentsTestData() []struct {
 	}
 }
 
-// TestNewStep ensures that NewStep queues a new step in the Assessment
+// TestNewStep ensures that NewStep queues a new step in the AssessmentLog
 func TestAddStep(t *testing.T) {
 	for _, test := range getAssessmentsTestData() {
 		t.Run(test.testName, func(t *testing.T) {
@@ -68,7 +68,7 @@ func TestAddStep(t *testing.T) {
 	}
 }
 
-// TestRunStep ensures that runStep runs the step and updates the Assessment
+// TestRunStep ensures that runStep runs the step and updates the AssessmentLog
 func TestRunStep(t *testing.T) {
 	stepsTestData := []struct {
 		testName string
@@ -98,7 +98,7 @@ func TestRunStep(t *testing.T) {
 	}
 	for _, test := range stepsTestData {
 		t.Run(test.testName, func(t *testing.T) {
-			anyOldAssessment := Assessment{}
+			anyOldAssessment := AssessmentLog{}
 			result := anyOldAssessment.runStep(nil, test.step)
 			if result != test.result {
 				t.Errorf("expected %s, got %s", test.result, result)
@@ -147,9 +147,9 @@ func TestRunB(t *testing.T) {
 	}
 }
 
-// TestNewChange ensures that NewChange creates a new Change object and adds it to the Assessment
+// TestNewChange ensures that NewChange creates a new Change object and adds it to the AssessmentLog
 func TestNewChange(t *testing.T) {
-	anyOldAssessment := Assessment{}
+	anyOldAssessment := AssessmentLog{}
 	testName := "Add-a-new-change"
 	t.Run(testName, func(t *testing.T) {
 		if len(anyOldAssessment.Changes) != 0 {
@@ -169,41 +169,41 @@ func TestNewChange(t *testing.T) {
 	})
 }
 
-// TestRevertChanges ensures that RevertChanges attempts to revert all changes in the Assessment
+// TestRevertChanges ensures that RevertChanges attempts to revert all changes in the AssessmentLog
 func TestRevertChanges(t *testing.T) {
 	revertChangesTestData := []struct {
 		testName   string
-		assessment Assessment
+		assessment AssessmentLog
 		corrupted  bool
 	}{
 		{
 			testName:   "No changes",
-			assessment: Assessment{},
+			assessment: AssessmentLog{},
 			corrupted:  false,
 		},
 		{
 			testName:   "Change already applied and reverted",
-			assessment: Assessment{Changes: map[string]*Change{"test": goodRevertedChangePtr()}},
+			assessment: AssessmentLog{Changes: map[string]*Change{"test": goodRevertedChangePtr()}},
 			corrupted:  false,
 		},
 		{
 			testName:   "Change without apply function",
-			assessment: Assessment{Changes: map[string]*Change{"test": noApplyChangePtr()}},
+			assessment: AssessmentLog{Changes: map[string]*Change{"test": noApplyChangePtr()}},
 			corrupted:  true,
 		},
 		{
 			testName:   "Change with error from apply function",
-			assessment: Assessment{Changes: map[string]*Change{"test": badApplyChangePtr()}},
+			assessment: AssessmentLog{Changes: map[string]*Change{"test": badApplyChangePtr()}},
 			corrupted:  true,
 		},
 		{
 			testName:   "Change with error from revert function",
-			assessment: Assessment{Changes: map[string]*Change{"test": badRevertChangePtr()}},
+			assessment: AssessmentLog{Changes: map[string]*Change{"test": badRevertChangePtr()}},
 			corrupted:  true,
 		},
 		{
 			testName:   "Change previously applied and needs reverted",
-			assessment: Assessment{Changes: map[string]*Change{"test": goodNotRevertedChangePtr()}},
+			assessment: AssessmentLog{Changes: map[string]*Change{"test": goodNotRevertedChangePtr()}},
 			corrupted:  false,
 		},
 		{
