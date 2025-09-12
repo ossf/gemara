@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5.0.0
+        with:
+          persist-credentials: false
       - uses: actions/setup-go@v6
         with:
           go-version: stable
