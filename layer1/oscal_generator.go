@@ -165,7 +165,7 @@ func createMetadata(guidance *GuidanceDocument, opts generateOpts) (oscal.Metada
 	fallbackTime := time.Now()
 	metadata := oscal.Metadata{
 		Title:        guidance.Metadata.Title,
-		OscalVersion: oscalUtils.OSCALVersion,
+		OscalVersion: oscal.Version,
 		Version:      opts.version,
 		Published:    oscalUtils.GetTime(guidance.Metadata.PublicationDate),
 		LastModified: oscalUtils.GetTimeWithFallback(guidance.Metadata.LastModified, fallbackTime),
