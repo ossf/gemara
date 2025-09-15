@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.24.5
 
 require (
-	github.com/defenseunicorns/go-oscal v0.6.3
+	github.com/defenseunicorns/go-oscal v0.7.0
 	github.com/goccy/go-yaml v1.18.0
 	github.com/stretchr/testify v1.11.1
 )
