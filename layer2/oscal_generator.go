@@ -62,8 +62,8 @@ func (c *Catalog) ToOSCAL(controlHREF string) (oscal.Catalog, error) {
 					Ns:    "",
 					Parts: &[]oscal.Part{
 						{
-							ID:    ar.Id + ".R",
-							Name:  "recommendation",
+							ID:    fmt.Sprintf("%s_smt.%s_gdn", control.Id, ar.Id),
+							Name:  "guidance",
 							Ns:    oscalUtils.GemaraNamespace,
 							Prose: ar.Recommendation,
 							Links: &[]oscal.Link{
