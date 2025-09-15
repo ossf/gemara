@@ -34,7 +34,7 @@ func (c *Catalog) ToOSCAL(controlHREF string) (oscal.Catalog, error) {
 					Rel:  "canonical",
 				},
 			},
-			OscalVersion: oscalUtils.OSCALVersion,
+			OscalVersion: oscal.Version,
 			Published:    &now,
 			Title:        c.Metadata.Title,
 			Version:      c.Metadata.Version,

@@ -11,10 +11,7 @@ import (
 	oscal "github.com/defenseunicorns/go-oscal/src/types/oscal-1-1-3"
 )
 
-const (
-	OSCALVersion    = "1.1.3"
-	GemaraNamespace = "https://github.com/ossf/gemara/ns/oscal"
-)
+const GemaraNamespace = "https://github.com/ossf/gemara/ns/oscal"
 
 // NilIfEmpty returns a pointer to the slice, or nil if empty.
 func NilIfEmpty[T any](slice []T) *[]T {
@@ -62,7 +59,7 @@ func GetTime(timeStr string) *time.Time {
 }
 
 func Validate(oscalModels oscal.OscalModels) error {
-	validator, err := oscalValidation.NewValidatorDesiredVersion(oscalModels, OSCALVersion)
+	validator, err := oscalValidation.NewValidatorDesiredVersion(oscalModels, oscal.Version)
 	if err != nil {
 		return fmt.Errorf("failed to create validator: %w", err)
 	}
