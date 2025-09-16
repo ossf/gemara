@@ -64,16 +64,16 @@ func TestToOSCALCatalog(t *testing.T) {
 									},
 								},
 								{
-									Name: "guidance",
-									ID:   "air-det-011_gdn",
+									Name: "assessment-objective",
+									ID:   "air-det-011_obj",
 									Parts: &[]oscalTypes.Part{
 										{
 											Name: "assessment-objective",
-											ID:   "air-det-011_gdn.1",
+											ID:   "air-det-011_obj.1",
 											Links: &[]oscalTypes.Link{
 												{
 													Href: "#air-det-011_smt.1",
-													Rel:  "referenced-statement",
+													Rel:  "assessment-for",
 												},
 											},
 											Prose: "Define Intended Use and KPIs:\nObjectives: Clearly document how feedback data will be utilized, such as for prompt fine-tuning, RAG document updates,model/data drift detection, " +
@@ -82,11 +82,11 @@ func TestToOSCALCatalog(t *testing.T) {
 										},
 										{
 											Name: "assessment-objective",
-											ID:   "air-det-011_gdn.2",
+											ID:   "air-det-011_obj.2",
 											Links: &[]oscalTypes.Link{
 												{
 													Href: "#air-det-011_smt.2",
-													Rel:  "referenced-statement",
+													Rel:  "assessment-for",
 												},
 											},
 											Prose: "Quantitative Feedback:\nDescription: Involves collecting structured responses that can be easily aggregated and measured, such as numerical ratings (e.g., “Rate this response on " +
@@ -96,8 +96,8 @@ func TestToOSCALCatalog(t *testing.T) {
 									},
 								},
 								{
-									Name: "assessment-objective",
-									ID:   "air-det-011_obj",
+									Name: "overview",
+									ID:   "air-det-011_ovw",
 									Prose: "A Human Feedback Loop is a critical detective and continuous improvement mechanism that involves systematically collecting, analyzing, and acting upon feedback provided by human users, " +
 										"subject matter experts (SMEs), or reviewers regarding an AI system’s performance, outputs, or behavior.",
 								},

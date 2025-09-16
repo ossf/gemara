@@ -272,14 +272,23 @@ func (g *GuidanceDocument) guidelineToControl(guideline Guideline, resourcesMap 
 		ID:   fmt.Sprintf("%s_smt", controlId),
 	}
 
-	gdnPart := oscal.Part{
-		Name:  "guidance",
-		ID:    fmt.Sprintf("%s_gdn", controlId),
-		Prose: strings.Join(guideline.Recommendations, " "),
+	objPart := oscal.Part{
+		Name: "assessment-objective",
+		ID:   fmt.Sprintf("%s_obj", controlId),
+	}
+
+	if len(guideline.Recommendations) > 0 {
+		objPart.Prose = strings.Join(guideline.Recommendations, " ")
+		objPart.Links = &[]oscal.Link{
+			{
+				Href: fmt.Sprintf("#%s_smt", controlId),
+				Rel:  "assessment-for",
+			},
+		}
 	}
 
 	var smtParts []oscal.Part
-	var gdnParts []oscal.Part
+	var objParts []oscal.Part
 	for _, part := range guideline.GuidelineParts {
 		partId := oscalUtils.NormalizeControl(part.Id, true)
 		smtID := fmt.Sprintf("%s_smt.%s", controlId, partId)
@@ -290,34 +299,36 @@ func (g *GuidanceDocument) guidelineToControl(guideline Guideline, resourcesMap 
 			Title: part.Title,
 		}
 		smtParts = append(smtParts, itemSubSmt)
-		gdnSubPart := oscal.Part{
-			Name:  "assessment-objective",
-			ID:    fmt.Sprintf("%s_gdn.%s", controlId, partId),
-			Prose: strings.Join(part.Recommendations, " "),
-			Links: &[]oscal.Link{
-				{
-					Href: fmt.Sprintf("#%s", smtID),
-					Rel:  "referenced-statement",
+
+		if len(part.Recommendations) > 0 {
+			objSubPart := oscal.Part{
+				Name:  "assessment-objective",
+				ID:    fmt.Sprintf("%s_obj.%s", controlId, partId),
+				Prose: strings.Join(part.Recommendations, " "),
+				Links: &[]oscal.Link{
+					{
+						Href: fmt.Sprintf("#%s", smtID),
+						Rel:  "assessment-for",
+					},
 				},
-			},
+			}
+			objParts = append(objParts, objSubPart)
 		}
-		gdnParts = append(gdnParts, gdnSubPart)
 	}
 
 	// Ensure the parts are set to nil if nothing was added for
 	// schema compliance.
 	smtPart.Parts = oscalUtils.NilIfEmpty(smtParts)
-	gdnPart.Parts = oscalUtils.NilIfEmpty(gdnParts)
-	control.Parts = &[]oscal.Part{smtPart, gdnPart}
+	objPart.Parts = oscalUtils.NilIfEmpty(objParts)
+	control.Parts = &[]oscal.Part{smtPart, objPart}
 
 	if guideline.Objective != "" {
-		// objective part
-		objPart := oscal.Part{
-			Name:  "assessment-objective",
-			ID:    fmt.Sprintf("%s_obj", controlId),
+		overviewPart := oscal.Part{
+			Name:  "overview",
+			ID:    fmt.Sprintf("%s_ovw", controlId),
 			Prose: guideline.Objective,
 		}
-		*control.Parts = append(*control.Parts, objPart)
+		*control.Parts = append(*control.Parts, overviewPart)
 	}
 
 	return control, oscalUtils.NormalizeControl(guideline.BaseGuidelineID, false)
