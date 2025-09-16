@@ -271,33 +271,44 @@ func (g *GuidanceDocument) guidelineToControl(guideline Guideline, resourcesMap 
 		Name: "statement",
 		ID:   fmt.Sprintf("%s_smt", controlId),
 	}
-	var subSmts []oscal.Part
+
+	gdnPart := oscal.Part{
+		Name:  "guidance",
+		ID:    fmt.Sprintf("%s_gdn", controlId),
+		Prose: strings.Join(guideline.Recommendations, " "),
+	}
+
+	var smtParts []oscal.Part
+	var gdnParts []oscal.Part
 	for _, part := range guideline.GuidelineParts {
-
 		partId := oscalUtils.NormalizeControl(part.Id, true)
-
-		subSmt := oscal.Part{
+		smtID := fmt.Sprintf("%s_smt.%s", controlId, partId)
+		itemSubSmt := oscal.Part{
 			Name:  "item",
-			ID:    fmt.Sprintf("%s_smt.%s", controlId, partId),
+			ID:    smtID,
 			Prose: part.Prose,
 			Title: part.Title,
 		}
-
-		if len(part.Recommendations) > 0 {
-			gdnSubPart := oscal.Part{
-				Name:  "guidance",
-				ID:    fmt.Sprintf("%s_smt.%s_gdn", controlId, partId),
-				Prose: strings.Join(part.Recommendations, " "),
-			}
-			subSmt.Parts = &[]oscal.Part{
-				gdnSubPart,
-			}
+		smtParts = append(smtParts, itemSubSmt)
+		gdnSubPart := oscal.Part{
+			Name:  "assessment-objective",
+			ID:    fmt.Sprintf("%s_gdn.%s", controlId, partId),
+			Prose: strings.Join(part.Recommendations, " "),
+			Links: &[]oscal.Link{
+				{
+					Href: fmt.Sprintf("#%s", smtID),
+					Rel:  "referenced-statement",
+				},
+			},
 		}
-
-		subSmts = append(subSmts, subSmt)
+		gdnParts = append(gdnParts, gdnSubPart)
 	}
-	smtPart.Parts = oscalUtils.NilIfEmpty(subSmts)
-	control.Parts = &[]oscal.Part{smtPart}
+
+	// Ensure the parts are set to nil if nothing was added for
+	// schema compliance.
+	smtPart.Parts = oscalUtils.NilIfEmpty(smtParts)
+	gdnPart.Parts = oscalUtils.NilIfEmpty(gdnParts)
+	control.Parts = &[]oscal.Part{smtPart, gdnPart}
 
 	if guideline.Objective != "" {
 		// objective part
@@ -307,16 +318,6 @@ func (g *GuidanceDocument) guidelineToControl(guideline Guideline, resourcesMap 
 			Prose: guideline.Objective,
 		}
 		*control.Parts = append(*control.Parts, objPart)
-	}
-
-	if len(guideline.Recommendations) > 0 {
-		// gdn part
-		gdnPart := oscal.Part{
-			Name:  "guidance",
-			ID:    fmt.Sprintf("%s_gdn", controlId),
-			Prose: strings.Join(guideline.Recommendations, " "),
-		}
-		*control.Parts = append(*control.Parts, gdnPart)
 	}
 
 	return control, oscalUtils.NormalizeControl(guideline.BaseGuidelineID, false)
