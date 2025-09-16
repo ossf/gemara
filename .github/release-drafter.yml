@@ -32,15 +32,18 @@ version-resolver:
   major:
     labels:
       - "breaking"
+      - "major"
   minor:
     labels:
       - "feature"
       - "enhancement"
+      - "minor"
   patch:
     labels:
       - "fix"
       - "documentation"
       - "maintenance"
+      - "patch"
   default: patch
 autolabeler:
   - label: "automation"
