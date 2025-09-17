@@ -11,6 +11,9 @@ import (
 )
 
 func TestToOSCALCatalog(t *testing.T) {
+	goodAIFG, err := goodAIGFExample()
+	require.NoError(t, err)
+
 	tests := []struct {
 		name       string
 		guidance   GuidanceDocument
@@ -19,7 +22,7 @@ func TestToOSCALCatalog(t *testing.T) {
 	}{
 		{
 			name:     "Good AIGF",
-			guidance: goodAIGFExample(),
+			guidance: goodAIFG,
 			wantGroups: []oscalTypes.Group{
 				{
 					Class: "category",
@@ -119,7 +122,10 @@ func TestToOSCALCatalog(t *testing.T) {
 }
 
 func TestToOSCALProfile(t *testing.T) {
-	guidanceWithImports := goodAIGFExample()
+	goodAIFG, err := goodAIGFExample()
+	require.NoError(t, err)
+
+	guidanceWithImports := goodAIFG
 	// Add some shared guidelines
 	mapping := MappingReference{
 		Id:          "EXP",
@@ -155,7 +161,7 @@ func TestToOSCALProfile(t *testing.T) {
 	}{
 		{
 			name:     "Success/LocalOnly",
-			guidance: goodAIGFExample(),
+			guidance: goodAIFG,
 			wantImports: []oscalTypes.Import{
 				{
 					Href:       "testHref",

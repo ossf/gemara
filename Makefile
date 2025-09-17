@@ -55,11 +55,20 @@ dirtycheck:
 		echo "  >  No uncommitted changes to generated files found."; \
 	fi
 
+oscalgenerate:
+	@echo "  >  Generate OSCAL testdata from Gemara artifacts..."
+	@go build -o utils/oscal/oscal_exporter utils/oscal/oscal_exporter.go
+	@mkdir -p artifacts
+	@utils/oscal/oscal_exporter catalog ./layer2/test-data/good-osps.yml --output ./artifacts/catalog.json
+	@utils/oscal/oscal_exporter guidance ./layer1/test-data/good-aigf.yaml --output ./artifacts/guidance.json
+	@rm utils/oscal/oscal_exporter
+
 lintinsights:
 	@echo "  >  Linting security-insights.yml ..."
 	@curl -O --silent https://raw.githubusercontent.com/ossf/security-insights-spec/refs/tags/v2.1.0/schema.cue
 	@cue vet -d '#SecurityInsights' security-insights.yml schema.cue
 	@rm schema.cue
 	@echo "  >  Linting security-insights.yml complete."
+
 
 PHONY: tidy test testcov lintcue cuegen dirtycheck lintinsights

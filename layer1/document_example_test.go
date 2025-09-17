@@ -27,7 +27,7 @@ func ExampleGuidanceDocument() {
 {{ end }}
 {{ end }}
 `
-	l1Docs := goodAIGFExample()
+	l1Docs, err := goodAIGFExample()
 	t, err := template.New("guidance").Parse(tmpl)
 	if err != nil {
 		fmt.Printf("error parsing template: %v\n", err)
