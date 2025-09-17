@@ -53,43 +53,56 @@ func (c *Catalog) ToOSCAL(controlHREF string) (oscal.Catalog, error) {
 
 		controls := []oscal.Control{}
 		for _, control := range family.Controls {
-			parts := []oscal.Part{}
-			for _, ar := range control.AssessmentRequirements {
-				parts = append(parts, oscal.Part{
-					Class: control.Id,
-					ID:    ar.Id,
-					Name:  ar.Id,
-					Ns:    "",
-					Parts: &[]oscal.Part{
-						{
-							ID:    fmt.Sprintf("%s_smt.%s_gdn", control.Id, ar.Id),
-							Name:  "guidance",
-							Ns:    oscalUtils.GemaraNamespace,
-							Prose: ar.Recommendation,
-							Links: &[]oscal.Link{
-								{
-									Href: fmt.Sprintf(controlHREF, c.Metadata.Version, ar.Id),
-									Rel:  "canonical",
-								},
-							},
-						},
-					},
-					Prose: ar.Text,
-					Title: "",
-				})
-			}
-
 			newCtl := oscal.Control{
-				Class: family.Title,
+				Class: family.Id,
 				ID:    control.Id,
+				Title: strings.TrimSpace(control.Title),
 				Links: &[]oscal.Link{
 					{
 						Href: fmt.Sprintf(controlHREF, c.Metadata.Version, strings.ToLower(control.Id)),
 						Rel:  "canonical",
 					},
 				},
-				Parts: &parts,
-				Title: strings.TrimSpace(control.Title),
+			}
+
+			var subControls []oscal.Control
+			for _, ar := range control.AssessmentRequirements {
+				subControl := oscal.Control{
+					ID:    fmt.Sprintf("%s.%s", control.Id, ar.Id),
+					Title: ar.Id,
+					Parts: &[]oscal.Part{
+						{
+							Name:  "statement",
+							ID:    fmt.Sprintf("%s.%s_smt", control.Id, ar.Id),
+							Prose: ar.Text,
+						},
+					},
+				}
+
+				if ar.Recommendation != "" {
+					*subControl.Parts = append(*subControl.Parts, oscal.Part{
+						Name:  "guidance",
+						ID:    fmt.Sprintf("%s.%s_gdn", control.Id, ar.Id),
+						Prose: ar.Recommendation,
+					})
+				}
+
+				*subControl.Parts = append(*subControl.Parts, oscal.Part{
+					Name: "assessment-objective",
+					ID:   fmt.Sprintf("%s.%s_obj", control.Id, ar.Id),
+					Links: &[]oscal.Link{
+						{
+							Href: fmt.Sprintf("#%s.%s_smt", control.Id, ar.Id),
+							Rel:  "assessment-for",
+						},
+					},
+				})
+
+				subControls = append(subControls, subControl)
+			}
+
+			if len(subControls) > 0 {
+				newCtl.Controls = &subControls
 			}
 			controls = append(controls, newCtl)
 		}
