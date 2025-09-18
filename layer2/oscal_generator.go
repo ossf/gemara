@@ -68,7 +68,7 @@ func (c *Catalog) ToOSCAL(controlHREF string) (oscal.Catalog, error) {
 			var subControls []oscal.Control
 			for _, ar := range control.AssessmentRequirements {
 				subControl := oscal.Control{
-					ID:    fmt.Sprintf("%s.%s", control.Id, ar.Id),
+					ID:    ar.Id,
 					Title: ar.Id,
 					Parts: &[]oscal.Part{
 						{
