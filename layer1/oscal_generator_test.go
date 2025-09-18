@@ -54,36 +54,50 @@ func TestToOSCALCatalog(t *testing.T) {
 											ID:    "air-det-011_smt.1",
 											Title: "Designing the Feedback Mechanism",
 											Prose: "Implementing an effective human feedback loop involves careful design of the mechanism.",
-											Parts: &[]oscalTypes.Part{
-												{
-													Name: "guidance",
-													ID:   "air-det-011_smt.1_gdn",
-													Prose: "Define Intended Use and KPIs:\nObjectives: Clearly document how feedback data will be utilized, such as for prompt fine-tuning, RAG document updates,model/data drift detection, " +
-														"or more advanced uses like Reinforcement Learning from Human Feedback (RLHF).\nKPI Alignment: Design feedback questions and metrics to align with the solution’s key performance indicators " +
-														"(KPIs). For example, if accuracy is a KPI, feedback might involve users or SMEs annotating if an answer was correct.",
-												},
-											},
 										},
 										{
 											Name:  "item",
 											ID:    "air-det-011_smt.2",
 											Title: "Types of Feedback and Collection Methods",
 											Prose: "Implementing an effective human feedback loop involves clear collection processes.",
-											Parts: &[]oscalTypes.Part{
-												{
-													Name: "guidance",
-													ID:   "air-det-011_smt.2_gdn",
-													Prose: "Quantitative Feedback:\nDescription: Involves collecting structured responses that can be easily aggregated and measured, such as numerical ratings (e.g., “Rate this response on " +
-														"a scale of 1-5 for helpfulness”), categorical choices (e.g., “Was this answer: Correct/Incorrect/Partially Correct”), or binary responses (e.g., thumbs up/down)." +
-														"\nUse Cases: Effective for tracking trends, measuring against KPIs, and quickly identifying areas of high or low performance.",
-												},
-											},
 										},
 									},
 								},
 								{
 									Name: "assessment-objective",
 									ID:   "air-det-011_obj",
+									Parts: &[]oscalTypes.Part{
+										{
+											Name: "assessment-objective",
+											ID:   "air-det-011_obj.1",
+											Links: &[]oscalTypes.Link{
+												{
+													Href: "#air-det-011_smt.1",
+													Rel:  "assessment-for",
+												},
+											},
+											Prose: "Define Intended Use and KPIs:\nObjectives: Clearly document how feedback data will be utilized, such as for prompt fine-tuning, RAG document updates,model/data drift detection, " +
+												"or more advanced uses like Reinforcement Learning from Human Feedback (RLHF).\nKPI Alignment: Design feedback questions and metrics to align with the solution’s key performance indicators " +
+												"(KPIs). For example, if accuracy is a KPI, feedback might involve users or SMEs annotating if an answer was correct.",
+										},
+										{
+											Name: "assessment-objective",
+											ID:   "air-det-011_obj.2",
+											Links: &[]oscalTypes.Link{
+												{
+													Href: "#air-det-011_smt.2",
+													Rel:  "assessment-for",
+												},
+											},
+											Prose: "Quantitative Feedback:\nDescription: Involves collecting structured responses that can be easily aggregated and measured, such as numerical ratings (e.g., “Rate this response on " +
+												"a scale of 1-5 for helpfulness”), categorical choices (e.g., “Was this answer: Correct/Incorrect/Partially Correct”), or binary responses (e.g., thumbs up/down)." +
+												"\nUse Cases: Effective for tracking trends, measuring against KPIs, and quickly identifying areas of high or low performance.",
+										},
+									},
+								},
+								{
+									Name: "overview",
+									ID:   "air-det-011_ovw",
 									Prose: "A Human Feedback Loop is a critical detective and continuous improvement mechanism that involves systematically collecting, analyzing, and acting upon feedback provided by human users, " +
 										"subject matter experts (SMEs), or reviewers regarding an AI system’s performance, outputs, or behavior.",
 								},
