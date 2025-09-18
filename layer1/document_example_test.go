@@ -28,9 +28,14 @@ func ExampleGuidanceDocument() {
 {{ end }}
 `
 	l1Docs, err := goodAIGFExample()
+	if err != nil {
+		fmt.Printf("error getting testdata: %v\n", err)
+		return
+	}
 	t, err := template.New("guidance").Parse(tmpl)
 	if err != nil {
 		fmt.Printf("error parsing template: %v\n", err)
+		return
 	}
 
 	err = t.Execute(os.Stdout, l1Docs)
