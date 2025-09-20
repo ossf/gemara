@@ -1,0 +1,74 @@
+metadata:
+  id: FINOS-AIR
+  title: AI Governance Framework
+  description: ""
+  author: ""
+  version: 0.1.0
+  last-modified: "2025-09-17T16:10:06-04:00"
+  mapping-references:
+    - id: NIST-800-53
+      title: NIST SP 800-53r5
+      version: rev5
+      url: "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-53r5.pdf#%5B%7B%22num%22%3A342%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C88%2C310%2C0%5D"
+    - id: AIR-PRIN
+      title: Example Principles Document for the Framework
+      version: 0.1.0
+  document-type: Framework
+  applicability:
+    technology-domains:
+      - artificial-intelligence
+    industry-sectors:
+      - financial-services
+front-matter: The following framework has been developed by FINOS (Fintech Open Source Foundation).
+categories:
+  - id: DET
+    title: Detective
+    description: Detection and Continuous Improvement
+    guidelines:
+      - id: AIR-DET-011
+        title: Human Feedback Loop for AI Systems
+        objective: A Human Feedback Loop is a critical detective and continuous improvement mechanism that involves systematically collecting, analyzing, and acting upon feedback provided by human users, subject matter experts (SMEs), or reviewers regarding an AI system’s performance, outputs, or behavior.
+        rationale:
+          risks: []
+          outcomes:
+            - title: Governance Support
+              description: Provides data for AI governance bodies to monitor impact and make decisions
+        guideline-parts:
+          - id: AIR-DET-011.1
+            title: Designing the Feedback Mechanism
+            prose: Implementing an effective human feedback loop involves careful design of the mechanism.
+            recommendations:
+              - "Define Intended Use and KPIs:\nObjectives: Clearly document how feedback data will be utilized, such as for prompt fine-tuning, RAG document updates,model/data drift detection, or more advanced uses like Reinforcement Learning from Human Feedback (RLHF).\nKPI Alignment: Design feedback questions and metrics to align with the solution’s key performance indicators (KPIs). For example, if accuracy is a KPI, feedback might involve users or SMEs annotating if an answer was correct."
+          - id: AIR-DET-011.2
+            title: Types of Feedback and Collection Methods
+            prose: Implementing an effective human feedback loop involves clear collection processes.
+            recommendations:
+              - "Quantitative Feedback:\nDescription: Involves collecting structured responses that can be easily aggregated and measured, such as numerical ratings (e.g., “Rate this response on a scale of 1-5 for helpfulness”), categorical choices (e.g., “Was this answer: Correct/Incorrect/Partially Correct”), or binary responses (e.g., thumbs up/down).\nUse Cases: Effective for tracking trends, measuring against KPIs, and quickly identifying areas of high or low performance."
+        guideline-mappings:
+          - reference-id: NIST-800-53
+            entries:
+              - reference-id: CA-7
+                strength: 7
+                remarks: This control is closely related to CA-7.
+              - reference-id: IR-6
+                strength: 5
+                remarks: This control has some relevance to IR-6.
+              - reference-id: PM-26
+                strength: 3
+                remarks: This control is loosely related to PM-26.
+              - reference-id: RA-5
+                strength: 7
+                remarks: This control is closely related to RA-5.
+              - reference-id: SI-2
+                strength: 5
+                remarks: This control has some relevance to SI-2.
+        principle-mappings:
+          - reference-id: AIR-PRIN
+            entries:
+              - reference-id: TIMELINESS
+                strength: 7
+                remarks: This principle emphasizes the importance of timely feedback.
+        see-also:
+          - AIR-DET-015
+          - AIR-DET-004
+          - AIR-PREV-005
