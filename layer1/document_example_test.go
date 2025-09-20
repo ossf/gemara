@@ -27,6 +27,7 @@ func ExampleGuidanceDocument() {
 {{ end }}
 {{ end }}
 `
+
 	l1Docs, err := goodAIGFExample()
 	if err != nil {
 		fmt.Printf("error getting testdata: %v\n", err)

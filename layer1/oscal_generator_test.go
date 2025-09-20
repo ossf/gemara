@@ -1,9 +1,11 @@
 package layer1
 
 import (
+	"os"
 	"testing"
 
 	oscalTypes "github.com/defenseunicorns/go-oscal/src/types/oscal-1-1-3"
+	"github.com/goccy/go-yaml"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -232,4 +234,17 @@ func TestToOSCALProfile(t *testing.T) {
 			assert.Equal(t, tt.wantImports, profile.Imports)
 		})
 	}
+}
+
+func goodAIGFExample() (GuidanceDocument, error) {
+	testdataPath := "./test-data/good-aigf.yaml"
+	data, err := os.ReadFile(testdataPath)
+	if err != nil {
+		return GuidanceDocument{}, err
+	}
+	var l1Docs GuidanceDocument
+	if err := yaml.Unmarshal(data, &l1Docs); err != nil {
+		return GuidanceDocument{}, err
+	}
+	return l1Docs, nil
 }
