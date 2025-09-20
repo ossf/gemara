@@ -35,6 +35,6 @@ To validate this functionality using `gemara` test artifacts, perform the follow
 
 1. Install the `oscal-cli`. Instructions on installation are available in this [guide](https://github.com/usnistgov/oscal-cli?tab=readme-ov-file#installing).
 2. Generate OSCAL test data by running `make oscalgenerate`
-3. Use the `oscal-cli` to validate the generate artifacts under the `artifacts` directory.
+3. Use the `oscal-cli` to validate the generated artifacts under the `artifacts` directory.
 
 Example: `oscal-cli catalog validate ./artifacts/catalog.json `

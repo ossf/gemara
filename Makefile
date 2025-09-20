@@ -58,8 +58,8 @@ dirtycheck:
 oscalgenerate:
 	@echo "  >  Generate OSCAL testdata from Gemara artifacts..."
 	@mkdir -p artifacts
-	@go run ./utils/oscal/main.go catalog ./layer2/test-data/good-osps.yml --output ./artifacts/catalog.json
-	@go run ./utils/oscal/main.go  guidance ./layer1/test-data/good-aigf.yaml --catalog-output ./artifacts/guidance.json --profile-output ./artifacts/profile.json
+	@go run ./utils/oscal catalog ./layer2/test-data/good-osps.yml --output ./artifacts/catalog.json
+	@go run ./utils/oscal  guidance ./layer1/test-data/good-aigf.yaml --catalog-output ./artifacts/guidance.json --profile-output ./artifacts/profile.json
 
 lintinsights:
 	@echo "  >  Linting security-insights.yml ..."
@@ -67,6 +67,5 @@ lintinsights:
 	@cue vet -d '#SecurityInsights' security-insights.yml schema.cue
 	@rm schema.cue
 	@echo "  >  Linting security-insights.yml complete."
-
 
 PHONY: tidy test testcov lintcue cuegen dirtycheck lintinsights
