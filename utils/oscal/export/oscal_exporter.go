@@ -1,4 +1,4 @@
-package main
+package export
 
 import (
 	"encoding/json"
@@ -13,39 +13,10 @@ import (
 	"github.com/ossf/gemara/layer2"
 )
 
-func main() {
-	flag.Parse()
-	args := flag.Args()
-
-	if len(args) < 2 {
-		fmt.Println("Usage: oscal_exporter <subcommand> <path> [flags]")
-		fmt.Println("Available subcommands: guidance, catalog")
-		os.Exit(1)
-	}
-
-	subcommand, path := args[0], args[1]
-	subcommandArgs := args[2:]
-
-	var err error
-	switch subcommand {
-	case "guidance":
-		err = exportGuidance(path, subcommandArgs)
-	case "catalog":
-		err = exportCatalog(path, subcommandArgs)
-	default:
-		fmt.Printf("Unknown subcommand: %s\n", subcommand)
-		os.Exit(1)
-	}
-
-	if err != nil {
-		fmt.Printf("Error processing command: %v\n", err)
-		os.Exit(1)
-	}
-}
-
-func exportGuidance(path string, args []string) error {
+func Guidance(path string, args []string) error {
 	cmd := flag.NewFlagSet("guidance", flag.ExitOnError)
-	outputFile := cmd.String("output", "guidance.json", "Path to output file for OSCAL Catalog and Profile")
+	catalogOutputFile := cmd.String("catalog-output", "guidance.json", "Path to output file for OSCAL Catalog")
+	profileOutputFile := cmd.String("profile-output", "profile.json", "Path to output file for OSCAL Profile")
 	if err := cmd.Parse(args); err != nil {
 		return err
 	}
@@ -65,20 +36,27 @@ func exportGuidance(path string, args []string) error {
 		return err
 	}
 
-	oscalProfile, err := guidanceDocument.ToOSCALProfile(fmt.Sprintf("file://%s", *outputFile))
+	oscalProfile, err := guidanceDocument.ToOSCALProfile(fmt.Sprintf("file://%s", *catalogOutputFile))
 	if err != nil {
 		return err
 	}
 
-	oscalModel := oscal.OscalModels{
+	catalogOscalModel := oscal.OscalModels{
 		Catalog: &oscalCatalog,
+	}
+
+	if err := writeOSCALFile(catalogOscalModel, *catalogOutputFile); err != nil {
+		return err
+	}
+
+	profileOscalModel := oscal.OscalModels{
 		Profile: &oscalProfile,
 	}
 
-	return writeOSCALFile(oscalModel, *outputFile)
+	return writeOSCALFile(profileOscalModel, *profileOutputFile)
 }
 
-func exportCatalog(path string, args []string) error {
+func Catalog(path string, args []string) error {
 	cmd := flag.NewFlagSet("catalog", flag.ExitOnError)
 	outputFile := cmd.String("output", "catalog.json", "Path to output file")
 	if err := cmd.Parse(args); err != nil {

@@ -57,11 +57,9 @@ dirtycheck:
 
 oscalgenerate:
 	@echo "  >  Generate OSCAL testdata from Gemara artifacts..."
-	@go build -o utils/oscal/oscal_exporter utils/oscal/oscal_exporter.go
 	@mkdir -p artifacts
-	@utils/oscal/oscal_exporter catalog ./layer2/test-data/good-osps.yml --output ./artifacts/catalog.json
-	@utils/oscal/oscal_exporter guidance ./layer1/test-data/good-aigf.yaml --output ./artifacts/guidance.json
-	@rm utils/oscal/oscal_exporter
+	@go run ./utils/oscal/main.go catalog ./layer2/test-data/good-osps.yml --output ./artifacts/catalog.json
+	@go run ./utils/oscal/main.go  guidance ./layer1/test-data/good-aigf.yaml --catalog-output ./artifacts/guidance.json --profile-output ./artifacts/profile.json
 
 lintinsights:
 	@echo "  >  Linting security-insights.yml ..."
