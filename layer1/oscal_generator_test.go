@@ -1,9 +1,11 @@
 package layer1
 
 import (
+	"os"
 	"testing"
 
 	oscalTypes "github.com/defenseunicorns/go-oscal/src/types/oscal-1-1-3"
+	"github.com/goccy/go-yaml"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -11,6 +13,9 @@ import (
 )
 
 func TestToOSCALCatalog(t *testing.T) {
+	goodAIFG, err := goodAIGFExample()
+	require.NoError(t, err)
+
 	tests := []struct {
 		name       string
 		guidance   GuidanceDocument
@@ -19,7 +24,7 @@ func TestToOSCALCatalog(t *testing.T) {
 	}{
 		{
 			name:     "Good AIGF",
-			guidance: goodAIGFExample(),
+			guidance: goodAIFG,
 			wantGroups: []oscalTypes.Group{
 				{
 					Class: "category",
@@ -133,7 +138,10 @@ func TestToOSCALCatalog(t *testing.T) {
 }
 
 func TestToOSCALProfile(t *testing.T) {
-	guidanceWithImports := goodAIGFExample()
+	goodAIFG, err := goodAIGFExample()
+	require.NoError(t, err)
+
+	guidanceWithImports := goodAIFG
 	// Add some shared guidelines
 	mapping := MappingReference{
 		Id:          "EXP",
@@ -169,7 +177,7 @@ func TestToOSCALProfile(t *testing.T) {
 	}{
 		{
 			name:     "Success/LocalOnly",
-			guidance: goodAIGFExample(),
+			guidance: goodAIFG,
 			wantImports: []oscalTypes.Import{
 				{
 					Href:       "testHref",
@@ -240,4 +248,17 @@ func TestToOSCALProfile(t *testing.T) {
 			assert.Equal(t, tt.wantImports, profile.Imports)
 		})
 	}
+}
+
+func goodAIGFExample() (GuidanceDocument, error) {
+	testdataPath := "./test-data/good-aigf.yaml"
+	data, err := os.ReadFile(testdataPath)
+	if err != nil {
+		return GuidanceDocument{}, err
+	}
+	var l1Docs GuidanceDocument
+	if err := yaml.Unmarshal(data, &l1Docs); err != nil {
+		return GuidanceDocument{}, err
+	}
+	return l1Docs, nil
 }
