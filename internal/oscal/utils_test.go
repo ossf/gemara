@@ -70,13 +70,13 @@ func TestGetTimeWithFallback(t *testing.T) {
 			want:     time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
 		},
 		{
-			name:     "Valid/FallBack",
+			name:     "Valid/Fallback",
 			timeStr:  "",
 			fallback: fallbackTime,
 			want:     fallbackTime,
 		},
 		{
-			name:     "Invalid/Fallack",
+			name:     "Invalid/Fallback",
 			timeStr:  "invalid-date",
 			fallback: fallbackTime,
 			want:     fallbackTime,

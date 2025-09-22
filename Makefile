@@ -56,7 +56,7 @@ dirtycheck:
 	fi
 
 oscalgenerate:
-	@echo "  >  Generate OSCAL testdata from Gemara artifacts..."
+	@echo "  >  Generating OSCAL testdata from Gemara artifacts..."
 	@mkdir -p artifacts
 	@go run ./utils/oscal catalog ./layer2/test-data/good-osps.yml --output ./artifacts/catalog.json
 	@go run ./utils/oscal  guidance ./layer1/test-data/good-aigf.yaml --catalog-output ./artifacts/guidance.json --profile-output ./artifacts/profile.json
