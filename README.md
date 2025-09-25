@@ -130,4 +130,7 @@ Some Gemara use cases include:
 
 ## Contributing
 
-We're so glad you asked - see [CONTRIBUTING.md](/CONTRIBUTING.md) and if you have any questions or feedback head over to the OpenSSF Slack in [#wg-orbit](https://openssf.slack.com/archives/C08NJTFAL74)
+We're so glad you asked - see [CONTRIBUTING.md](/CONTRIBUTING.md) and if you have any questions or feedback head over to the OpenSSF Slack in [#gemara](https://openssf.slack.com/archives/C09A9PP765Q)
+
+You can also join the biweekly meeting on alternate Thursdays.  
+See Gemara Bi-Weekly Meeting on the [OpenSSF calendar](https://calendar.google.com/calendar/u/0?cid=czYzdm9lZmhwNWk5cGZsdGI1cTY3bmdwZXNAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ) for details.
