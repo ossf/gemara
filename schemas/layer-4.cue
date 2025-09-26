@@ -2,7 +2,6 @@ package schemas
 
 import "time"
 
-
 // EvaluationPlan defines how a set of Layer 4 controls are to be evaluated.
 #EvaluationPlan: {
 	metadata: #Metadata
@@ -17,15 +16,15 @@ import "time"
 
 // Metadata contains metadata about the evaluation plan.
 #Metadata: {
-	id:       string
-	version?: string
+	id:        string
+	version?:  string
 	evaluator: #Evaluator
 }
 
 // Evaluator contains the information about the entity that produced the evaluation results.
 #Evaluator: {
-	"name": string
-	"uri"?: string
+	"name":     string
+	"uri"?:     string
 	"version"?: string
 	"contact"?: #Contact @go(Contact)
 }
