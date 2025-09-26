@@ -2,10 +2,31 @@ package schemas
 
 import "time"
 
-// EvaluationResults contains the results of evaluating a set of Layer 4 controls.
-#EvaluationResults: {
-	"evaluation-set": [#ControlEvaluation, ...#ControlEvaluation] @go(EvaluationSet)
-	...
+// EvaluationPlan defines how a set of Layer 2 controls are to be evaluated.
+#EvaluationPlan: {
+	metadata: #Metadata
+	plans: [...#AssessmentPlan]
+}
+
+// EvaluationLog contains the results of evaluating a set of Layer 2 controls.
+#EvaluationLog: {
+	"evaluations": [#ControlEvaluation, ...#ControlEvaluation] @go(Evaluations)
+	"metadata"?: #Metadata @go(Metadata)
+}
+
+// Metadata contains metadata about the Layer 4 evaluation plan and log.
+#Metadata: {
+	id:        string
+	version?:  string
+	evaluator: #Evaluator
+}
+
+// Evaluator contains the information about the entity that produced the evaluation results.
+#Evaluator: {
+	"name":     string
+	"uri"?:     string
+	"version"?: string
+	"contact"?: #Contact @go(Contact)
 }
 
 // ControlEvaluation contains the results of evaluating a single Layer 4 control.
@@ -52,19 +73,6 @@ import "time"
 #Result: "Not Run" | "Passed" | "Failed" | "Needs Review" | "Not Applicable" | "Unknown"
 
 #Datetime: time.Format("2006-01-02T15:04:05Z07:00") @go(Datetime,format="date-time")
-
-// EvaluationPlan defines how a set of Layer 4 controls are to be evaluated.
-#EvaluationPlan: {
-	metadata: #Metadata
-	plans: [...#AssessmentPlan]
-}
-
-// Metadata contains metadata about the evaluation plan.
-#Metadata: {
-	id:       string
-	version?: string
-	author:   #Contact
-}
 
 // AssessmentPlan defines all testing procedures for a control id.
 #AssessmentPlan: {
