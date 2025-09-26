@@ -2,19 +2,19 @@ package schemas
 
 import "time"
 
-// EvaluationPlan defines how a set of Layer 4 controls are to be evaluated.
+// EvaluationPlan defines how a set of Layer 2 controls are to be evaluated.
 #EvaluationPlan: {
 	metadata: #Metadata
 	plans: [...#AssessmentPlan]
 }
 
-// EvaluationLog contains the results of evaluating a set of Layer 4 controls.
+// EvaluationLog contains the results of evaluating a set of Layer 2 controls.
 #EvaluationLog: {
 	"evaluations": [#ControlEvaluation, ...#ControlEvaluation] @go(Evaluations)
 	"metadata"?: #Metadata @go(Metadata)
 }
 
-// Metadata contains metadata about the evaluation plan.
+// Metadata contains metadata about the Layer 4 evaluation plan and log.
 #Metadata: {
 	id:        string
 	version?:  string
