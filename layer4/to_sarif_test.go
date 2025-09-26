@@ -34,10 +34,18 @@ func Test_ToSARIF(t *testing.T) {
 	}
 	informationURI := "https://github.com/ossf/gemara"
 	version := "1.0.0"
-	semanticVersion := "1.0.0"
-	dottedQuadFileVersion := "1.0.0.0"
 
-	sarifBytes, err := ToSARIF("gemara", informationURI, version, semanticVersion, dottedQuadFileVersion, []*ControlEvaluation{ce})
+	evaluationLog := EvaluationLog{
+		Evaluations: []*ControlEvaluation{ce},
+		Metadata: Metadata{
+			Evaluator: Evaluator{
+				Name:    "gemara",
+				URI:     informationURI,
+				Version: version,
+			},
+		},
+	}
+	sarifBytes, err := evaluationLog.ToSARIF()
 	require.NoError(t, err)
 	sarif = &SarifReport{}
 	err = json.Unmarshal(sarifBytes, sarif)
@@ -65,8 +73,6 @@ func Test_ToSARIF(t *testing.T) {
 	require.Equal(t, "gemara", run.Tool.Driver.Name)
 	require.Equal(t, informationURI, run.Tool.Driver.InformationURI)
 	require.Equal(t, version, run.Tool.Driver.Version)
-	require.Equal(t, semanticVersion, run.Tool.Driver.SemanticVersion)
-	require.Equal(t, dottedQuadFileVersion, run.Tool.Driver.DottedQuadFileVersion)
 
 	// ensure JSON marshals cleanly
 	_, err = json.Marshal(sarif)

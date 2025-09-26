@@ -5,20 +5,24 @@ import (
 	"fmt"
 )
 
+// EvaluationLog contains the results of evaluating a set of Layer 4 controls.
+type EvaluationLog struct {
+	Evaluations []*ControlEvaluation `yaml:"evaluations"`
+	Metadata    Metadata             `yaml:"metadata"`
+}
+
 // ToSARIF converts the evaluation results into a SARIF document (v2.1.0).
 // Each AssessmentLog is emitted as a SARIF result. The rule id is derived from
 // the control id and requirement id.
-func ToSARIF(toolName, informationURI, version, semanticVersion, dottedQuadFileVersion string, evaluations []*ControlEvaluation) ([]byte, error) {
+func (e EvaluationLog) ToSARIF() ([]byte, error) {
 	report := &SarifReport{
 		Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/123e95847b13fbdd4cbe2120fa5e33355d4a042b/Schemata/sarif-schema-2.1.0.json",
 		Version: "2.1.0",
 	}
 	driver := ToolComponent{
-		Name:                  toolName,
-		InformationURI:        informationURI,
-		Version:               version,
-		SemanticVersion:       semanticVersion,
-		DottedQuadFileVersion: dottedQuadFileVersion,
+		Name:           e.Metadata.Evaluator.Name,
+		InformationURI: e.Metadata.Evaluator.URI,
+		Version:        e.Metadata.Evaluator.Version,
 	}
 	run := Run{Tool: Tool{Driver: driver}}
 
@@ -26,7 +30,7 @@ func ToSARIF(toolName, informationURI, version, semanticVersion, dottedQuadFileV
 	ruleIdSeen := map[string]bool{}
 	rules := []ReportingDescriptor{}
 
-	for _, evaluation := range evaluations {
+	for _, evaluation := range e.Evaluations {
 		if evaluation == nil {
 			continue
 		}
