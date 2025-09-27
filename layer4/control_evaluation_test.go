@@ -101,37 +101,10 @@ func TestEvaluate(t *testing.T) {
 	for _, test := range controlEvaluationTestData {
 		t.Run(test.testName, func(t *testing.T) {
 			c := test.control // copy the control to avoid duplication in the next test
-			c.Evaluate(nil, testingApplicability, true)
+			c.Evaluate(nil, testingApplicability)
 
 			if c.Result != test.expectedResult {
 				t.Errorf("Expected Result to be %v, but it was %v", test.expectedResult, c.Result)
-			}
-
-			if c.CorruptedState != test.expectedCorrupted {
-				t.Errorf("Expected CorruptedState to be %v, but it was %v", test.expectedCorrupted, c.CorruptedState)
-			}
-		})
-		t.Run(test.testName+"no-changes", func(t *testing.T) {
-			c := test.control // copy the control to avoid duplication in the next test
-			c.Evaluate(nil, testingApplicability, false)
-
-			for _, assessment := range c.AssessmentLogs {
-				if assessment.Changes != nil {
-					for _, change := range assessment.Changes {
-						if change.Applied {
-							t.Errorf("Expected no changes to be applied, but they were")
-							return
-						}
-					}
-				}
-			}
-
-			if c.Result != test.expectedResult {
-				t.Errorf("Expected Result to be %v, but it was %v", test.expectedResult, c.Result)
-			}
-
-			if c.CorruptedState != test.expectedCorrupted {
-				t.Errorf("Expected CorruptedState to be %v, but it was %v", test.expectedCorrupted, c.CorruptedState)
 			}
 		})
 	}

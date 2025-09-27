@@ -11,7 +11,7 @@ func Test_ToSARIF(t *testing.T) {
 	var sarif *SarifReport
 	ce := &ControlEvaluation{
 		Name:      "Example Control",
-		ControlID: "CTRL-1",
+		ControlId: "CTRL-1",
 		Result:    Passed,
 		AssessmentLogs: []*AssessmentLog{
 			{
@@ -40,7 +40,7 @@ func Test_ToSARIF(t *testing.T) {
 		Metadata: Metadata{
 			Evaluator: Evaluator{
 				Name:    "gemara",
-				URI:     informationURI,
+				Uri:     informationURI,
 				Version: version,
 			},
 		},
