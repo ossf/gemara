@@ -6,9 +6,9 @@ import "time"
 
 // Core Document Structure
 #PolicyDocument: {
-	metadata: #Metadata
-	contacts: #Contacts
-	scope:    #Scope
+	metadata:               #Metadata
+	contacts:               #Contacts
+	scope:                  #Scope
 	"implementation-plan"?: #ImplementationPlan @go(ImplementationPlan) @yaml("implementation-plan,omitempty")
 	"guidance-references": [...#Mapping] @go(GuidanceReferences) @yaml("guidance-references")
 	"control-references": [...#Mapping] @go(ControlReferences) @yaml("control-references")
