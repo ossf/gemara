@@ -10,6 +10,8 @@ type PolicyDocument struct {
 
 	Scope	Scope	`json:"scope" yaml:"scope"`
 
+	ImplementationPlan	ImplementationPlan	`json:"implementation-plan,omitempty" yaml:"implementation-plan,omitempty"`
+
 	GuidanceReferences	[]Mapping	`json:"guidance-references" yaml:"guidance-references"`
 
 	ControlReferences	[]Mapping	`json:"control-references" yaml:"control-references"`
@@ -87,6 +89,40 @@ type Scope struct {
 	Providers	[]string	`json:"providers,omitempty" yaml:"providers,omitempty"`
 }
 
+type ImplementationPlan struct {
+	// The process through which notified parties should be made aware of this policy
+	NotifactionProcess	string	`json:"notification-process,omitempty" yaml:"notification-process,omitempty"`
+
+	NotifiedParties	[]NotificationGroup	`json:"notified-parties,omitempty" yaml:"notified-parties,omitempty"`
+
+	Evaluation	ImplementationDetails	`json:"evaluation" yaml:"evaluation"`
+
+	EvaluationPoints	[]EvaluationPoint	`json:"evaluation-points,omitempty" yaml:"evaluation-points,omitempty"`
+
+	Enforcement	ImplementationDetails	`json:"enforcement" yaml:"enforcement"`
+
+	EnforcementMethods	[]EnforcementMethod	`json:"enforcement-methods,omitempty" yaml:"enforcement-methods,omitempty"`
+
+	// The process that will be followed in the event that noncompliance is detected in an applicable resource
+	NoncompliancePlan	string	`json:"noncompliance-plan,omitempty" yaml:"noncompliance-plan,omitempty"`
+}
+
+type NotificationGroup string
+
+type ImplementationDetails struct {
+	Start	Datetime	`json:"start" yaml:"start"`
+
+	End	Datetime	`json:"end,omitempty" yaml:"end,omitempty"`
+
+	Notes	string	`json:"notes" yaml:"notes"`
+}
+
+type Datetime string
+
+type EvaluationPoint string
+
+type EnforcementMethod string
+
 type Mapping struct {
 	ReferenceId	string	`json:"reference-id" yaml:"reference-id"`
 
@@ -155,40 +191,6 @@ type GuidelineModifier struct {
 
 	ExternalReferences	[]string	`json:"external-references,omitempty" yaml:"external-references,omitempty"`
 }
-
-type ImplementationPlan struct {
-	// The process through which notified parties should be made aware of this policy
-	NotifactionProcess	string	`json:"notification-process,omitempty" yaml:"notification-process,omitempty"`
-
-	NotifiedParties	[]NotificationGroup	`json:"notified-parties,omitempty" yaml:"notified-parties,omitempty"`
-
-	Evaluation	ImplementationDetails	`json:"evaluation" yaml:"evaluation"`
-
-	EvaluationPoints	[]EvaluationPoint	`json:"evaluation-points,omitempty" yaml:"evaluation-points,omitempty"`
-
-	Enforcement	ImplementationDetails	`json:"enforcement" yaml:"enforcement"`
-
-	EnforcementMethods	[]EnforcementMethod	`json:"enforcement-methods,omitempty" yaml:"enforcement-methods,omitempty"`
-
-	// The process that will be followed in the event that noncompliance is detected in an applicable resource
-	NoncompliancePlan	string	`json:"noncompliance-plan,omitempty" yaml:"noncompliance-plan,omitempty"`
-}
-
-type NotificationGroup string
-
-type ImplementationDetails struct {
-	Start	Datetime	`json:"start" yaml:"start"`
-
-	End	Datetime	`json:"end,omitempty" yaml:"end,omitempty"`
-
-	Notes	string	`json:"notes" yaml:"notes"`
-}
-
-type Datetime string
-
-type EvaluationPoint string
-
-type EnforcementMethod string
 
 type PartModifier struct {
 	TargetId	string	`json:"target-id" yaml:"target-id"`

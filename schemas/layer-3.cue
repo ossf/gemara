@@ -6,11 +6,12 @@ import "time"
 
 // Core Document Structure
 #PolicyDocument: {
-	metadata: #Metadata
-	contacts: #Contacts
-	scope:    #Scope
-	"guidance-references": [...#Mapping] @go(GuidanceReferences) @yaml("guidance-references",omitempty)
-	"control-references": [...#Mapping] @go(ControlReferences) @yaml("control-references",omitempty)
+	metadata:               #Metadata
+	contacts:               #Contacts
+	scope:                  #Scope
+	"implementation-plan"?: #ImplementationPlan @go(ImplementationPlan) @yaml("implementation-plan,omitempty")
+	"guidance-references": [...#Mapping] @go(GuidanceReferences) @yaml("guidance-references")
+	"control-references": [...#Mapping] @go(ControlReferences) @yaml("control-references")
 }
 
 #Metadata: {
@@ -21,9 +22,9 @@ import "time"
 	contacts:  #Contacts
 
 	"last-modified":    string @go(LastModified) @yaml("last-modified,omitempty")
-	"organization-id"?: string @go(OrganizationID) @yaml("organization-id",omitempty)
+	"organization-id"?: string @go(OrganizationID) @yaml("organization-id,omitempty")
 	"author-notes?":    string @go(AuthorNotes) @yaml("author-notes",omitempty)
-	"mapping-references"?: [...#MappingReference] @go(MappingReferences) @yaml("mapping-references",omitempty)
+	"mapping-references"?: [...#MappingReference] @go(MappingReferences) @yaml("mapping-references,omitempty")
 }
 
 #Contacts: {
