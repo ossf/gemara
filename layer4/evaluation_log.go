@@ -5,12 +5,6 @@ import (
 	"fmt"
 )
 
-// EvaluationLog contains the results of evaluating a set of Layer 4 controls.
-type EvaluationLog struct {
-	Evaluations []*ControlEvaluation `yaml:"evaluations"`
-	Metadata    Metadata             `yaml:"metadata"`
-}
-
 // ToSARIF converts the evaluation results into a SARIF document (v2.1.0).
 // Each AssessmentLog is emitted as a SARIF result. The rule id is derived from
 // the control id and requirement id.
@@ -21,7 +15,7 @@ func (e EvaluationLog) ToSARIF() ([]byte, error) {
 	}
 	driver := ToolComponent{
 		Name:           e.Metadata.Evaluator.Name,
-		InformationURI: e.Metadata.Evaluator.URI,
+		InformationURI: e.Metadata.Evaluator.Uri,
 		Version:        e.Metadata.Evaluator.Version,
 	}
 	run := Run{Tool: Tool{Driver: driver}}
@@ -31,16 +25,12 @@ func (e EvaluationLog) ToSARIF() ([]byte, error) {
 	rules := []ReportingDescriptor{}
 
 	for _, evaluation := range e.Evaluations {
-		if evaluation == nil {
-			continue
-		}
-
 		for _, log := range evaluation.AssessmentLogs {
 			if log == nil {
 				continue
 			}
 
-			ruleID := fmt.Sprintf("%s/%s", evaluation.ControlID, log.RequirementId)
+			ruleID := fmt.Sprintf("%s/%s", evaluation.ControlId, log.RequirementId)
 			if !ruleIdSeen[ruleID] {
 				rule := ReportingDescriptor{ID: ruleID}
 				if log.Description != "" {

@@ -2,6 +2,8 @@ package schemas
 
 import "time"
 
+@go(layer4)
+
 // EvaluationPlan defines how a set of Layer 2 controls are to be evaluated.
 #EvaluationPlan: {
 	metadata: #Metadata
@@ -10,7 +12,7 @@ import "time"
 
 // EvaluationLog contains the results of evaluating a set of Layer 2 controls.
 #EvaluationLog: {
-	"evaluations": [#ControlEvaluation, ...#ControlEvaluation] @go(Evaluations)
+	"evaluations": [#ControlEvaluation, ...#ControlEvaluation] @go(Evaluations,type=[]*ControlEvaluation)
 	"metadata"?: #Metadata @go(Metadata)
 }
 
@@ -32,12 +34,11 @@ import "time"
 // ControlEvaluation contains the results of evaluating a single Layer 4 control.
 // TODO: are all control requirements guaranteed to be evaluated at once, or does applicability influence this?
 #ControlEvaluation: {
-	name:              string
-	"control-id":      string @go(ControlId)
-	result:            #Result
-	message:           string
-	"corrupted-state": bool @go(CorruptedState)
-	"assessment-logs": [...#AssessmentLog] @go(AssessmentLogs)
+	name:         string
+	"control-id": string @go(ControlId)
+	result:       #Result
+	message:      string
+	"assessment-logs": [...#AssessmentLog] @go(AssessmentLogs,type=[]*AssessmentLog)
 }
 
 // AssessmentLog contains the results of executing a single assessment procedure for a control requirement.
@@ -52,27 +53,19 @@ import "time"
 	message:     string
 	steps: [...#AssessmentStep]
 	"steps-executed"?: int @go(StepsExecuted)
-	"start":           #Datetime
-	"end"?:            #Datetime
-	value?:            _
-	changes?: {[string]: #Change}
+	// "start" is the timestamp when the assessment began.
+	"start": #Datetime
+	// "end" is the timestamp when the assessment concluded.
+	"end"?: #Datetime
+	// recommendation provides guidance on how to address a failed assessment.
 	recommendation?: string
 }
 
-#AssessmentStep: string
+#AssessmentStep: string @go(-)
 
-#Change: {
-	"target-name":    string @go(TargetName)
-	description:      string
-	"target-object"?: _ @go(TargetObject)
-	applied?:         bool
-	reverted?:        bool
-	error?:           string
-}
+#Result: "Not Run" | "Passed" | "Failed" | "Needs Review" | "Not Applicable" | "Unknown" @go(-)
 
-#Result: "Not Run" | "Passed" | "Failed" | "Needs Review" | "Not Applicable" | "Unknown"
-
-#Datetime: time.Format("2006-01-02T15:04:05Z07:00") @go(Datetime,format="date-time")
+#Datetime: time.Format("2006-01-02T15:04:05Z07:00") @go(Datetime)
 
 // AssessmentPlan defines all testing procedures for a control id.
 #AssessmentPlan: {
