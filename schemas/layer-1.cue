@@ -25,9 +25,6 @@ package schemas
 
 	"mapping-references"?: [...#MappingReference] @go(MappingReferences) @yaml("mapping-references,omitempty")
 
-	// References to external resources not represented in a structured format.
-	resources?: [...#ResourceReference] @go(Resources)
-
 	"document-type"?: #DocumentType  @go(DocumentType)
 	applicability?:   #Applicability @go(Applicability,optional=nillable)
 	exemptions?: [...string]
@@ -94,8 +91,6 @@ package schemas
 
 	// This is akin to related controls, but using more explicit terminology
 	"see-also"?: [...string] @go(SeeAlso) @yaml("see-also,omitempty")
-	// Corresponds to the resource ids in metadata to map to external unstructured resources
-	"external-references"?: [...string] @go(ExternalReferences) @yaml("external-references,omitempty")
 }
 
 // Parts include sub-statements of a guideline that can be assessed individually
@@ -127,14 +122,4 @@ package schemas
 	"reference-id": string @go(ReferenceId)
 	strength:       int & >=1 & <=10
 	remarks?:       string
-}
-
-// ResourceReferences defines a references to an external document (possibly unstructured)
-#ResourceReference: {
-	id:                  string
-	title:               string
-	description:         string
-	url?:                =~"^https?://[^\\s]+$"
-	"issuing-body"?:     string @go(IssuingBody)
-	"publication-date"?: string @go(PublicationDate)
 }
