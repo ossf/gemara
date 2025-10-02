@@ -50,6 +50,7 @@ package schemas
 	title:       string
 	description: string
 	guidelines?: [...#Guideline]
+	issuer?:     string @go(Issuer)
 }
 
 // Rationale provides contextual information to help with development and understanding of
@@ -127,14 +128,4 @@ package schemas
 	"reference-id": string @go(ReferenceId)
 	strength:       int & >=1 & <=10
 	remarks?:       string
-}
-
-// ResourceReferences defines a references to an external document (possibly unstructured)
-#ResourceReference: {
-	id:                  string
-	title:               string
-	description:         string
-	url?:                =~"^https?://[^\\s]+$"
-	"issuing-body"?:     string @go(IssuingBody)
-	"publication-date"?: string @go(PublicationDate)
 }
