@@ -51,6 +51,8 @@ type MappingReference struct {
 
 	Description	string	`json:"description,omitempty" yaml:"description,omitempty"`
 
+	Issuer	string	`json:"issuer,omitempty" yaml:"issuer,omitempty"`
+
 	Url	string	`json:"url,omitempty" yaml:"url,omitempty"`
 }
 
