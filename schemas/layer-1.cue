@@ -108,6 +108,7 @@ package schemas
 	title:        string
 	version:      string
 	description?: string
+	issuer?:      string
 	url?:         =~"^https?://[^\\s]+$"
 }
 
