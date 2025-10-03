@@ -137,7 +137,7 @@ type Part struct {
 
 	Title	string	`json:"title,omitempty" yaml:"title,omitempty"`
 
-	Prose	string	`json:"prose" yaml:"prose"`
+	Text	string	`json:"text" yaml:"text"`
 
 	Recommendations	[]string	`json:"recommendations,omitempty" yaml:"recommendations,omitempty"`
 }
@@ -145,7 +145,7 @@ type Part struct {
 type Mapping struct {
 	ReferenceId	string	`json:"reference-id" yaml:"reference-id"`
 
-	Entries	[]MappingEntry	`json:"entries" yaml:"entries"`
+	Entries	[]MappingEntry	`json:"entries,omitempty" yaml:"entries,omitempty"`
 
 	// Adding context about this particular mapping and why it was mapped.
 	Remarks	string	`json:"remarks,omitempty" yaml:"remarks,omitempty"`

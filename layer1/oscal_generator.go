@@ -137,7 +137,7 @@ func (g *GuidanceDocument) ToOSCALCatalog(opts ...GenerateOption) (oscal.Catalog
 
 	// Create a resource map for control linking
 	resourcesMap := make(map[string]string)
-	backmatter := resourcesToBackMatter(g.Metadata.Resources)
+	backmatter := mappingToBackMatter(g.Metadata.MappingReferences)
 	if backmatter != nil {
 		for _, resource := range *backmatter.Resources {
 			// Extract the id from the props
@@ -253,17 +253,10 @@ func (g *GuidanceDocument) guidelineToControl(guideline Guideline, resourcesMap 
 		links = append(links, relatedLink)
 	}
 
-	for _, external := range guideline.ExternalReferences {
-		ref, found := resourcesMap[external]
-		if !found {
-			continue
-		}
-		externalLink := oscal.Link{
-			Href: fmt.Sprintf("#%s", ref),
-			Rel:  "reference",
-		}
-		links = append(links, externalLink)
-	}
+	guidanceLinks := mappingToLinks(guideline.GuidelineMappings, resourcesMap)
+	principleLinks := mappingToLinks(guideline.PrincipleMappings, resourcesMap)
+	links = append(links, guidanceLinks...)
+	links = append(links, principleLinks...)
 	control.Links = oscalUtils.NilIfEmpty(links)
 
 	// Top-level statements are required for controls per OSCAL guidance
@@ -295,7 +288,7 @@ func (g *GuidanceDocument) guidelineToControl(guideline Guideline, resourcesMap 
 		itemSubSmt := oscal.Part{
 			Name:  "item",
 			ID:    smtID,
-			Prose: part.Prose,
+			Prose: part.Text,
 			Title: part.Title,
 		}
 		smtParts = append(smtParts, itemSubSmt)
@@ -334,7 +327,23 @@ func (g *GuidanceDocument) guidelineToControl(guideline Guideline, resourcesMap 
 	return control, oscalUtils.NormalizeControl(guideline.BaseGuidelineID, false)
 }
 
-func resourcesToBackMatter(resourceRefs []ResourceReference) *oscal.BackMatter {
+func mappingToLinks(mappings []Mapping, resourcesMap map[string]string) []oscal.Link {
+	links := make([]oscal.Link, 0, len(mappings))
+	for _, mapping := range mappings {
+		ref, found := resourcesMap[mapping.ReferenceId]
+		if !found {
+			continue
+		}
+		externalLink := oscal.Link{
+			Href: fmt.Sprintf("#%s", ref),
+			Rel:  "reference",
+		}
+		links = append(links, externalLink)
+	}
+	return links
+}
+
+func mappingToBackMatter(resourceRefs []MappingReference) *oscal.BackMatter {
 	var resources []oscal.Resource
 	for _, ref := range resourceRefs {
 		resource := oscal.Resource{
@@ -355,9 +364,8 @@ func resourcesToBackMatter(resourceRefs []ResourceReference) *oscal.BackMatter {
 			},
 			Citation: &oscal.Citation{
 				Text: fmt.Sprintf(
-					"%s. (%s). *%s*. %s",
-					ref.IssuingBody,
-					ref.PublicationDate,
+					"%s. *%s*. %s",
+					ref.Issuer,
 					ref.Title,
 					ref.Url),
 			},

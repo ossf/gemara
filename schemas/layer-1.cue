@@ -97,7 +97,7 @@ package schemas
 #Part: {
 	id:     string
 	title?: string
-	prose:  string
+	text:   string
 	recommendations?: [...string]
 }
 
@@ -114,7 +114,7 @@ package schemas
 
 #Mapping: {
 	"reference-id": string @go(ReferenceId)
-	entries: [...#MappingEntry]
+	entries?: [...#MappingEntry] @go(Entries,optional=nillable)
 	// Adding context about this particular mapping and why it was mapped.
 	remarks?: string
 }
