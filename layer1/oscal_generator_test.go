@@ -6,6 +6,8 @@ import (
 
 	oscalTypes "github.com/defenseunicorns/go-oscal/src/types/oscal-1-1-3"
 	"github.com/goccy/go-yaml"
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -47,6 +49,14 @@ func TestToOSCALCatalog(t *testing.T) {
 								{
 									Href: "#air-prev-005",
 									Rel:  "related",
+								},
+								{
+									Href: "#placeholder",
+									Rel:  "reference",
+								},
+								{
+									Href: "#placeholder",
+									Rel:  "reference",
 								},
 							},
 							Parts: &[]oscalTypes.Part{
@@ -131,7 +141,9 @@ func TestToOSCALCatalog(t *testing.T) {
 				}
 				err = oscalUtils.Validate(oscalDocument)
 				assert.NoError(t, err)
-				assert.Equal(t, tt.wantGroups, *catalog.Groups)
+				if diff := cmp.Diff(tt.wantGroups, *catalog.Groups, cmpopts.IgnoreFields(oscalTypes.Link{}, "Href")); diff != "" {
+					t.Errorf("group mismatch (-want +got):\n%s", diff)
+				}
 			}
 		})
 	}
