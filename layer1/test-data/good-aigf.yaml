@@ -36,12 +36,12 @@ categories:
         guideline-parts:
           - id: AIR-DET-011.1
             title: Designing the Feedback Mechanism
-            prose: Implementing an effective human feedback loop involves careful design of the mechanism.
+            text: Implementing an effective human feedback loop involves careful design of the mechanism.
             recommendations:
               - "Define Intended Use and KPIs:\nObjectives: Clearly document how feedback data will be utilized, such as for prompt fine-tuning, RAG document updates,model/data drift detection, or more advanced uses like Reinforcement Learning from Human Feedback (RLHF).\nKPI Alignment: Design feedback questions and metrics to align with the solution’s key performance indicators (KPIs). For example, if accuracy is a KPI, feedback might involve users or SMEs annotating if an answer was correct."
           - id: AIR-DET-011.2
             title: Types of Feedback and Collection Methods
-            prose: Implementing an effective human feedback loop involves clear collection processes.
+            text: Implementing an effective human feedback loop involves clear collection processes.
             recommendations:
               - "Quantitative Feedback:\nDescription: Involves collecting structured responses that can be easily aggregated and measured, such as numerical ratings (e.g., “Rate this response on a scale of 1-5 for helpfulness”), categorical choices (e.g., “Was this answer: Correct/Incorrect/Partially Correct”), or binary responses (e.g., thumbs up/down).\nUse Cases: Effective for tracking trends, measuring against KPIs, and quickly identifying areas of high or low performance."
         guideline-mappings:

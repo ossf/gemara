@@ -33,9 +33,6 @@ type Metadata struct {
 
 	MappingReferences	[]MappingReference	`json:"mapping-references,omitempty" yaml:"mapping-references,omitempty"`
 
-	// References to external resources not represented in a structured format.
-	Resources	[]ResourceReference	`json:"resources,omitempty" yaml:"resources,omitempty"`
-
 	DocumentType	DocumentType	`json:"document-type,omitempty" yaml:"document-type,omitempty"`
 
 	Applicability	*Applicability	`json:"applicability,omitempty" yaml:"applicability,omitempty"`
@@ -54,22 +51,9 @@ type MappingReference struct {
 
 	Description	string	`json:"description,omitempty" yaml:"description,omitempty"`
 
-	Url	string	`json:"url,omitempty" yaml:"url,omitempty"`
-}
-
-// ResourceReferences defines a references to an external document (possibly unstructured)
-type ResourceReference struct {
-	Id	string	`json:"id" yaml:"id"`
-
-	Title	string	`json:"title" yaml:"title"`
-
-	Description	string	`json:"description" yaml:"description"`
+	Issuer	string	`json:"issuer,omitempty" yaml:"issuer,omitempty"`
 
 	Url	string	`json:"url,omitempty" yaml:"url,omitempty"`
-
-	IssuingBody	string	`json:"issuing-body,omitempty" yaml:"issuing-body,omitempty"`
-
-	PublicationDate	string	`json:"publication-date,omitempty" yaml:"publication-date,omitempty"`
 }
 
 type DocumentType string
@@ -123,9 +107,6 @@ type Guideline struct {
 
 	// This is akin to related controls, but using more explicit terminology
 	SeeAlso	[]string	`json:"see-also,omitempty" yaml:"see-also,omitempty"`
-
-	// Corresponds to the resource ids in metadata to map to external unstructured resources
-	ExternalReferences	[]string	`json:"external-references,omitempty" yaml:"external-references,omitempty"`
 }
 
 // Rationale provides contextual information to help with development and understanding of
@@ -156,7 +137,7 @@ type Part struct {
 
 	Title	string	`json:"title,omitempty" yaml:"title,omitempty"`
 
-	Prose	string	`json:"prose" yaml:"prose"`
+	Text	string	`json:"text" yaml:"text"`
 
 	Recommendations	[]string	`json:"recommendations,omitempty" yaml:"recommendations,omitempty"`
 }
@@ -164,7 +145,7 @@ type Part struct {
 type Mapping struct {
 	ReferenceId	string	`json:"reference-id" yaml:"reference-id"`
 
-	Entries	[]MappingEntry	`json:"entries" yaml:"entries"`
+	Entries	[]MappingEntry	`json:"entries,omitempty" yaml:"entries,omitempty"`
 
 	// Adding context about this particular mapping and why it was mapped.
 	Remarks	string	`json:"remarks,omitempty" yaml:"remarks,omitempty"`
