@@ -18,9 +18,9 @@ import "time"
 
 // Metadata contains metadata about the Layer 4 evaluation plan and log.
 #Metadata: {
-	id:        string
-	version?:  string
-	author: #Author
+	id:       string
+	version?: string
+	author:   #Author
 	"mapping-references"?: [...#MappingReference] @go(MappingReferences) @yaml("mapping-references,omitempty")
 }
 
@@ -38,7 +38,7 @@ import "time"
 	// EntryId should reference the specific element within the referenced document
 	"entry-id": string @go(EntryId)
 	// Strength describes how effectively the referenced item addresses the associated control or procedure on a scale of 1 to 10, with 10 being the most effective.
-	strength?: 	 int & >=1 & <=10
+	strength?: int & >=1 & <=10
 	// Remarks provides additional context about the mapping entry.
 	remarks?: string
 }
@@ -53,9 +53,9 @@ import "time"
 
 // ControlEvaluation contains the results of evaluating a single Layer 4 control.
 #ControlEvaluation: {
-	name:              string
-	result:            #Result
-	message:           string
+	name:    string
+	result:  #Result
+	message: string
 	control: #Mapping
 	"assessment-logs": [...#AssessmentLog] @go(AssessmentLogs,type=[]*AssessmentLog)
 }
@@ -69,9 +69,9 @@ import "time"
 	// Description provides a summary of the assessment procedure.
 	description: string
 	// Result is the overall outcome of the assessment procedure, matching the result of the last step that was run.
-	result:      #Result
+	result: #Result
 	// Message provides additional context about the assessment result.
-	message:     string
+	message: string
 	// Applicability is elevated from the Layer 2 Assessment Requirement to aid in execution and reporting.
 	applicability: [...string] @go(Applicability,type=[]string)
 	// Steps are sequential actions taken as part of the assessment, which may halt the assessment if a failure occurs.
