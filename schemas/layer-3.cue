@@ -7,7 +7,6 @@ import "time"
 // Core Document Structure
 #PolicyDocument: {
 	metadata:               #Metadata
-	contacts:               #Contacts
 	scope:                  #Scope
 	"implementation-plan"?: #ImplementationPlan @go(ImplementationPlan) @yaml("implementation-plan,omitempty")
 	"guidance-references": [...#Mapping] @go(GuidanceReferences) @yaml("guidance-references")
@@ -23,7 +22,7 @@ import "time"
 
 	"last-modified":    string @go(LastModified) @yaml("last-modified,omitempty")
 	"organization-id"?: string @go(OrganizationID) @yaml("organization-id,omitempty")
-	"author-notes?":    string @go(AuthorNotes) @yaml("author-notes",omitempty)
+	"author-notes"?:    string @go(AuthorNotes) @yaml("author-notes,omitempty")
 	"mapping-references"?: [...#MappingReference] @go(MappingReferences) @yaml("mapping-references,omitempty")
 }
 
@@ -37,7 +36,7 @@ import "time"
 
 #ImplementationPlan: {
 	// The process through which notified parties should be made aware of this policy
-	"notification-process"?: string @go(NotifactionProcess) @yaml("notification-process",omitempty)
+	"notification-process"?: string @go(NotificationProcess) @yaml("notification-process",omitempty)
 	"notified-parties"?: [...#NotificationGroup] @go(NotifiedParties) @yaml("notified-parties",omitempty)
 
 	evaluation: #ImplementationDetails

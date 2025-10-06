@@ -6,8 +6,6 @@ package layer3
 type PolicyDocument struct {
 	Metadata	Metadata	`json:"metadata" yaml:"metadata"`
 
-	Contacts	Contacts	`json:"contacts" yaml:"contacts"`
-
 	Scope	Scope	`json:"scope" yaml:"scope"`
 
 	ImplementationPlan	ImplementationPlan	`json:"implementation-plan,omitempty" yaml:"implementation-plan,omitempty"`
@@ -32,7 +30,7 @@ type Metadata struct {
 
 	OrganizationID	string	`json:"organization-id,omitempty" yaml:"organization-id,omitempty"`
 
-	AuthorNotes	string	`json:"author-notes" yaml:"author-notes"`
+	AuthorNotes	string	`json:"author-notes,omitempty" yaml:"author-notes,omitempty"`
 
 	MappingReferences	[]MappingReference	`json:"mapping-references,omitempty" yaml:"mapping-references,omitempty"`
 }
@@ -91,7 +89,7 @@ type Scope struct {
 
 type ImplementationPlan struct {
 	// The process through which notified parties should be made aware of this policy
-	NotifactionProcess	string	`json:"notification-process,omitempty" yaml:"notification-process,omitempty"`
+	NotificationProcess	string	`json:"notification-process,omitempty" yaml:"notification-process,omitempty"`
 
 	NotifiedParties	[]NotificationGroup	`json:"notified-parties,omitempty" yaml:"notified-parties,omitempty"`
 
