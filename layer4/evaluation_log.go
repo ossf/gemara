@@ -14,9 +14,9 @@ func (e EvaluationLog) ToSARIF() ([]byte, error) {
 		Version: "2.1.0",
 	}
 	driver := ToolComponent{
-		Name:           e.Metadata.Evaluator.Name,
-		InformationURI: e.Metadata.Evaluator.Uri,
-		Version:        e.Metadata.Evaluator.Version,
+		Name:           e.Metadata.Author.Name,
+		InformationURI: e.Metadata.Author.Uri,
+		Version:        e.Metadata.Author.Version,
 	}
 	run := Run{Tool: Tool{Driver: driver}}
 
@@ -30,7 +30,7 @@ func (e EvaluationLog) ToSARIF() ([]byte, error) {
 				continue
 			}
 
-			ruleID := fmt.Sprintf("%s/%s", evaluation.ControlId, log.RequirementId)
+			ruleID := fmt.Sprintf("%s/%s", evaluation.Control.EntryId, log.Requirement.EntryId)
 			if !ruleIdSeen[ruleID] {
 				rule := ReportingDescriptor{ID: ruleID}
 				if log.Description != "" {

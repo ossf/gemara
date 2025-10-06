@@ -21,7 +21,7 @@ import "time"
 	id:        string
 	version?:  string
 	author: #Author
-	mapping-references?: [...#MappingReference] @go(MappingReferences) @yaml("mapping-references,omitempty")
+	"mapping-references"?: [...#MappingReference] @go(MappingReferences) @yaml("mapping-references,omitempty")
 }
 
 #MappingReference: {
@@ -56,20 +56,24 @@ import "time"
 	name:              string
 	result:            #Result
 	message:           string
-	mappings:          [...#Mapping] @go(Mapping,type=[]*Mapping)
+	control: #Mapping
 	"assessment-logs": [...#AssessmentLog] @go(AssessmentLogs,type=[]*AssessmentLog)
 }
 
 // AssessmentLog contains the results of executing a single assessment procedure for a control requirement.
 #AssessmentLog: {
-	// Mappings should point to the assessment requirement and procedure followed for this assessment.
-	mappings: [...#Mapping] @go(Mapping,type=[]*Mapping)
+	// Requirement should map to the assessment requirement for this assessment.
+	requirement: #Mapping
+	// Procedure should map to the assessment procedure being executed.
+	procedure: #Mapping
 	// Description provides a summary of the assessment procedure.
 	description: string
 	// Result is the overall outcome of the assessment procedure, matching the result of the last step that was run.
 	result:      #Result
 	// Message provides additional context about the assessment result.
 	message:     string
+	// Applicability is elevated from the Layer 2 Assessment Requirement to aid in execution and reporting.
+	applicability: [...string] @go(Applicability,type=[]string)
 	// Steps are sequential actions taken as part of the assessment, which may halt the assessment if a failure occurs.
 	steps: [...#AssessmentStep]
 	// Steps-executed is the number of steps that were executed as part of the assessment.

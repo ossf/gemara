@@ -10,25 +10,33 @@ import (
 func Test_ToSARIF(t *testing.T) {
 	var sarif *SarifReport
 	ce := &ControlEvaluation{
-		Name:      "Example Control",
-		ControlId: "CTRL-1",
-		Result:    Passed,
+		Name: "Example Control",
+		Control: Mapping{
+			EntryId: "CTRL-1",
+		},
+		Result: Passed,
 		AssessmentLogs: []*AssessmentLog{
 			{
-				RequirementId: "REQ-1",
-				Description:   "should do a thing",
-				Result:        Failed,
-				Message:       "thing was not done",
+				Requirement: Mapping{
+					EntryId: "REQ-1",
+				},
+				Description: "should do a thing",
+				Result:      Failed,
+				Message:     "thing was not done",
 			},
 			{
-				RequirementId: "REQ-2",
-				Description:   "should maybe do a thing",
-				Result:        NeedsReview,
+				Requirement: Mapping{
+					EntryId: "REQ-2",
+				},
+				Description: "should maybe do a thing",
+				Result:      NeedsReview,
 			},
 			{
-				RequirementId: "REQ-3",
-				Description:   "should do another thing",
-				Result:        Passed,
+				Requirement: Mapping{
+					EntryId: "REQ-3",
+				},
+				Description: "should do another thing",
+				Result:      Passed,
 			},
 		},
 	}
@@ -38,7 +46,7 @@ func Test_ToSARIF(t *testing.T) {
 	evaluationLog := EvaluationLog{
 		Evaluations: []*ControlEvaluation{ce},
 		Metadata: Metadata{
-			Evaluator: Evaluator{
+			Author: Author{
 				Name:    "gemara",
 				Uri:     informationURI,
 				Version: version,

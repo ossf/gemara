@@ -15,11 +15,13 @@ type Metadata struct {
 
 	Version	string	`json:"version,omitempty" yaml:"version,omitempty"`
 
-	Evaluator	Evaluator	`json:"evaluator" yaml:"evaluator"`
+	Author	Author	`json:"author" yaml:"author"`
+
+	MappingReferences	[]MappingReference	`json:"mapping-references,omitempty" yaml:"mapping-references,omitempty"`
 }
 
-// Evaluator contains the information about the entity that produced the evaluation results.
-type Evaluator struct {
+// Author contains the information about the entity that produced the evaluation plan or log.
+type Author struct {
 	Name	string	`json:"name" yaml:"name"`
 
 	Uri	string	`json:"uri,omitempty" yaml:"uri,omitempty"`
@@ -46,17 +48,45 @@ type Contact struct {
 	Social	*string	`json:"social,omitempty" yaml:"social,omitempty"`
 }
 
+type MappingReference struct {
+	Id	string	`json:"id" yaml:"id"`
+
+	Title	string	`json:"title" yaml:"title"`
+
+	Version	string	`json:"version" yaml:"version"`
+
+	Description	string	`json:"description,omitempty" yaml:"description,omitempty"`
+
+	Url	string	`json:"url,omitempty" yaml:"url,omitempty"`
+}
+
 // AssessmentPlan defines all testing procedures for a control id.
 type AssessmentPlan struct {
-	ControlId	string	`json:"control-id" yaml:"control-id"`
+	// Control points to the Layer 2 control being evaluated.
+	Control	Mapping	`json:"control" yaml:"control"`
 
+	// Assessments defines possible testing procedures to evaluate the control.
 	Assessments	[]Assessment	`json:"assessments" yaml:"assessments"`
+}
+
+type Mapping struct {
+	// ReferenceId should reference the corresponding MappingReference id
+	ReferenceId	string	`json:"reference-id" yaml:"reference-id"`
+
+	// EntryId should reference the specific element within the referenced document
+	EntryId	string	`json:"entry-id" yaml:"entry-id"`
+
+	// Strength describes how effectively the referenced item addresses the associated control or procedure on a scale of 1 to 10, with 10 being the most effective.
+	Strength	int64	`json:"strength,omitempty" yaml:"strength,omitempty"`
+
+	// Remarks provides additional context about the mapping entry.
+	Remarks	string	`json:"remarks,omitempty" yaml:"remarks,omitempty"`
 }
 
 // Assessment defines all testing procedures for a requirement.
 type Assessment struct {
-	// RequirementId is the unique identifier for the requirement being tested.
-	RequirementId	string	`json:"requirement-id" yaml:"requirement-id"`
+	// RequirementId points to the requirement being tested.
+	Requirement	Mapping	`json:"requirement" yaml:"requirement"`
 
 	// Procedures defines possible testing procedures to evaluate the requirement.
 	Procedures	[]AssessmentProcedure	`json:"procedures" yaml:"procedures"`
@@ -85,46 +115,51 @@ type EvaluationLog struct {
 }
 
 // ControlEvaluation contains the results of evaluating a single Layer 4 control.
-// TODO: are all control requirements guaranteed to be evaluated at once, or does applicability influence this?
 type ControlEvaluation struct {
 	Name	string	`json:"name" yaml:"name"`
-
-	ControlId	string	`json:"control-id" yaml:"control-id"`
 
 	Result	Result	`json:"result" yaml:"result"`
 
 	Message	string	`json:"message" yaml:"message"`
+
+	Control	Mapping	`json:"control" yaml:"control"`
 
 	AssessmentLogs	[]*AssessmentLog	`json:"assessment-logs" yaml:"assessment-logs"`
 }
 
 // AssessmentLog contains the results of executing a single assessment procedure for a control requirement.
 type AssessmentLog struct {
-	// RequirementId identifies the control requirement assessed.
-	RequirementId	string	`json:"requirement-id" yaml:"requirement-id"`
+	// Requirement should map to the assessment requirement for this assessment.
+	Requirement	Mapping	`json:"requirement" yaml:"requirement"`
 
-	// ProcedureId uniquely identifies the assessment procedure associated with the log
-	ProcedureId	string	`json:"procedure-id,omitempty" yaml:"procedure-id,omitempty"`
+	// Procedure should map to the assessment procedure being executed.
+	Procedure	Mapping	`json:"procedure" yaml:"procedure"`
 
-	Applicability	[]string	`json:"applicability" yaml:"applicability"`
-
+	// Description provides a summary of the assessment procedure.
 	Description	string	`json:"description" yaml:"description"`
 
+	// Result is the overall outcome of the assessment procedure, matching the result of the last step that was run.
 	Result	Result	`json:"result" yaml:"result"`
 
+	// Message provides additional context about the assessment result.
 	Message	string	`json:"message" yaml:"message"`
 
+	// Applicability is elevated from the Layer 2 Assessment Requirement to aid in execution and reporting.
+	Applicability	[]string	`json:"applicability" yaml:"applicability"`
+
+	// Steps are sequential actions taken as part of the assessment, which may halt the assessment if a failure occurs.
 	Steps	[]AssessmentStep	`json:"steps" yaml:"steps"`
 
+	// Steps-executed is the number of steps that were executed as part of the assessment.
 	StepsExecuted	int64	`json:"steps-executed,omitempty" yaml:"steps-executed,omitempty"`
 
-	// "start" is the timestamp when the assessment began.
+	// Start is the timestamp when the assessment began.
 	Start	Datetime	`json:"start" yaml:"start"`
 
-	// "end" is the timestamp when the assessment concluded.
+	// End is the timestamp when the assessment concluded.
 	End	Datetime	`json:"end,omitempty" yaml:"end,omitempty"`
 
-	// recommendation provides guidance on how to address a failed assessment.
+	// Recommendation provides guidance on how to address a failed assessment.
 	Recommendation	string	`json:"recommendation,omitempty" yaml:"recommendation,omitempty"`
 }
 
