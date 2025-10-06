@@ -28,8 +28,10 @@ func failingAssessmentPtr() *AssessmentLog {
 
 func failingAssessment() AssessmentLog {
 	return AssessmentLog{
-		RequirementId: "failingAssessment()",
-		Description:   "failing assessment",
+		Requirement: Mapping{
+			EntryId: "failingAssessment()",
+		},
+		Description: "failing assessment",
 		Steps: []AssessmentStep{
 			failingAssessmentStep,
 			passingAssessmentStep,
@@ -44,8 +46,10 @@ func passingAssessmentPtr() *AssessmentLog {
 
 func passingAssessment() AssessmentLog {
 	return AssessmentLog{
-		RequirementId: "passingAssessment()",
-		Description:   "passing assessment",
+		Requirement: Mapping{
+			EntryId: "passingAssessment()",
+		},
+		Description: "passing assessment",
 		Steps: []AssessmentStep{
 			passingAssessmentStep,
 		},
@@ -59,8 +63,10 @@ func needsReviewAssessmentPtr() *AssessmentLog {
 
 func needsReviewAssessment() AssessmentLog {
 	return AssessmentLog{
-		RequirementId: "needsReviewAssessment()",
-		Description:   "needs review assessment",
+		Requirement: Mapping{
+			EntryId: "needsReviewAssessment()",
+		},
+		Description: "needs review assessment",
 		Steps: []AssessmentStep{
 			passingAssessmentStep,
 			needsReviewAssessmentStep,
@@ -76,8 +82,10 @@ func unknownAssessmentPtr() *AssessmentLog {
 
 func unknownAssessment() AssessmentLog {
 	return AssessmentLog{
-		RequirementId: "unknownAssessment()",
-		Description:   "unknown assessment",
+		Requirement: Mapping{
+			EntryId: "unknownAssessment()",
+		},
+		Description: "unknown assessment",
 		Steps: []AssessmentStep{
 			passingAssessmentStep,
 			unknownAssessmentStep,
@@ -89,8 +97,10 @@ func unknownAssessment() AssessmentLog {
 
 func badRevertPassingAssessment() AssessmentLog {
 	return AssessmentLog{
-		RequirementId: "badRevertPassingAssessment()",
-		Description:   "bad revert passing assessment",
+		Requirement: Mapping{
+			EntryId: "badRevertPassingAssessment()",
+		},
+		Description: "bad revert passing assessment",
 		Steps: []AssessmentStep{
 			passingAssessmentStep,
 			passingAssessmentStep,
