@@ -66,6 +66,9 @@ type AssessmentPlan struct {
 	Control	Mapping	`json:"control" yaml:"control"`
 
 	// Assessments defines possible testing procedures to evaluate the control.
+	//
+	// Enforce that control reference and the assessments' references match
+	// This formulation uses the control's reference if the assessment doesn't include a reference
 	Assessments	[]Assessment	`json:"assessments" yaml:"assessments"`
 }
 
@@ -81,30 +84,6 @@ type Mapping struct {
 
 	// Remarks provides additional context about the mapping entry.
 	Remarks	string	`json:"remarks,omitempty" yaml:"remarks,omitempty"`
-}
-
-// Assessment defines all testing procedures for a requirement.
-type Assessment struct {
-	// RequirementId points to the requirement being tested.
-	Requirement	Mapping	`json:"requirement" yaml:"requirement"`
-
-	// Procedures defines possible testing procedures to evaluate the requirement.
-	Procedures	[]AssessmentProcedure	`json:"procedures" yaml:"procedures"`
-}
-
-// AssessmentProcedure describes a testing procedure for evaluating a Layer 2 control requirement.
-type AssessmentProcedure struct {
-	// Id uniquely identifies the assessment procedure being executed
-	Id	string	`json:"id" yaml:"id"`
-
-	// Name provides a summary of the procedure
-	Name	string	`json:"name" yaml:"name"`
-
-	// Description provides a detailed explanation of the procedure
-	Description	string	`json:"description" yaml:"description"`
-
-	// Documentation provides a URL to documentation that describes how the assessment procedure evaluates the control requirement
-	Documentation	string	`json:"documentation,omitempty" yaml:"documentation,omitempty"`
 }
 
 // EvaluationLog contains the results of evaluating a set of Layer 2 controls.
@@ -124,6 +103,8 @@ type ControlEvaluation struct {
 
 	Control	Mapping	`json:"control" yaml:"control"`
 
+	// Enforce that control reference and the assessments' references match
+	// This formulation uses the control's reference if the assessment doesn't include a reference
 	AssessmentLogs	[]*AssessmentLog	`json:"assessment-logs" yaml:"assessment-logs"`
 }
 
@@ -164,5 +145,29 @@ type AssessmentLog struct {
 }
 
 type Datetime string
+
+// Assessment defines all testing procedures for a requirement.
+type Assessment struct {
+	// RequirementId points to the requirement being tested.
+	Requirement	Mapping	`json:"requirement" yaml:"requirement"`
+
+	// Procedures defines possible testing procedures to evaluate the requirement.
+	Procedures	[]AssessmentProcedure	`json:"procedures" yaml:"procedures"`
+}
+
+// AssessmentProcedure describes a testing procedure for evaluating a Layer 2 control requirement.
+type AssessmentProcedure struct {
+	// Id uniquely identifies the assessment procedure being executed
+	Id	string	`json:"id" yaml:"id"`
+
+	// Name provides a summary of the procedure
+	Name	string	`json:"name" yaml:"name"`
+
+	// Description provides a detailed explanation of the procedure
+	Description	string	`json:"description" yaml:"description"`
+
+	// Documentation provides a URL to documentation that describes how the assessment procedure evaluates the control requirement
+	Documentation	string	`json:"documentation,omitempty" yaml:"documentation,omitempty"`
+}
 
 type Email string

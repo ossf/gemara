@@ -58,6 +58,12 @@ import "time"
 	message: string
 	control: #Mapping
 	"assessment-logs": [...#AssessmentLog] @go(AssessmentLogs,type=[]*AssessmentLog)
+	// Enforce that control reference and the assessments' references match
+	// This formulation uses the control's reference if the assessment doesn't include a reference
+	"assessment-logs": [...{
+		requirement: "reference-id": (control."reference-id")
+		procedure: "reference-id":   (control."reference-id")
+	}] @go(AssessmentLogs,type=[]*AssessmentLog)
 }
 
 // AssessmentLog contains the results of executing a single assessment procedure for a control requirement.
@@ -97,7 +103,12 @@ import "time"
 	// Control points to the Layer 2 control being evaluated.
 	control: #Mapping
 	// Assessments defines possible testing procedures to evaluate the control.
-	assessments: [...#Assessment] @go(Assessments)
+	assessments: [...#Assessment] @go(Assessments,type=[]Assessment)
+	// Enforce that control reference and the assessments' references match
+	// This formulation uses the control's reference if the assessment doesn't include a reference
+	assessments: [...{
+		requirement: "reference-id": (control."reference-id")
+	}] @go(Assessments,type=[]Assessment)
 }
 
 // Assessment defines all testing procedures for a requirement.
