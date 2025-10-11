@@ -62,7 +62,6 @@ import "time"
 	// This formulation uses the control's reference if the assessment doesn't include a reference
 	"assessment-logs": [...{
 		requirement: "reference-id": (control."reference-id")
-		procedure: "reference-id":   (control."reference-id")
 	}] @go(AssessmentLogs,type=[]*AssessmentLog)
 }
 
