@@ -10,8 +10,7 @@ The project welcomes your contributions whether they be:
 
 All changes to the repository should be made via PR ([OSPS-AC-03](https://baseline.openssf.org/#osps-ac-03)).
 
-PRs MUST meet the following criteria:
-
+SDfsdfsdfsdf
 * Clear title that conforms to the [Conventional Commits spec](https://www.conventionalcommits.org/)
 * Descriptive commit message
 * DCO signoff (via `git commit -s` -- [OSPS-LE-01](https://baseline.openssf.org/#osps-le-01))
