@@ -1,5 +1,7 @@
 # Gemara: GRC Engineering Model for Automated Risk Assessment  [![Go Reference](https://pkg.go.dev/badge/github.com/ossf/gemara.svg)](https://pkg.go.dev/github.com/ossf/gemara)
 
+> Pronounced: Juh-MAH-ruh (think :gem:)
+
 - [Overview](#overview)
 - [The Model](#the-model)
   - [Layer 1: Guidance](#layer-1-guidance)
