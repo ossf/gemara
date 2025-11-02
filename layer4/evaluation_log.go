@@ -9,10 +9,9 @@ import (
 // Each AssessmentLog is emitted as a SARIF result. The rule id is derived from
 // the control id and requirement id.
 //
-// PhysicalLocation: Uses Metadata.Author.Uri as the artifact URI (typically a repository URL).
-// IMPORTANT: GitHub Code Scanning may require file paths (e.g., "README.md") instead of repository URLs.
-// If testing shows repository URLs don't work with GitHub Code Scanning, consider implementing
-// an optional artifactURI parameter (see Option A implementation below).
+// PhysicalLocation is populated using Metadata.Author.Uri as the artifact URI
+// for repository-level assessments. Region is left nil as we don't have
+// file-specific line/column data.
 func (e EvaluationLog) ToSARIF() ([]byte, error) {
 	report := &SarifReport{
 		Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/123e95847b13fbdd4cbe2120fa5e33355d4a042b/Schemata/sarif-schema-2.1.0.json",
@@ -55,14 +54,9 @@ func (e EvaluationLog) ToSARIF() ([]byte, error) {
 				msg = log.Description
 			}
 
-			// Build PhysicalLocation using repository URI from metadata
-			// For repository-level assessments, use Metadata.Author.Uri as the artifact URI
-			// Region is left nil as we don't have file-specific line/column data
-			//
-			// NOTE: This uses Metadata.Author.Uri (repository URL like "https://github.com/ossf/gemera")
-			// GitHub Code Scanning may require file paths (e.g., "README.md") instead.
-			// TODO: Test with GitHub Code Scanning. If repository URLs don't work, implement
-			// Option A: Add optional artifactURI parameter to ToSARIF() method signature.
+			// Build PhysicalLocation using repository URI from metadata.
+			// For repository-level assessments, use Metadata.Author.Uri as the artifact URI.
+			// Region is left nil as we don't have file-specific line/column data.
 			var physicalLocation *PhysicalLocation
 			if e.Metadata.Author.Uri != "" {
 				physicalLocation = &PhysicalLocation{
