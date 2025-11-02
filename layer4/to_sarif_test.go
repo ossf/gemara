@@ -82,7 +82,68 @@ func Test_ToSARIF(t *testing.T) {
 	require.Equal(t, informationURI, run.Tool.Driver.InformationURI)
 	require.Equal(t, version, run.Tool.Driver.Version)
 
+	// Check that PhysicalLocation is included in all results
+	for _, result := range run.Results {
+		require.NotEmpty(t, result.Locations, "Each result should have at least one location")
+		for _, location := range result.Locations {
+			require.NotNil(t, location.PhysicalLocation, "PhysicalLocation should be present")
+			require.Equal(t, informationURI, location.PhysicalLocation.ArtifactLocation.URI, "ArtifactLocation URI should match Metadata.Author.Uri")
+			require.Nil(t, location.PhysicalLocation.Region, "Region should be nil for repository-level assessments")
+			// LogicalLocations should still be present
+			require.NotEmpty(t, location.LogicalLocations, "LogicalLocations should still be present")
+		}
+	}
+
 	// ensure JSON marshals cleanly
 	_, err = json.Marshal(sarif)
 	require.NoError(t, err)
+}
+
+func Test_ToSARIF_NoPhysicalLocationWhenURIMissing(t *testing.T) {
+	// Test that PhysicalLocation is nil when Metadata.Author.Uri is empty
+	ce := &ControlEvaluation{
+		Name: "Example Control",
+		Control: Mapping{
+			EntryId: "CTRL-1",
+		},
+		Result: Passed,
+		AssessmentLogs: []*AssessmentLog{
+			{
+				Requirement: Mapping{
+					EntryId: "REQ-1",
+				},
+				Description: "should do a thing",
+				Result:      Failed,
+				Message:     "thing was not done",
+			},
+		},
+	}
+
+	evaluationLog := EvaluationLog{
+		Evaluations: []*ControlEvaluation{ce},
+		Metadata: Metadata{
+			Author: Author{
+				Name:    "gemara",
+				Uri:     "", // Empty URI
+				Version: "1.0.0",
+			},
+		},
+	}
+	sarifBytes, err := evaluationLog.ToSARIF()
+	require.NoError(t, err)
+	sarif := &SarifReport{}
+	err = json.Unmarshal(sarifBytes, sarif)
+	require.NoError(t, err)
+	require.NotNil(t, sarif)
+	require.Len(t, sarif.Runs, 1)
+	run := sarif.Runs[0]
+
+	// When URI is empty, PhysicalLocation should be nil
+	require.Len(t, run.Results, 1)
+	result := run.Results[0]
+	require.NotEmpty(t, result.Locations)
+	location := result.Locations[0]
+	require.Nil(t, location.PhysicalLocation, "PhysicalLocation should be nil when Metadata.Author.Uri is empty")
+	// LogicalLocations should still be present
+	require.NotEmpty(t, location.LogicalLocations, "LogicalLocations should still be present")
 }
