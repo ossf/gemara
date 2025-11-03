@@ -10,14 +10,14 @@ import (
 // the control id and requirement id.
 //
 // Parameters:
-//   - artifactURI (optional): File path or URI for PhysicalLocation.artifactLocation.uri.
-//     If not provided or empty, falls back to Metadata.Author.Uri (repository URL).
+//   - artifactURI: File path or URI for PhysicalLocation.artifactLocation.uri.
+//     If empty, falls back to Metadata.Author.Uri (repository URL).
 //     For GitHub Code Scanning, typically use a file path like "README.md".
 //
 // PhysicalLocation identifies the artifact (file/repository) where the result was found.
 // LogicalLocation identifies the logical component (assessment step) that produced the result.
 // Region is left nil as we don't have file-specific line/column data.
-func (e EvaluationLog) ToSARIF(artifactURI ...string) ([]byte, error) {
+func (e EvaluationLog) ToSARIF(artifactURI string) ([]byte, error) {
 	report := &SarifReport{
 		Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/123e95847b13fbdd4cbe2120fa5e33355d4a042b/Schemata/sarif-schema-2.1.0.json",
 		Version: "2.1.0",
@@ -61,8 +61,8 @@ func (e EvaluationLog) ToSARIF(artifactURI ...string) ([]byte, error) {
 
 			// Determine artifact URI: use provided parameter, fallback to Metadata.Author.Uri
 			var uri string
-			if len(artifactURI) > 0 && artifactURI[0] != "" {
-				uri = artifactURI[0]
+			if artifactURI != "" {
+				uri = artifactURI
 			} else if e.Metadata.Author.Uri != "" {
 				uri = e.Metadata.Author.Uri
 			}

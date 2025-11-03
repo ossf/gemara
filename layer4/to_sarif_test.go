@@ -13,7 +13,7 @@ func Test_ToSARIF(t *testing.T) {
 	step1 := func(interface{}) (Result, string) { return Failed, "" }
 	step2 := func(interface{}) (Result, string) { return NeedsReview, "" }
 	step3 := func(interface{}) (Result, string) { return Passed, "" }
-	
+
 	ce := &ControlEvaluation{
 		Name: "Example Control",
 		Control: Mapping{
@@ -25,28 +25,28 @@ func Test_ToSARIF(t *testing.T) {
 				Requirement: Mapping{
 					EntryId: "REQ-1",
 				},
-				Description: "should do a thing",
-				Result:      Failed,
-				Message:     "thing was not done",
-				Steps:       []AssessmentStep{step1},
+				Description:   "should do a thing",
+				Result:        Failed,
+				Message:       "thing was not done",
+				Steps:         []AssessmentStep{step1},
 				StepsExecuted: 1,
 			},
 			{
 				Requirement: Mapping{
 					EntryId: "REQ-2",
 				},
-				Description: "should maybe do a thing",
-				Result:      NeedsReview,
-				Steps:       []AssessmentStep{step2},
+				Description:   "should maybe do a thing",
+				Result:        NeedsReview,
+				Steps:         []AssessmentStep{step2},
 				StepsExecuted: 1,
 			},
 			{
 				Requirement: Mapping{
 					EntryId: "REQ-3",
 				},
-				Description: "should do another thing",
-				Result:      Passed,
-				Steps:       []AssessmentStep{step3},
+				Description:   "should do another thing",
+				Result:        Passed,
+				Steps:         []AssessmentStep{step3},
 				StepsExecuted: 1,
 			},
 		},
@@ -65,7 +65,7 @@ func Test_ToSARIF(t *testing.T) {
 		},
 	}
 	// Test without parameter - should use Metadata.Author.Uri (backward compatible)
-	sarifBytes, err := evaluationLog.ToSARIF()
+	sarifBytes, err := evaluationLog.ToSARIF("")
 	require.NoError(t, err)
 	sarif = &SarifReport{}
 	err = json.Unmarshal(sarifBytes, sarif)
@@ -124,10 +124,10 @@ func Test_ToSARIF_NoPhysicalLocationWhenURIMissing(t *testing.T) {
 				Requirement: Mapping{
 					EntryId: "REQ-1",
 				},
-				Description: "should do a thing",
-				Result:      Failed,
-				Message:     "thing was not done",
-				Steps:       []AssessmentStep{func(interface{}) (Result, string) { return Failed, "" }},
+				Description:   "should do a thing",
+				Result:        Failed,
+				Message:       "thing was not done",
+				Steps:         []AssessmentStep{func(interface{}) (Result, string) { return Failed, "" }},
 				StepsExecuted: 1,
 			},
 		},
@@ -144,7 +144,7 @@ func Test_ToSARIF_NoPhysicalLocationWhenURIMissing(t *testing.T) {
 		},
 	}
 	// Test without parameter and empty URI - PhysicalLocation should be nil
-	sarifBytes, err := evaluationLog.ToSARIF()
+	sarifBytes, err := evaluationLog.ToSARIF("")
 	require.NoError(t, err)
 	sarif := &SarifReport{}
 	err = json.Unmarshal(sarifBytes, sarif)
@@ -179,10 +179,10 @@ func Test_ToSARIF_WithArtifactURIParameter(t *testing.T) {
 				Requirement: Mapping{
 					EntryId: "REQ-1",
 				},
-				Description: "Test requirement",
-				Result:      Failed,
-				Message:     "Test message",
-				Steps:       []AssessmentStep{testStep},
+				Description:   "Test requirement",
+				Result:        Failed,
+				Message:       "Test message",
+				Steps:         []AssessmentStep{testStep},
 				StepsExecuted: 1,
 			},
 		},
