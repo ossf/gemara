@@ -64,7 +64,7 @@ func Test_ToSARIF(t *testing.T) {
 			},
 		},
 	}
-	// Test without parameter - should use Metadata.Author.Uri (backward compatible)
+	// Test with empty artifactURI - PhysicalLocation should be nil
 	sarifBytes, err := evaluationLog.ToSARIF("")
 	require.NoError(t, err)
 	sarif = &SarifReport{}
@@ -94,14 +94,12 @@ func Test_ToSARIF(t *testing.T) {
 	require.Equal(t, informationURI, run.Tool.Driver.InformationURI)
 	require.Equal(t, version, run.Tool.Driver.Version)
 
-	// Check that PhysicalLocation is included in all results (uses Metadata.Author.Uri as fallback)
+	// Check that PhysicalLocation is nil when artifactURI is empty
 	for _, result := range run.Results {
 		require.NotEmpty(t, result.Locations, "Each result should have at least one location")
 		for _, location := range result.Locations {
-			require.NotNil(t, location.PhysicalLocation, "PhysicalLocation should be present")
-			require.Equal(t, informationURI, location.PhysicalLocation.ArtifactLocation.URI, "ArtifactLocation URI should match Metadata.Author.Uri")
-			require.Nil(t, location.PhysicalLocation.Region, "Region should be nil")
-			// LogicalLocations should be present with AssessmentStep function name
+			require.Nil(t, location.PhysicalLocation, "PhysicalLocation should be nil when artifactURI is empty")
+			// LogicalLocations should still be present with AssessmentStep function name
 			require.NotEmpty(t, location.LogicalLocations, "LogicalLocations should still be present")
 		}
 	}

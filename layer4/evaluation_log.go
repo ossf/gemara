@@ -11,7 +11,7 @@ import (
 //
 // Parameters:
 //   - artifactURI: File path or URI for PhysicalLocation.artifactLocation.uri.
-//     If empty, falls back to Metadata.Author.Uri (repository URL).
+//     If empty, PhysicalLocation will be nil (no resource URI available).
 //     For GitHub Code Scanning, typically use a file path like "README.md".
 //
 // PhysicalLocation identifies the artifact (file/repository) where the result was found.
@@ -59,19 +59,14 @@ func (e EvaluationLog) ToSARIF(artifactURI string) ([]byte, error) {
 				msg = log.Description
 			}
 
-			// Determine artifact URI: use provided parameter, fallback to Metadata.Author.Uri
-			var uri string
-			if artifactURI != "" {
-				uri = artifactURI
-			} else if e.Metadata.Author.Uri != "" {
-				uri = e.Metadata.Author.Uri
-			}
-
+			// PhysicalLocation: use provided artifactURI if available
+			// Note: Metadata.Author.Uri represents the tool/evaluator, not the resource being assessed,
+			// so we don't use it as a fallback for PhysicalLocation.
 			var physicalLocation *PhysicalLocation
-			if uri != "" {
+			if artifactURI != "" {
 				physicalLocation = &PhysicalLocation{
 					ArtifactLocation: ArtifactLocation{
-						URI: uri,
+						URI: artifactURI,
 					},
 					// Region left nil - no line/column data available
 				}
