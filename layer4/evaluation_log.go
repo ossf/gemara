@@ -8,7 +8,16 @@ import (
 // ToSARIF converts the evaluation results into a SARIF document (v2.1.0).
 // Each AssessmentLog is emitted as a SARIF result. The rule id is derived from
 // the control id and requirement id.
-func (e EvaluationLog) ToSARIF() ([]byte, error) {
+//
+// Parameters:
+//   - artifactURI: File path or URI for PhysicalLocation.artifactLocation.uri.
+//     If empty, PhysicalLocation will be nil (no resource URI available).
+//     For GitHub Code Scanning, typically use a file path like "README.md".
+//
+// PhysicalLocation identifies the artifact (file/repository) where the result was found.
+// LogicalLocation identifies the logical component (assessment step) that produced the result.
+// Region is left nil as we don't have file-specific line/column data.
+func (e EvaluationLog) ToSARIF(artifactURI string) ([]byte, error) {
 	report := &SarifReport{
 		Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/123e95847b13fbdd4cbe2120fa5e33355d4a042b/Schemata/sarif-schema-2.1.0.json",
 		Version: "2.1.0",
@@ -50,16 +59,38 @@ func (e EvaluationLog) ToSARIF() ([]byte, error) {
 				msg = log.Description
 			}
 
+			var physicalLocation *PhysicalLocation
+			if artifactURI != "" {
+				physicalLocation = &PhysicalLocation{
+					ArtifactLocation: ArtifactLocation{
+						URI: artifactURI,
+					},
+					// Region left nil - no line/column data available
+				}
+			}
+
+			// Use the last AssessmentStep for LogicalLocation (the location is for the entire evaluation)
+			logicalLocationName := ruleID
+			if len(log.Steps) > 0 {
+				lastStep := log.Steps[len(log.Steps)-1]
+				if lastStep != nil {
+					logicalLocationName = lastStep.String()
+				}
+			}
+
+			location := Location{
+				PhysicalLocation: physicalLocation,
+				LogicalLocations: []LogicalLocation{
+					{FullyQualifiedName: logicalLocationName},
+				},
+			}
+
 			result := ResultEntry{
 				RuleID:  ruleID,
 				Level:   level,
 				Message: Message{Text: msg},
 				Locations: []Location{
-					{
-						LogicalLocations: []LogicalLocation{
-							{FullyQualifiedName: ruleID},
-						},
-					},
+					location,
 				},
 			}
 			run.Results = append(run.Results, result)
@@ -130,7 +161,31 @@ type Message struct {
 }
 
 type Location struct {
+	PhysicalLocation *PhysicalLocation `json:"physicalLocation,omitempty"`
 	LogicalLocations []LogicalLocation `json:"logicalLocations,omitempty"`
+}
+
+type PhysicalLocation struct {
+	ArtifactLocation ArtifactLocation `json:"artifactLocation"`
+	Region           *Region          `json:"region,omitempty"`
+}
+
+type ArtifactLocation struct {
+	URI       string `json:"uri"`
+	URIBaseID string `json:"uriBaseId,omitempty"`
+	Index     int    `json:"index,omitempty"`
+}
+
+type Region struct {
+	StartLine   int      `json:"startLine,omitempty"`
+	StartColumn int      `json:"startColumn,omitempty"`
+	EndLine     int      `json:"endLine,omitempty"`
+	EndColumn   int      `json:"endColumn,omitempty"`
+	Snippet     *Snippet `json:"snippet,omitempty"`
+}
+
+type Snippet struct {
+	Text string `json:"text"`
 }
 
 type LogicalLocation struct {
