@@ -59,9 +59,6 @@ func (e EvaluationLog) ToSARIF(artifactURI string) ([]byte, error) {
 				msg = log.Description
 			}
 
-			// PhysicalLocation: use provided artifactURI if available
-			// Note: Metadata.Author.Uri represents the tool/evaluator, not the resource being assessed,
-			// so we don't use it as a fallback for PhysicalLocation.
 			var physicalLocation *PhysicalLocation
 			if artifactURI != "" {
 				physicalLocation = &PhysicalLocation{
@@ -72,10 +69,13 @@ func (e EvaluationLog) ToSARIF(artifactURI string) ([]byte, error) {
 				}
 			}
 
-			// Use AssessmentStep function address for LogicalLocation (the step is the originator)
+			// Use the last AssessmentStep for LogicalLocation (the location is for the entire evaluation)
 			logicalLocationName := ruleID
-			if len(log.Steps) > 0 && log.Steps[0] != nil {
-				logicalLocationName = log.Steps[0].String()
+			if len(log.Steps) > 0 {
+				lastStep := log.Steps[len(log.Steps)-1]
+				if lastStep != nil {
+					logicalLocationName = lastStep.String()
+				}
 			}
 
 			location := Location{
