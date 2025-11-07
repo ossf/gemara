@@ -39,6 +39,11 @@ func (e EvaluationLog) ToSARIF(artifactURI string) ([]byte, error) {
 				continue
 			}
 
+			// Skip NotRun and NotApplicable results - only include Passed, Failed, NeedsReview, Unknown
+			if log.Result == NotRun || log.Result == NotApplicable {
+				continue
+			}
+
 			ruleID := fmt.Sprintf("%s/%s", evaluation.Control.EntryId, log.Requirement.EntryId)
 			if !ruleIdSeen[ruleID] {
 				rule := ReportingDescriptor{ID: ruleID}
