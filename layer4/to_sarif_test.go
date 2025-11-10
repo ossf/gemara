@@ -221,7 +221,7 @@ func Test_ToSARIF_WithArtifactURIParameter(t *testing.T) {
 }
 
 func Test_ToSARIF_WithCatalogEnrichment(t *testing.T) {
-	// Test that catalog data enriches SARIF output with requirement text, recommendations, and help URI
+	// Test that catalog data enriches SARIF output with requirement text, recommendations, and help text
 	testStep := func(interface{}) (Result, string) {
 		return Failed, ""
 	}

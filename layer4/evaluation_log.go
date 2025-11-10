@@ -15,8 +15,8 @@ import (
 //   - artifactURI: File path or URI for PhysicalLocation.artifactLocation.uri.
 //     If empty, PhysicalLocation will be nil (no resource URI available).
 //     For GitHub Code Scanning, typically use a file path like "README.md".
-//   - catalog: Optional catalog data to enrich SARIF output with requirement text,
-//     recommendations, and documentation links. If nil, only basic information is included.
+//   - catalog: Optional catalog data to enrich SARIF output with requirement text
+//     and recommendations. If nil, only basic information is included.
 //
 // PhysicalLocation identifies the artifact (file/repository) where the result was found.
 // LogicalLocation identifies the logical component (assessment step) that produced the result.
