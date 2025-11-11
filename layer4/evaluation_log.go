@@ -3,6 +3,8 @@ package layer4
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/ossf/gemara/layer2"
 )
 
 // ToSARIF converts the evaluation results into a SARIF document (v2.1.0).
@@ -13,11 +15,13 @@ import (
 //   - artifactURI: File path or URI for PhysicalLocation.artifactLocation.uri.
 //     If empty, PhysicalLocation will be nil (no resource URI available).
 //     For GitHub Code Scanning, typically use a file path like "README.md".
+//   - catalog: Optional catalog data to enrich SARIF output with requirement text
+//     and recommendations. If nil, only basic information is included.
 //
 // PhysicalLocation identifies the artifact (file/repository) where the result was found.
 // LogicalLocation identifies the logical component (assessment step) that produced the result.
 // Region is left nil as we don't have file-specific line/column data.
-func (e EvaluationLog) ToSARIF(artifactURI string) ([]byte, error) {
+func (e EvaluationLog) ToSARIF(artifactURI string, catalog *layer2.Catalog) ([]byte, error) {
 	report := &SarifReport{
 		Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/123e95847b13fbdd4cbe2120fa5e33355d4a042b/Schemata/sarif-schema-2.1.0.json",
 		Version: "2.1.0",
@@ -52,6 +56,41 @@ func (e EvaluationLog) ToSARIF(artifactURI string) ([]byte, error) {
 				} else if evaluation.Name != "" {
 					rule.Name = evaluation.Name
 				}
+
+				// Enrich rule with catalog data if available
+				if catalog != nil {
+					control, requirement := findControlAndRequirement(catalog, evaluation.Control.EntryId, log.Requirement.EntryId)
+					if control != nil {
+						// Use control title if name is still empty
+						if rule.Name == "" {
+							rule.Name = control.Title
+						}
+
+						// Add requirement text as short description
+						if requirement != nil && requirement.Text != "" {
+							rule.ShortDescription = &Message{Text: requirement.Text}
+						}
+
+						// Add full description: control objective + requirement text
+						if control.Objective != "" {
+							fullDesc := control.Objective
+							if requirement != nil && requirement.Text != "" {
+								fullDesc = fmt.Sprintf("%s\n\nRequirement: %s", control.Objective, requirement.Text)
+							}
+							rule.FullDescription = &Message{Text: fullDesc}
+						}
+
+						// Add recommendation as help text
+						if log.Recommendation != "" {
+							rule.Help = &Message{Text: log.Recommendation}
+						} else if requirement != nil && requirement.Recommendation != "" {
+							rule.Help = &Message{Text: requirement.Recommendation}
+						}
+
+						// HelpUri is left empty - catalog-specific URI generation should be handled by the caller
+					}
+				}
+
 				rules = append(rules, rule)
 				ruleIdSeen[ruleID] = true
 			}
@@ -150,8 +189,12 @@ type ToolComponent struct {
 }
 
 type ReportingDescriptor struct {
-	ID   string `json:"id"`
-	Name string `json:"name,omitempty"`
+	ID               string   `json:"id"`
+	Name             string   `json:"name,omitempty"`
+	ShortDescription *Message `json:"shortDescription,omitempty"`
+	FullDescription  *Message `json:"fullDescription,omitempty"`
+	Help             *Message `json:"help,omitempty"`
+	HelpUri          string   `json:"helpUri,omitempty"`
 }
 
 type ResultEntry struct {
@@ -195,4 +238,31 @@ type Snippet struct {
 
 type LogicalLocation struct {
 	FullyQualifiedName string `json:"fullyQualifiedName,omitempty"`
+}
+
+// findControlAndRequirement searches the catalog for a control and requirement by their IDs.
+// Returns the control and requirement if found, nil otherwise.
+func findControlAndRequirement(catalog *layer2.Catalog, controlID, requirementID string) (*layer2.Control, *layer2.AssessmentRequirement) {
+	if catalog == nil {
+		return nil, nil
+	}
+
+	for _, family := range catalog.ControlFamilies {
+		for i := range family.Controls {
+			control := &family.Controls[i]
+			if control.Id == controlID {
+				// Found the control, now find the requirement
+				for j := range control.AssessmentRequirements {
+					requirement := &control.AssessmentRequirements[j]
+					if requirement.Id == requirementID {
+						return control, requirement
+					}
+				}
+				// Control found but requirement not found
+				return control, nil
+			}
+		}
+	}
+
+	return nil, nil
 }
