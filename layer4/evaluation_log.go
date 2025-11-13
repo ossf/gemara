@@ -104,13 +104,13 @@ func (e EvaluationLog) ToSARIF(artifactURI string, catalog *layer2.Catalog) ([]b
 			}
 
 			var physicalLocation *PhysicalLocation
-			if artifactURI != "" {
-				physicalLocation = &PhysicalLocation{
-					ArtifactLocation: ArtifactLocation{
-						URI: artifactURI,
-					},
-					// Region left nil - no line/column data available
-				}
+			if artifactURI == "" {
+				artifactURI = "no file associated with this alert"
+			}
+			physicalLocation = &PhysicalLocation{
+				ArtifactLocation: ArtifactLocation{
+					URI: artifactURI,
+				},
 			}
 
 			// Use the last AssessmentStep for LogicalLocation (the location is for the entire evaluation)
