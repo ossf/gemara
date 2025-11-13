@@ -8,272 +8,332 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_ToSARIF(t *testing.T) {
-	var sarif *SarifReport
-	// Create test steps for LogicalLocation testing
-	step1 := func(interface{}) (Result, string) { return Failed, "" }
-	step2 := func(interface{}) (Result, string) { return NeedsReview, "" }
-	step3 := func(interface{}) (Result, string) { return Passed, "" }
+func TestToSARIF(t *testing.T) {
+	testCatalog := makeCatalog("CTRL-1", "Test Control Title", "Test control objective", "REQ-1", "This is the requirement text that should appear in SARIF", "This is the catalog recommendation")
 
-	ce := &ControlEvaluation{
-		Name: "Example Control",
-		Control: Mapping{
-			EntryId: "CTRL-1",
-		},
-		Result: Passed,
-		AssessmentLogs: []*AssessmentLog{
-			{
-				Requirement: Mapping{
-					EntryId: "REQ-1",
-				},
-				Description:   "should do a thing",
-				Result:        Failed,
-				Message:       "thing was not done",
-				Steps:         []AssessmentStep{step1},
-				StepsExecuted: 1,
-			},
-			{
-				Requirement: Mapping{
-					EntryId: "REQ-2",
-				},
-				Description:   "should maybe do a thing",
-				Result:        NeedsReview,
-				Steps:         []AssessmentStep{step2},
-				StepsExecuted: 1,
-			},
-			{
-				Requirement: Mapping{
-					EntryId: "REQ-3",
-				},
-				Description:   "should do another thing",
-				Result:        Passed,
-				Steps:         []AssessmentStep{step3},
-				StepsExecuted: 1,
-			},
-		},
-	}
-	informationURI := "https://github.com/ossf/gemara"
-	version := "1.0.0"
-
-	evaluationLog := EvaluationLog{
-		Evaluations: []*ControlEvaluation{ce},
-		Metadata: Metadata{
-			Author: Author{
+	tests := []struct {
+		name          string
+		artifactURI   string
+		catalog       *layer2.Catalog
+		evaluationLog EvaluationLog
+		wantRules     int
+		wantResults   int
+		wantLevels    map[string]string
+		wantToolName  string
+		wantToolURI   string
+		wantToolVer   string
+		checkLocation func(*testing.T, *Location)
+		checkRule     func(*testing.T, *ReportingDescriptor)
+	}{
+		{
+			name:        "basic conversion with multiple results",
+			artifactURI: "",
+			catalog:     nil,
+			evaluationLog: makeEvaluationLog(Author{
 				Name:    "gemara",
-				Uri:     informationURI,
-				Version: version,
-			},
-		},
-	}
-	// Test with empty artifactURI - PhysicalLocation should be nil
-	sarifBytes, err := evaluationLog.ToSARIF("", nil)
-	require.NoError(t, err)
-	sarif = &SarifReport{}
-	err = json.Unmarshal(sarifBytes, sarif)
-	require.NoError(t, err)
-	require.NotNil(t, sarif)
-	require.Len(t, sarif.Runs, 1)
-	run := sarif.Runs[0]
-
-	// rules should be unique for each requirement
-	require.NotNil(t, run.Tool.Driver.Rules)
-	require.Len(t, run.Tool.Driver.Rules, 3)
-
-	// results should be present with appropriate levels
-	require.Len(t, run.Results, 3)
-	// map of ruleId to level
-	levels := map[string]string{}
-	for _, r := range run.Results {
-		levels[r.RuleID] = r.Level
-	}
-	require.Equal(t, "error", levels["CTRL-1/REQ-1"])   // Failed
-	require.Equal(t, "warning", levels["CTRL-1/REQ-2"]) // NeedsReview
-	require.Equal(t, "note", levels["CTRL-1/REQ-3"])    // Passed
-
-	// Check tool version information
-	require.Equal(t, "gemara", run.Tool.Driver.Name)
-	require.Equal(t, informationURI, run.Tool.Driver.InformationURI)
-	require.Equal(t, version, run.Tool.Driver.Version)
-
-	// Check that PhysicalLocation is nil when artifactURI is empty
-	for _, result := range run.Results {
-		require.NotEmpty(t, result.Locations, "Each result should have at least one location")
-		for _, location := range result.Locations {
-			require.Nil(t, location.PhysicalLocation, "PhysicalLocation should be nil when artifactURI is empty")
-			// LogicalLocations should still be present with AssessmentStep function name
-			require.NotEmpty(t, location.LogicalLocations, "LogicalLocations should still be present")
-		}
-	}
-
-	// ensure JSON marshals cleanly
-	_, err = json.Marshal(sarif)
-	require.NoError(t, err)
-}
-
-func Test_ToSARIF_NoPhysicalLocationWhenURIMissing(t *testing.T) {
-	// Test that PhysicalLocation is nil when Metadata.Author.Uri is empty
-	ce := &ControlEvaluation{
-		Name: "Example Control",
-		Control: Mapping{
-			EntryId: "CTRL-1",
-		},
-		Result: Passed,
-		AssessmentLogs: []*AssessmentLog{
-			{
-				Requirement: Mapping{
-					EntryId: "REQ-1",
-				},
-				Description:   "should do a thing",
-				Result:        Failed,
-				Message:       "thing was not done",
-				Steps:         []AssessmentStep{func(interface{}) (Result, string) { return Failed, "" }},
-				StepsExecuted: 1,
-			},
-		},
-	}
-
-	evaluationLog := EvaluationLog{
-		Evaluations: []*ControlEvaluation{ce},
-		Metadata: Metadata{
-			Author: Author{
-				Name:    "gemara",
-				Uri:     "", // Empty URI
+				Uri:     "https://github.com/ossf/gemara",
 				Version: "1.0.0",
+			}, []*AssessmentLog{
+				makeAssessmentLog("REQ-1", "should do a thing", Failed, "thing was not done", nil),
+				makeAssessmentLog("REQ-2", "should maybe do a thing", NeedsReview, "", nil),
+				makeAssessmentLog("REQ-3", "should do another thing", Passed, "", nil),
+			}),
+			wantRules:   3,
+			wantResults: 3,
+			wantLevels: map[string]string{
+				"REQ-1": "error",
+				"REQ-2": "warning",
+				"REQ-3": "note",
+			},
+			wantToolName: "gemara",
+			wantToolURI:  "https://github.com/ossf/gemara",
+			wantToolVer:  "1.0.0",
+			checkLocation: func(t *testing.T, loc *Location) {
+				require.NotNil(t, loc.PhysicalLocation)
+				require.Equal(t, emptyArtifactURIMessage, loc.PhysicalLocation.ArtifactLocation.URI)
+				require.NotEmpty(t, loc.LogicalLocations)
 			},
 		},
-	}
-	// Test without parameter and empty URI - PhysicalLocation should be nil
-	sarifBytes, err := evaluationLog.ToSARIF("", nil)
-	require.NoError(t, err)
-	sarif := &SarifReport{}
-	err = json.Unmarshal(sarifBytes, sarif)
-	require.NoError(t, err)
-	require.NotNil(t, sarif)
-	require.Len(t, sarif.Runs, 1)
-	run := sarif.Runs[0]
-
-	// When URI is empty, PhysicalLocation should be nil
-	require.Len(t, run.Results, 1)
-	result := run.Results[0]
-	require.NotEmpty(t, result.Locations)
-	location := result.Locations[0]
-	require.Nil(t, location.PhysicalLocation, "PhysicalLocation should be nil when Metadata.Author.Uri is empty")
-	// LogicalLocations should still be present
-	require.NotEmpty(t, location.LogicalLocations, "LogicalLocations should still be present")
-}
-
-func Test_ToSARIF_WithArtifactURIParameter(t *testing.T) {
-	// Test that provided artifactURI parameter is used instead of Metadata.Author.Uri
-	testStep := func(interface{}) (Result, string) {
-		return Failed, ""
-	}
-	ce := &ControlEvaluation{
-		Name: "Example Control",
-		Control: Mapping{
-			EntryId: "CTRL-1",
-		},
-		Result: Passed,
-		AssessmentLogs: []*AssessmentLog{
-			{
-				Requirement: Mapping{
-					EntryId: "REQ-1",
-				},
-				Description:   "Test requirement",
-				Result:        Failed,
-				Message:       "Test message",
-				Steps:         []AssessmentStep{testStep},
-				StepsExecuted: 1,
-			},
-		},
-	}
-
-	customURI := "README.md"
-	evaluationLog := EvaluationLog{
-		Evaluations: []*ControlEvaluation{ce},
-		Metadata: Metadata{
-			Author: Author{
+		{
+			name:        "with artifactURI parameter",
+			artifactURI: "README.md",
+			catalog:     nil,
+			evaluationLog: makeEvaluationLog(Author{
 				Name:    "gemara",
-				Uri:     "https://github.com/test/repo", // This should NOT be used
+				Uri:     "https://github.com/test/repo",
 				Version: "1.0.0",
+			}, []*AssessmentLog{
+				makeAssessmentLog("REQ-1", "Test requirement", Failed, "Test message", nil),
+			}),
+			wantRules:   1,
+			wantResults: 1,
+			wantLevels: map[string]string{
+				"REQ-1": "error",
+			},
+			wantToolName: "gemara",
+			wantToolURI:  "https://github.com/test/repo",
+			wantToolVer:  "1.0.0",
+			checkLocation: func(t *testing.T, loc *Location) {
+				require.NotNil(t, loc.PhysicalLocation)
+				require.Equal(t, "README.md", loc.PhysicalLocation.ArtifactLocation.URI)
+				require.NotEmpty(t, loc.LogicalLocations)
 			},
 		},
-	}
-
-	// Test with custom artifactURI parameter
-	sarifBytes, err := evaluationLog.ToSARIF(customURI, nil)
-	require.NoError(t, err)
-	sarif := &SarifReport{}
-	err = json.Unmarshal(sarifBytes, sarif)
-	require.NoError(t, err)
-	require.NotNil(t, sarif)
-	require.Len(t, sarif.Runs, 1)
-	run := sarif.Runs[0]
-
-	require.Len(t, run.Results, 1)
-	result := run.Results[0]
-	require.NotEmpty(t, result.Locations)
-	location := result.Locations[0]
-
-	// Verify custom URI is used (not Metadata.Author.Uri)
-	require.NotNil(t, location.PhysicalLocation)
-	require.Equal(t, customURI, location.PhysicalLocation.ArtifactLocation.URI, "Should use provided artifactURI parameter")
-	require.NotEqual(t, "https://github.com/test/repo", location.PhysicalLocation.ArtifactLocation.URI, "Should not use Metadata.Author.Uri when parameter provided")
-}
-
-func Test_ToSARIF_WithCatalogEnrichment(t *testing.T) {
-	// Test that catalog data enriches SARIF output with requirement text, recommendations, and help text
-	testStep := func(interface{}) (Result, string) {
-		return Failed, ""
-	}
-
-	ce := &ControlEvaluation{
-		Name: "Test Control",
-		Control: Mapping{
-			EntryId: "CTRL-1",
-		},
-		Result: Failed,
-		AssessmentLogs: []*AssessmentLog{
-			{
-				Requirement: Mapping{
-					EntryId: "REQ-1",
-				},
-				Description:    "Test description",
-				Result:         Failed,
-				Message:        "Test failed",
-				Recommendation: "Fix this issue by doing X",
-				Steps:          []AssessmentStep{testStep},
-				StepsExecuted:  1,
+		{
+			name:        "empty author URI",
+			artifactURI: "",
+			catalog:     nil,
+			evaluationLog: makeEvaluationLog(Author{
+				Name:    "gemara",
+				Uri:     "",
+				Version: "1.0.0",
+			}, []*AssessmentLog{
+				makeAssessmentLog("REQ-1", "should do a thing", Failed, "thing was not done", nil),
+			}),
+			wantRules:   1,
+			wantResults: 1,
+			wantLevels: map[string]string{
+				"REQ-1": "error",
+			},
+			wantToolName: "gemara",
+			wantToolURI:  "",
+			wantToolVer:  "1.0.0",
+			checkLocation: func(t *testing.T, loc *Location) {
+				require.NotNil(t, loc.PhysicalLocation)
+				require.Equal(t, emptyArtifactURIMessage, loc.PhysicalLocation.ArtifactLocation.URI)
+				require.NotEmpty(t, loc.LogicalLocations)
 			},
 		},
-	}
-
-	evaluationLog := EvaluationLog{
-		Evaluations: []*ControlEvaluation{ce},
-		Metadata: Metadata{
-			Author: Author{
+		{
+			name:        "with catalog enrichment",
+			artifactURI: "README.md",
+			catalog:     testCatalog,
+			evaluationLog: makeEvaluationLog(Author{
 				Name:    "test-tool",
 				Uri:     "https://github.com/test/tool",
 				Version: "1.0.0",
+			}, []*AssessmentLog{
+				{
+					Requirement:    Mapping{EntryId: "REQ-1"},
+					Description:    "Test description",
+					Result:         Failed,
+					Message:        "Test failed",
+					Recommendation: "Fix this issue by doing X",
+					Steps:          []AssessmentStep{func(interface{}) (Result, string) { return Failed, "" }},
+					StepsExecuted:  1,
+				},
+			}),
+			wantRules:   1,
+			wantResults: 1,
+			wantLevels: map[string]string{
+				"REQ-1": "error",
+			},
+			wantToolName: "test-tool",
+			wantToolURI:  "https://github.com/test/tool",
+			wantToolVer:  "1.0.0",
+			checkRule: func(t *testing.T, rule *ReportingDescriptor) {
+				require.Equal(t, "REQ-1", rule.ID)
+				require.NotNil(t, rule.ShortDescription)
+				require.Equal(t, "This is the requirement text that should appear in SARIF", rule.ShortDescription.Text)
+				require.NotNil(t, rule.FullDescription)
+				require.Contains(t, rule.FullDescription.Text, "Test control objective")
+				require.Contains(t, rule.FullDescription.Text, "This is the requirement text")
+				require.NotNil(t, rule.Help)
+				require.Equal(t, "Fix this issue by doing X", rule.Help.Text, "should prefer AssessmentLog recommendation over catalog")
+				require.Empty(t, rule.HelpUri)
+			},
+		},
+		{
+			name:        "without catalog",
+			artifactURI: "README.md",
+			catalog:     nil,
+			evaluationLog: makeEvaluationLog(Author{
+				Name:    "test-tool",
+				Uri:     "https://github.com/test/tool",
+				Version: "1.0.0",
+			}, []*AssessmentLog{
+				{
+					Requirement:    Mapping{EntryId: "REQ-1"},
+					Description:    "Test description",
+					Result:         Failed,
+					Message:        "Test failed",
+					Recommendation: "Fix this issue by doing X",
+					Steps:          []AssessmentStep{func(interface{}) (Result, string) { return Failed, "" }},
+					StepsExecuted:  1,
+				},
+			}),
+			wantRules:   1,
+			wantResults: 1,
+			wantLevels: map[string]string{
+				"REQ-1": "error",
+			},
+			wantToolName: "test-tool",
+			wantToolURI:  "https://github.com/test/tool",
+			wantToolVer:  "1.0.0",
+			checkRule: func(t *testing.T, rule *ReportingDescriptor) {
+				require.Equal(t, "REQ-1", rule.ID)
+				require.Nil(t, rule.ShortDescription)
+				require.Nil(t, rule.FullDescription)
+				require.Nil(t, rule.Help)
+				require.Empty(t, rule.HelpUri)
+			},
+		},
+		{
+			name:        "catalog recommendation when assessment log has none",
+			artifactURI: "README.md",
+			catalog:     testCatalog,
+			evaluationLog: makeEvaluationLog(Author{
+				Name:    "test-tool",
+				Uri:     "https://github.com/test/tool",
+				Version: "1.0.0",
+			}, []*AssessmentLog{
+				{
+					Requirement:   Mapping{EntryId: "REQ-1"},
+					Description:   "Test description",
+					Result:        Failed,
+					Message:       "Test failed",
+					Steps:         []AssessmentStep{func(interface{}) (Result, string) { return Failed, "" }},
+					StepsExecuted: 1,
+				},
+			}),
+			wantRules:   1,
+			wantResults: 1,
+			wantLevels: map[string]string{
+				"REQ-1": "error",
+			},
+			wantToolName: "test-tool",
+			wantToolURI:  "https://github.com/test/tool",
+			wantToolVer:  "1.0.0",
+			checkRule: func(t *testing.T, rule *ReportingDescriptor) {
+				require.NotNil(t, rule.Help)
+				require.Equal(t, "This is the catalog recommendation", rule.Help.Text, "should use catalog recommendation when assessment log has none")
 			},
 		},
 	}
 
-	// Create a test catalog with matching control and requirement
-	testCatalog := &layer2.Catalog{
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sarifBytes, err := tt.evaluationLog.ToSARIF(tt.artifactURI, tt.catalog)
+			require.NoError(t, err)
+
+			sarif := toSARIFReport(t, sarifBytes)
+			require.Len(t, sarif.Runs, 1)
+
+			run := sarif.Runs[0]
+
+			require.Len(t, run.Tool.Driver.Rules, tt.wantRules)
+			require.Len(t, run.Results, tt.wantResults)
+
+			require.Equal(t, tt.wantToolName, run.Tool.Driver.Name)
+			require.Equal(t, tt.wantToolURI, run.Tool.Driver.InformationURI)
+			require.Equal(t, tt.wantToolVer, run.Tool.Driver.Version)
+
+			levels := make(map[string]string)
+			for _, r := range run.Results {
+				levels[r.RuleID] = r.Level
+				if tt.checkLocation != nil {
+					require.NotEmpty(t, r.Locations)
+					tt.checkLocation(t, &r.Locations[0])
+				}
+			}
+
+			for ruleID, wantLevel := range tt.wantLevels {
+				require.Equal(t, wantLevel, levels[ruleID], "rule %s should have level %s", ruleID, wantLevel)
+			}
+
+			if tt.checkRule != nil && len(run.Tool.Driver.Rules) > 0 {
+				tt.checkRule(t, &run.Tool.Driver.Rules[0])
+			}
+
+			_, err = json.Marshal(sarif)
+			require.NoError(t, err)
+		})
+	}
+}
+
+func TestToSARIF_ResultLevels(t *testing.T) {
+	tests := []struct {
+		result    Result
+		wantLevel string
+		wantCount int
+	}{
+		{Failed, "error", 1},
+		{NeedsReview, "warning", 1},
+		{Unknown, "warning", 1},
+		{Passed, "note", 1},
+		{NotApplicable, "", 0},
+		{NotRun, "", 0},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.result.String(), func(t *testing.T) {
+			evaluationLog := makeEvaluationLog(Author{
+				Name:    "test",
+				Uri:     "https://test",
+				Version: "1.0.0",
+			}, []*AssessmentLog{
+				makeAssessmentLog("REQ-1", "test", tt.result, "", nil),
+			})
+
+			sarifBytes, err := evaluationLog.ToSARIF("", nil)
+			require.NoError(t, err)
+
+			sarif := toSARIFReport(t, sarifBytes)
+			require.Len(t, sarif.Runs[0].Results, tt.wantCount)
+
+			if tt.wantCount > 0 {
+				require.Equal(t, tt.wantLevel, sarif.Runs[0].Results[0].Level)
+			}
+		})
+	}
+}
+
+// Helper functions
+
+func makeEvaluationLog(author Author, logs []*AssessmentLog) EvaluationLog {
+	return EvaluationLog{
+		Evaluations: []*ControlEvaluation{
+			{
+				Name:           "Example Control",
+				Control:        Mapping{EntryId: "CTRL-1"},
+				Result:         Passed,
+				AssessmentLogs: logs,
+			},
+		},
+		Metadata: Metadata{Author: author},
+	}
+}
+
+func makeAssessmentLog(entryID, description string, result Result, message string, steps []AssessmentStep) *AssessmentLog {
+	if steps == nil {
+		steps = []AssessmentStep{func(interface{}) (Result, string) { return result, "" }}
+	}
+	return &AssessmentLog{
+		Requirement:   Mapping{EntryId: entryID},
+		Description:   description,
+		Result:        result,
+		Message:       message,
+		Steps:         steps,
+		StepsExecuted: int64(len(steps)),
+	}
+}
+
+func makeCatalog(controlID, controlTitle, controlObjective, reqID, reqText, reqRecommendation string) *layer2.Catalog {
+	return &layer2.Catalog{
 		ControlFamilies: []layer2.ControlFamily{
 			{
 				Id:    "test-family",
 				Title: "Test Family",
 				Controls: []layer2.Control{
 					{
-						Id:        "CTRL-1",
-						Title:     "Test Control Title",
-						Objective: "Test control objective",
+						Id:        controlID,
+						Title:     controlTitle,
+						Objective: controlObjective,
 						AssessmentRequirements: []layer2.AssessmentRequirement{
 							{
-								Id:             "REQ-1",
-								Text:           "This is the requirement text that should appear in SARIF",
-								Recommendation: "This is the catalog recommendation",
+								Id:             reqID,
+								Text:           reqText,
+								Recommendation: reqRecommendation,
 							},
 						},
 					},
@@ -281,49 +341,13 @@ func Test_ToSARIF_WithCatalogEnrichment(t *testing.T) {
 			},
 		},
 	}
+}
 
-	// Test with catalog
-	sarifBytes, err := evaluationLog.ToSARIF("README.md", testCatalog)
+func toSARIFReport(t *testing.T, data []byte) *SarifReport {
+	t.Helper()
+	var sarif SarifReport
+	err := json.Unmarshal(data, &sarif)
 	require.NoError(t, err)
-	sarif := &SarifReport{}
-	err = json.Unmarshal(sarifBytes, sarif)
-	require.NoError(t, err)
-	require.NotNil(t, sarif)
-	require.Len(t, sarif.Runs, 1)
-	run := sarif.Runs[0]
-
-	// Verify rules are enriched with catalog data
-	require.NotNil(t, run.Tool.Driver.Rules)
-	require.Len(t, run.Tool.Driver.Rules, 1)
-	rule := run.Tool.Driver.Rules[0]
-
-	require.Equal(t, "CTRL-1/REQ-1", rule.ID)
-	require.NotNil(t, rule.ShortDescription, "ShortDescription should be populated from requirement text")
-	require.Equal(t, "This is the requirement text that should appear in SARIF", rule.ShortDescription.Text)
-
-	require.NotNil(t, rule.FullDescription, "FullDescription should be populated")
-	require.Contains(t, rule.FullDescription.Text, "Test control objective", "FullDescription should contain control objective")
-	require.Contains(t, rule.FullDescription.Text, "This is the requirement text", "FullDescription should contain requirement text")
-
-	require.NotNil(t, rule.Help, "Help should be populated from AssessmentLog recommendation")
-	require.Equal(t, "Fix this issue by doing X", rule.Help.Text, "Help should prefer AssessmentLog recommendation over catalog")
-
-	// HelpUri is not populated in gemara - catalog-specific URI generation should be handled by the caller
-	require.Empty(t, rule.HelpUri, "HelpUri should be empty as it's catalog-specific")
-
-	// Test without catalog - should still work but without enrichment
-	sarifBytes2, err := evaluationLog.ToSARIF("README.md", nil)
-	require.NoError(t, err)
-	sarif2 := &SarifReport{}
-	err = json.Unmarshal(sarifBytes2, sarif2)
-	require.NoError(t, err)
-	require.Len(t, sarif2.Runs, 1)
-	run2 := sarif2.Runs[0]
-	require.Len(t, run2.Tool.Driver.Rules, 1)
-	rule2 := run2.Tool.Driver.Rules[0]
-
-	require.Nil(t, rule2.ShortDescription, "ShortDescription should be nil without catalog")
-	require.Nil(t, rule2.FullDescription, "FullDescription should be nil without catalog")
-	require.Nil(t, rule2.Help, "Help should be nil without catalog")
-	require.Empty(t, rule2.HelpUri, "HelpUri should be empty without catalog")
+	require.NotNil(t, &sarif)
+	return &sarif
 }

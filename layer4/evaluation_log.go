@@ -7,6 +7,8 @@ import (
 	"github.com/ossf/gemara/layer2"
 )
 
+var emptyArtifactURIMessage = "no file associated with this alert"
+
 // ToSARIF converts the evaluation results into a SARIF document (v2.1.0).
 // Each AssessmentLog is emitted as a SARIF result. The rule id is derived from
 // the control id and requirement id.
@@ -105,7 +107,7 @@ func (e EvaluationLog) ToSARIF(artifactURI string, catalog *layer2.Catalog) ([]b
 
 			var physicalLocation *PhysicalLocation
 			if artifactURI == "" {
-				artifactURI = "no file associated with this alert"
+				artifactURI = emptyArtifactURIMessage
 			}
 			physicalLocation = &PhysicalLocation{
 				ArtifactLocation: ArtifactLocation{
