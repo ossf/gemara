@@ -48,7 +48,7 @@ func (e EvaluationLog) ToSARIF(artifactURI string, catalog *layer2.Catalog) ([]b
 				continue
 			}
 
-			ruleID := fmt.Sprintf("%s/%s", evaluation.Control.EntryId, log.Requirement.EntryId)
+			ruleID := log.Requirement.EntryId
 			if !ruleIdSeen[ruleID] {
 				rule := ReportingDescriptor{ID: ruleID}
 				if log.Description != "" {
