@@ -19,24 +19,24 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 				Plans: []AssessmentPlan{
 					{
 						Control: Mapping{
-							ReferenceId: "NIST-800-53",
-							EntryId:     "AC-1",
+							ReferenceId: "OSPS-B",
+							EntryId:     "OSPS-AC-01",
 						},
 						Assessments: []Assessment{
 							{
 								Requirement: Mapping{
-									ReferenceId: "NIST-800-53",
-									EntryId:     "AC-1.1",
+									ReferenceId: "OSPS-B",
+									EntryId:     "OSPS-AC-01.01",
 								},
 								Procedures: []AssessmentProcedure{
 									{
-										Id:            "proc-1",
-										Name:          "Verify access control policy",
-										Description:   "Check that an access control policy exists and is documented",
-										Documentation: "https://example.com/docs/ac-1",
+										Id:            "test_multi_factor_authentication",
+										Name:          "Verify MFA configured for repository",
+										Description:   "Check that MFA is configured for the repository",
+										Documentation: "https://github.com/ossf/security-baseline/blob/main/baseline/OSPS-AC.yaml",
 									},
 									{
-										Id:          "proc-2",
+										Id:          "test_review_policy_content",
 										Name:        "Review policy content",
 										Description: "Verify the policy contains required elements",
 									},
@@ -44,8 +44,8 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 							},
 							{
 								Requirement: Mapping{
-									ReferenceId: "NIST-800-53",
-									EntryId:     "AC-1.2",
+									ReferenceId: "OSPS-B",
+									EntryId:     "OSPS-AC-01.02",
 								},
 								Procedures: []AssessmentProcedure{
 									{
@@ -59,19 +59,20 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 					},
 					{
 						Control: Mapping{
-							ReferenceId: "CIS",
-							EntryId:     "CTRL-2",
+							ReferenceId: "OSPS-B",
+							EntryId:     "OSPS-AC-03",
 						},
 						Assessments: []Assessment{
 							{
 								Requirement: Mapping{
-									ReferenceId: "CIS",
-									EntryId:     "CTRL-2.1",
+									ReferenceId: "OSPS-B",
+									EntryId:     "OSPS-AC-03.01",
 								},
 								Procedures: []AssessmentProcedure{
 									{
-										Name:        "Verify configuration setting",
-										Description: "Check that the configuration is properly set",
+										Id:          "github_branch_protection",
+										Name:        "Primary Branch Protection Requirements",
+										Description: "Check that the branch protection rules are configured for the primary branch",
 									},
 								},
 							},
@@ -88,16 +89,10 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 					},
 					MappingReferences: []MappingReference{
 						{
-							Id:      "NIST-800-53",
-							Title:   "NIST Special Publication 800-53",
-							Version: "Rev. 5",
-							Url:     "https://csrc.nist.gov/publications/detail/sp/800-53/rev-5/final",
-						},
-						{
-							Id:      "CIS",
-							Title:   "CIS Controls",
-							Version: "v8",
-							Url:     "https://www.cisecurity.org/controls",
+							Id:      "OSPS-B",
+							Title:   "Open Source Project Security Baseline",
+							Version: "1.0",
+							Url:     "https://github.com/ossf/security-baseline/tree/main/baseline",
 						},
 					},
 				},
@@ -106,16 +101,16 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 				"# Evaluation Plan: plan-2024-01",
 				"**Author:** gemara",
 				"(v1.0.0)",
-				"## AC-1",
-				"**Control:** NIST-800-53 / AC-1",
-				"- [ ] **AC-1.1**: Verify access control policy - Check that an access control policy exists and is documented",
-				"    > [Documentation](https://example.com/docs/ac-1)",
+				"## OSPS-AC-01",
+				"**Control:** OSPS-B / OSPS-AC-01",
+				"- [ ] **OSPS-AC-01.01**: Verify MFA configured for repository - Check that MFA is configured for the repository",
+				"    > [Documentation](https://github.com/ossf/security-baseline/blob/main/baseline/OSPS-AC.yaml)",
 				"  - [ ] Review policy content - Verify the policy contains required elements",
-				"- [ ] **AC-1.2**: Check policy approval - Verify the policy has been approved by management",
+				"- [ ] **OSPS-AC-01.02**: Check policy approval - Verify the policy has been approved by management",
 				"---",
-				"## CTRL-2",
-				"**Control:** CIS / CTRL-2",
-				"- [ ] **CTRL-2.1**: Verify configuration setting - Check that the configuration is properly set",
+				"## OSPS-AC-03",
+				"**Control:** OSPS-B / OSPS-AC-03",
+				"- [ ] **OSPS-AC-03.01**: Primary Branch Protection Requirements - Check that the branch protection rules are configured for the primary branch",
 			},
 		},
 		{
@@ -124,13 +119,13 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 				Plans: []AssessmentPlan{
 					{
 						Control: Mapping{
-							ReferenceId: "TEST-REF",
-							EntryId:     "EDGE-CASE-CTRL",
+							ReferenceId: "OSPS-B",
+							EntryId:     "OSPS-AC-02",
 						},
 						Assessments: []Assessment{
 							{
 								Requirement: Mapping{
-									ReferenceId: "TEST-REF",
+									ReferenceId: "OSPS-B",
 									EntryId:     "",
 								}, // Empty ID should be numbered
 								Procedures: []AssessmentProcedure{
@@ -142,8 +137,8 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 							},
 							{
 								Requirement: Mapping{
-									ReferenceId: "TEST-REF",
-									EntryId:     "VALID-ID",
+									ReferenceId: "OSPS-B",
+									EntryId:     "OSPS-AC-02.02",
 								},
 								Procedures: []AssessmentProcedure{
 									{
@@ -158,8 +153,8 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 					Author: Author{Name: "test"},
 					MappingReferences: []MappingReference{
 						{
-							Id:      "TEST-REF",
-							Title:   "Test Reference",
+							Id:      "OSPS-B",
+							Title:   "OSPS Baseline",
 							Version: "1.0",
 						},
 					},
@@ -167,10 +162,10 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 			},
 			contains: []string{
 				"**Author:** test",
-				"## EDGE-CASE-CTRL",
-				"**Control:** TEST-REF / EDGE-CASE-CTRL",
+				"## OSPS-AC-02",
+				"**Control:** OSPS-B / OSPS-AC-02",
 				"- [ ] **Assessment 1**: proc-1",
-				"- [ ] **VALID-ID**: Test procedure",
+				"- [ ] **OSPS-AC-02.02**: Test procedure",
 			},
 		},
 		{
@@ -196,7 +191,8 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			markdown := tt.evaluationPlan.ToMarkdownChecklist()
+			markdown, err := tt.evaluationPlan.ToMarkdownChecklist()
+			require.NoError(t, err)
 			require.NotEmpty(t, markdown)
 
 			for _, expected := range tt.contains {
@@ -217,20 +213,20 @@ func Test_ToChecklist(t *testing.T) {
 		Plans: []AssessmentPlan{
 			{
 				Control: Mapping{
-					ReferenceId: "NIST-800-53",
-					EntryId:     "AC-1",
+					ReferenceId: "OSPS-B",
+					EntryId:     "OSPS-AC-01",
 				},
 				Assessments: []Assessment{
 					{
 						Requirement: Mapping{
-							ReferenceId: "NIST-800-53",
-							EntryId:     "AC-1.1",
+							ReferenceId: "OSPS-B",
+							EntryId:     "OSPS-AC-01.01",
 						},
 						Procedures: []AssessmentProcedure{
 							{
-								Name:          "Test procedure",
-								Description:   "Test description",
-								Documentation: "https://example.com",
+								Name:          "Verify MFA configured for repository",
+								Description:   "Check that MFA is configured for the repository",
+								Documentation: "https://github.com/ossf/security-baseline/blob/main/baseline/OSPS-AC.yaml",
 							},
 						},
 					},
@@ -246,7 +242,8 @@ func Test_ToChecklist(t *testing.T) {
 		},
 	}
 
-	checklist := plan.ToChecklist()
+	checklist, err := plan.ToChecklist()
+	require.NoError(t, err)
 
 	require.Equal(t, "test-plan", checklist.PlanId)
 	require.Equal(t, "test-author", checklist.Author)
@@ -254,14 +251,60 @@ func Test_ToChecklist(t *testing.T) {
 	require.Len(t, checklist.Sections, 1)
 
 	section := checklist.Sections[0]
-	require.Equal(t, "AC-1", section.ControlName)
-	require.Equal(t, "NIST-800-53 / AC-1", section.ControlReference)
+	require.Equal(t, "OSPS-AC-01", section.ControlName)
+	require.Equal(t, "OSPS-B / OSPS-AC-01", section.ControlReference)
 	require.Len(t, section.Items, 1)
 
 	item := section.Items[0]
-	require.Equal(t, "AC-1.1", item.RequirementId)
-	require.Equal(t, "Test procedure", item.ProcedureName)
-	require.Equal(t, "Test description", item.Description)
-	require.Equal(t, "https://example.com", item.Documentation)
+	require.Equal(t, "OSPS-AC-01.01", item.RequirementId)
+	require.Equal(t, "Verify MFA configured for repository", item.ProcedureName)
+	require.Equal(t, "Check that MFA is configured for the repository", item.Description)
+	require.Equal(t, "https://github.com/ossf/security-baseline/blob/main/baseline/OSPS-AC.yaml", item.Documentation)
 	require.False(t, item.IsAdditionalProcedure)
+}
+
+func Test_ToChecklist_ErrorCases(t *testing.T) {
+	t.Run("no assessments", func(t *testing.T) {
+		plan := EvaluationPlan{
+			Plans: []AssessmentPlan{
+				{
+					Control: Mapping{
+						ReferenceId: "OSPS-B",
+						EntryId:     "OSPS-AC-01",
+					},
+					Assessments: []Assessment{},
+				},
+			},
+		}
+
+		_, err := plan.ToChecklist()
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "has no assessments")
+	})
+
+	t.Run("no procedures", func(t *testing.T) {
+		plan := EvaluationPlan{
+			Plans: []AssessmentPlan{
+				{
+					Control: Mapping{
+						ReferenceId: "OSPS-B",
+						EntryId:     "OSPS-AC-01",
+					},
+					Assessments: []Assessment{
+						{
+							Requirement: Mapping{
+								ReferenceId: "OSPS-B",
+								EntryId:     "OSPS-AC-01.01",
+							},
+							Procedures: []AssessmentProcedure{},
+						},
+					},
+				},
+			},
+		}
+
+		_, err := plan.ToChecklist()
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "has no procedures")
+	})
 }

@@ -1,9 +1,8 @@
 package layer4
 
-// MarkdownTemplate is the default template for generating markdown checklist output.
-// This template can be customized or replaced to change the output format without
-// modifying the data extraction logic.
-const MarkdownTemplate = `{{if .PlanId}}# Evaluation Plan: {{.PlanId}}
+// markdownTemplate is the default template for generating markdown checklist output.
+// This template is used internally by ToMarkdownChecklist().
+const markdownTemplate = `{{if .PlanId}}# Evaluation Plan: {{.PlanId}}
 
 {{end}}{{if .Author}}**Author:** {{.Author}}{{if .AuthorVersion}} (v{{.AuthorVersion}}){{end}}
 
@@ -15,6 +14,6 @@ const MarkdownTemplate = `{{if .PlanId}}# Evaluation Plan: {{.PlanId}}
 {{if $section.ControlReference}}**Control:** {{$section.ControlReference}}
 
 {{end}}{{if eq (len $section.Items) 0}}- [ ] No assessments defined
-{{else}}{{range $section.Items}}{{if .IsAdditionalProcedure}}  {{end}}- [ ] {{if .RequirementId}}**{{.RequirementId}}**: {{end}}{{.ProcedureName}}{{if and .Description (ne .Description .ProcedureName)}} - {{.Description}}{{end}}
+{{else}}{{range $section.Items}}{{if .IsAdditionalProcedure}}  {{end}}- [ ] {{if and .RequirementId (eq false .IsAdditionalProcedure)}}**{{.RequirementId}}**: {{end}}{{.ProcedureName}}{{if and .Description (ne .Description .ProcedureName)}} - {{.Description}}{{end}}
 {{if .Documentation}}    > [Documentation]({{.Documentation}})
 {{end}}{{end}}{{end}}{{end}}`
