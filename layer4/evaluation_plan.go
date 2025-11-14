@@ -8,26 +8,38 @@ import (
 
 // ChecklistItem represents a single checklist item.
 type ChecklistItem struct {
-	RequirementId         string // Requirement ID (e.g., "AC-1.1")
-	ProcedureName         string // Procedure name
-	Description           string // Description (if different from name)
-	Documentation         string // Documentation URL
-	IsAdditionalProcedure bool   // Additional procedure
+	// RequirementId is the requirement ID (e.g., "AC-1.1")
+	RequirementId string
+	// ProcedureName is the procedure name
+	ProcedureName string
+	// Description is the description (if different from name)
+	Description string
+	// Documentation is the documentation URL
+	Documentation string
+	// IsAdditionalProcedure indicates if this is an additional procedure
+	IsAdditionalProcedure bool
 }
 
 // ControlSection organizes checklist items by control.
 type ControlSection struct {
-	ControlName      string          // Control identifier (e.g., "AC-1")
-	ControlReference string          // Formatted reference (e.g., "NIST-800-53 / AC-1")
-	Items            []ChecklistItem // Checklist items for this control
+	// ControlName is the control identifier (e.g., "AC-1")
+	ControlName string
+	// ControlReference is the formatted reference (e.g., "OSPS-B / AC-01")
+	ControlReference string
+	// Items are the checklist items for this control
+	Items []ChecklistItem
 }
 
 // Checklist represents the structured checklist data.
 type Checklist struct {
-	PlanId        string           // Evaluation plan ID
-	Author        string           // Author name
-	AuthorVersion string           // Author version
-	Sections      []ControlSection // Control sections
+	// PlanId is the evaluation plan ID
+	PlanId string
+	// Author is the author name
+	Author string
+	// AuthorVersion is the author version
+	AuthorVersion string
+	// Sections are the control sections
+	Sections []ControlSection
 }
 
 // ToChecklist converts an EvaluationPlan into a structured Checklist.
@@ -77,26 +89,18 @@ func (e EvaluationPlan) ToChecklist() Checklist {
 // Generates a pre-execution checklist showing what needs to be checked.
 func (e EvaluationPlan) ToMarkdownChecklist() string {
 	checklist := e.ToChecklist()
-	markdown, err := checklist.ToMarkdownWithTemplate(MarkdownTemplate)
+
+	tmpl, err := template.New("checklist").Parse(MarkdownTemplate)
 	if err != nil {
 		return ""
 	}
-	return markdown
-}
-
-// ToMarkdownWithTemplate formats the checklist using a custom template.
-func (c Checklist) ToMarkdownWithTemplate(templateStr string) (string, error) {
-	tmpl, err := template.New("checklist").Parse(templateStr)
-	if err != nil {
-		return "", fmt.Errorf("failed to parse template: %w", err)
-	}
 
 	var buf bytes.Buffer
-	if err := tmpl.Execute(&buf, c); err != nil {
-		return "", fmt.Errorf("failed to execute template: %w", err)
+	if err := tmpl.Execute(&buf, checklist); err != nil {
+		return ""
 	}
 
-	return buf.String(), nil
+	return buf.String()
 }
 
 // buildChecklistItems converts an AssessmentPlan into checklist items.
