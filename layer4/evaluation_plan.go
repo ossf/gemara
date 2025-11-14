@@ -1,130 +1,160 @@
 package layer4
 
 import (
+	"bytes"
 	"fmt"
-	"strings"
+	"text/template"
 )
 
-// ToMarkdownChecklist converts an evaluation plan into a markdown checklist for human-led
-// assessments. Used BEFORE execution - shows what needs to be checked, not the results.
-// Note: reference-id values must map to metadata.mapping-references[id], and requirement
-// reference-ids must match their parent control's reference-id (enforced by schema).
-func (e EvaluationPlan) ToMarkdownChecklist() string {
-	var b strings.Builder
+// ChecklistItem represents a single checklist item.
+type ChecklistItem struct {
+	RequirementId         string // Requirement ID (e.g., "AC-1.1")
+	ProcedureName         string // Procedure name
+	Description           string // Description (if different from name)
+	Documentation         string // Documentation URL
+	IsAdditionalProcedure bool   // Additional procedure
+}
+
+// ControlSection organizes checklist items by control.
+type ControlSection struct {
+	ControlName      string          // Control identifier (e.g., "AC-1")
+	ControlReference string          // Formatted reference (e.g., "NIST-800-53 / AC-1")
+	Items            []ChecklistItem // Checklist items for this control
+}
+
+// Checklist represents the structured checklist data.
+type Checklist struct {
+	PlanId        string           // Evaluation plan ID
+	Author        string           // Author name
+	AuthorVersion string           // Author version
+	Sections      []ControlSection // Control sections
+}
+
+// ToChecklist converts an EvaluationPlan into a structured Checklist.
+func (e EvaluationPlan) ToChecklist() Checklist {
+	checklist := Checklist{}
 
 	if e.Metadata.Id != "" {
-		fmt.Fprintf(&b, "# Evaluation Plan: %s\n\n", e.Metadata.Id)
+		checklist.PlanId = e.Metadata.Id
 	}
 	if e.Metadata.Author.Name != "" {
-		fmt.Fprintf(&b, "**Author:** %s", e.Metadata.Author.Name)
-		if e.Metadata.Author.Version != "" {
-			fmt.Fprintf(&b, " (v%s)", e.Metadata.Author.Version)
-		}
-		b.WriteString("\n\n")
+		checklist.Author = e.Metadata.Author.Name
+		checklist.AuthorVersion = e.Metadata.Author.Version
 	}
 
-	isFirstPlan := true
 	for _, plan := range e.Plans {
 		if plan.Control.EntryId == "" {
 			continue
 		}
 
-		// Add separator between controls (except before the first one)
-		if !isFirstPlan {
-			b.WriteString("\n---\n\n")
+		// Get control name with fallback: EntryId -> ReferenceId -> default
+		controlName := "Unnamed Control"
+		if plan.Control.EntryId != "" {
+			controlName = plan.Control.EntryId
+		} else if plan.Control.ReferenceId != "" {
+			controlName = plan.Control.ReferenceId
 		}
-		isFirstPlan = false
 
-		controlChecklist := formatAssessmentPlanAsMarkdown(&plan)
-		b.WriteString(controlChecklist)
+		// Format control reference as "Framework / Control-ID" (e.g. OSPS-B / AC-01)
+		controlReference := ""
+		if plan.Control.ReferenceId != "" || plan.Control.EntryId != "" {
+			controlReference = fmt.Sprintf("%s / %s", plan.Control.ReferenceId, plan.Control.EntryId)
+		}
+
+		section := ControlSection{
+			ControlName:      controlName,
+			ControlReference: controlReference,
+			Items:            buildChecklistItems(&plan),
+		}
+
+		checklist.Sections = append(checklist.Sections, section)
 	}
 
-	return b.String()
+	return checklist
 }
 
-// formatAssessmentPlanAsMarkdown creates a markdown representation of a single assessment plan.
-// This is used internally by EvaluationPlan.ToMarkdownChecklist().
-func formatAssessmentPlanAsMarkdown(plan *AssessmentPlan) string {
-	if plan == nil {
+// ToMarkdownChecklist converts an evaluation plan into a markdown checklist.
+// Generates a pre-execution checklist showing what needs to be checked.
+func (e EvaluationPlan) ToMarkdownChecklist() string {
+	checklist := e.ToChecklist()
+	markdown, err := checklist.ToMarkdownWithTemplate(MarkdownTemplate)
+	if err != nil {
 		return ""
 	}
+	return markdown
+}
 
-	var b strings.Builder
+// ToMarkdownWithTemplate formats the checklist using a custom template.
+func (c Checklist) ToMarkdownWithTemplate(templateStr string) (string, error) {
+	tmpl, err := template.New("checklist").Parse(templateStr)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse template: %w", err)
+	}
 
-	controlName := getControlName(plan)
-	fmt.Fprintf(&b, "## %s\n\n", controlName)
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, c); err != nil {
+		return "", fmt.Errorf("failed to execute template: %w", err)
+	}
 
-	// Control ID and mapping info
-	if plan.Control.ReferenceId != "" || plan.Control.EntryId != "" {
-		fmt.Fprintf(&b, "**Control:** %s / %s\n\n", plan.Control.ReferenceId, plan.Control.EntryId)
+	return buf.String(), nil
+}
+
+// buildChecklistItems converts an AssessmentPlan into checklist items.
+func buildChecklistItems(plan *AssessmentPlan) []ChecklistItem {
+	if plan == nil {
+		return nil
 	}
 
 	if len(plan.Assessments) == 0 {
-		b.WriteString("- [ ] No assessments defined\n")
-	} else {
-		assessmentNum := 1
-		for _, assessment := range plan.Assessments {
-			requirementId := assessment.Requirement.EntryId
-			if requirementId == "" {
-				requirementId = fmt.Sprintf("Assessment %d", assessmentNum)
-			}
-			assessmentNum++
+		return []ChecklistItem{
+			{
+				RequirementId: "",
+				ProcedureName: "No assessments defined",
+			},
+		}
+	}
 
-			if len(assessment.Procedures) == 0 {
-				fmt.Fprintf(&b, "- [ ] **%s**: No procedures defined\n", requirementId)
-			} else {
-				for i, procedure := range assessment.Procedures {
-					procedureName := getProcedureName(&procedure)
-					if i == 0 {
-						// First procedure uses the requirement ID
-						fmt.Fprintf(&b, "- [ ] **%s**: %s", requirementId, procedureName)
-						if procedure.Description != "" && procedure.Description != procedureName {
-							fmt.Fprintf(&b, " - %s", procedure.Description)
-						}
-						b.WriteString("\n")
-					} else {
-						// Additional procedures for the same requirement
-						fmt.Fprintf(&b, "  - [ ] %s", procedureName)
-						if procedure.Description != "" && procedure.Description != procedureName {
-							fmt.Fprintf(&b, " - %s", procedure.Description)
-						}
-						b.WriteString("\n")
-					}
+	var items []ChecklistItem
+	assessmentNum := 1
 
-					if procedure.Documentation != "" {
-						fmt.Fprintf(&b, "    > [Documentation](%s)\n", procedure.Documentation)
-					}
+	for _, assessment := range plan.Assessments {
+		requirementId := assessment.Requirement.EntryId
+		if requirementId == "" {
+			requirementId = fmt.Sprintf("Assessment %d", assessmentNum)
+		}
+		assessmentNum++
+
+		if len(assessment.Procedures) == 0 {
+			items = append(items, ChecklistItem{
+				RequirementId: requirementId,
+				ProcedureName: "No procedures defined",
+			})
+		} else {
+			for i, procedure := range assessment.Procedures {
+				// Get procedure name with fallback: Name -> Description -> Id
+				procedureName := procedure.Id
+				if procedure.Name != "" {
+					procedureName = procedure.Name
+				} else if procedure.Description != "" {
+					procedureName = procedure.Description
 				}
+
+				item := ChecklistItem{
+					RequirementId:         requirementId,
+					ProcedureName:         procedureName,
+					Description:           procedure.Description,
+					Documentation:         procedure.Documentation,
+					IsAdditionalProcedure: i > 0,
+				}
+
+				if i > 0 {
+					item.RequirementId = ""
+				}
+
+				items = append(items, item)
 			}
 		}
 	}
 
-	return b.String()
-}
-
-// getControlName returns a human-readable name for the control from the assessment plan.
-func getControlName(plan *AssessmentPlan) string {
-	if plan == nil {
-		return "Unknown Control"
-	}
-	// Use EntryId as the control name if no other name is available
-	if plan.Control.EntryId != "" {
-		return plan.Control.EntryId
-	}
-	if plan.Control.ReferenceId != "" {
-		return plan.Control.ReferenceId
-	}
-	return "Unnamed Control"
-}
-
-// getProcedureName returns a human-readable name for a procedure, with fallback logic.
-// Priority: Name -> Description -> Id
-func getProcedureName(procedure *AssessmentProcedure) string {
-	if procedure.Name != "" {
-		return procedure.Name
-	}
-	if procedure.Description != "" {
-		return procedure.Description
-	}
-	return procedure.Id
+	return items
 }

@@ -211,3 +211,132 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 		})
 	}
 }
+
+func Test_ToMarkdownWithTemplate(t *testing.T) {
+	plan := EvaluationPlan{
+		Plans: []AssessmentPlan{
+			{
+				Control: Mapping{
+					ReferenceId: "NIST-800-53",
+					EntryId:     "AC-1",
+				},
+				Assessments: []Assessment{
+					{
+						Requirement: Mapping{
+							ReferenceId: "NIST-800-53",
+							EntryId:     "AC-1.1",
+						},
+						Procedures: []AssessmentProcedure{
+							{
+								Name:        "Test procedure",
+								Description: "Test description",
+							},
+						},
+					},
+				},
+			},
+		},
+		Metadata: Metadata{
+			Id:     "test-plan",
+			Author: Author{Name: "test"},
+		},
+	}
+
+	checklist := plan.ToChecklist()
+
+	t.Run("valid template", func(t *testing.T) {
+		customTemplate := `Plan: {{.PlanId}}
+Author: {{.Author}}
+{{range .Sections}}
+Control: {{.ControlName}}
+{{range .Items}}
+  - {{.ProcedureName}}
+{{end}}{{end}}`
+
+		markdown, err := checklist.ToMarkdownWithTemplate(customTemplate)
+		require.NoError(t, err)
+		require.Contains(t, markdown, "Plan: test-plan")
+		require.Contains(t, markdown, "Author: test")
+		require.Contains(t, markdown, "Control: AC-1")
+		require.Contains(t, markdown, "- Test procedure")
+	})
+
+	t.Run("invalid template syntax", func(t *testing.T) {
+		invalidTemplate := `{{.PlanId{{` // Missing closing brace
+
+		markdown, err := checklist.ToMarkdownWithTemplate(invalidTemplate)
+		require.Error(t, err)
+		require.Empty(t, markdown)
+		require.Contains(t, err.Error(), "failed to parse template")
+	})
+
+	t.Run("template with missing field", func(t *testing.T) {
+		templateWithMissingField := `{{.NonExistentField}}`
+
+		markdown, err := checklist.ToMarkdownWithTemplate(templateWithMissingField)
+		require.Error(t, err)
+		require.Empty(t, markdown)
+		require.Contains(t, err.Error(), "failed to execute template")
+	})
+
+	t.Run("default template produces output", func(t *testing.T) {
+		markdown, err := checklist.ToMarkdownWithTemplate(MarkdownTemplate)
+		require.NoError(t, err)
+		require.NotEmpty(t, markdown)
+		require.Contains(t, markdown, "test-plan")
+	})
+}
+
+func Test_ToChecklist(t *testing.T) {
+	plan := EvaluationPlan{
+		Plans: []AssessmentPlan{
+			{
+				Control: Mapping{
+					ReferenceId: "NIST-800-53",
+					EntryId:     "AC-1",
+				},
+				Assessments: []Assessment{
+					{
+						Requirement: Mapping{
+							ReferenceId: "NIST-800-53",
+							EntryId:     "AC-1.1",
+						},
+						Procedures: []AssessmentProcedure{
+							{
+								Name:          "Test procedure",
+								Description:   "Test description",
+								Documentation: "https://example.com",
+							},
+						},
+					},
+				},
+			},
+		},
+		Metadata: Metadata{
+			Id: "test-plan",
+			Author: Author{
+				Name:    "test-author",
+				Version: "1.0.0",
+			},
+		},
+	}
+
+	checklist := plan.ToChecklist()
+
+	require.Equal(t, "test-plan", checklist.PlanId)
+	require.Equal(t, "test-author", checklist.Author)
+	require.Equal(t, "1.0.0", checklist.AuthorVersion)
+	require.Len(t, checklist.Sections, 1)
+
+	section := checklist.Sections[0]
+	require.Equal(t, "AC-1", section.ControlName)
+	require.Equal(t, "NIST-800-53 / AC-1", section.ControlReference)
+	require.Len(t, section.Items, 1)
+
+	item := section.Items[0]
+	require.Equal(t, "AC-1.1", item.RequirementId)
+	require.Equal(t, "Test procedure", item.ProcedureName)
+	require.Equal(t, "Test description", item.Description)
+	require.Equal(t, "https://example.com", item.Documentation)
+	require.False(t, item.IsAdditionalProcedure)
+}
