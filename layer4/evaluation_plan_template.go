@@ -1,7 +1,6 @@
 package layer4
 
 // MarkdownTemplate is the default template for generating markdown checklist output.
-// This template can be customized or replaced to change the output format without
 // modifying the data extraction logic.
 const MarkdownTemplate = `{{if .PlanId}}# Evaluation Plan: {{.PlanId}}
 

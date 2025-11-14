@@ -8,11 +8,11 @@ import (
 
 // ChecklistItem represents a single checklist item.
 type ChecklistItem struct {
-	// RequirementId is the requirement ID (e.g., "AC-1.1")
+	// RequirementId is the requirement ID (e.g., "OSPS-AC-01.01")
 	RequirementId string
-	// ProcedureName is the procedure name
+	 // ProcedureName is the human-readable name of the procedure to execute.
 	ProcedureName string
-	// Description is the description (if different from name)
+	// Description provides additional context or a summary about the procedure.  
 	Description string
 	// Documentation is the documentation URL
 	Documentation string
@@ -22,9 +22,9 @@ type ChecklistItem struct {
 
 // ControlSection organizes checklist items by control.
 type ControlSection struct {
-	// ControlName is the control identifier (e.g., "AC-1")
+	// ControlName is the control identifier (e.g., "OSPS-AC-01")
 	ControlName string
-	// ControlReference is the formatted reference (e.g., "OSPS-B / AC-01")
+	// ControlReference is the formatted reference (e.g., "OSPS-B / OSPS-AC-01")
 	ControlReference string
 	// Items are the checklist items for this control
 	Items []ChecklistItem
@@ -32,11 +32,11 @@ type ControlSection struct {
 
 // Checklist represents the structured checklist data.
 type Checklist struct {
-	// PlanId is the evaluation plan ID
+	 // PlanId identifies the evaluation plan.
 	PlanId string
-	// Author is the author name
+	// Author is the name of the plan author.
 	Author string
-	// AuthorVersion is the author version
+	// AuthorVersion is the version of the authoring tool or system.
 	AuthorVersion string
 	// Sections are the control sections
 	Sections []ControlSection
@@ -67,7 +67,7 @@ func (e EvaluationPlan) ToChecklist() Checklist {
 			controlName = plan.Control.ReferenceId
 		}
 
-		// Format control reference as "Framework / Control-ID" (e.g. OSPS-B / AC-01)
+		// Format control reference as "Framework / Control-ID" (e.g. OSPS-B / OSPS-AC-01)
 		controlReference := ""
 		if plan.Control.ReferenceId != "" || plan.Control.EntryId != "" {
 			controlReference = fmt.Sprintf("%s / %s", plan.Control.ReferenceId, plan.Control.EntryId)
@@ -87,7 +87,7 @@ func (e EvaluationPlan) ToChecklist() Checklist {
 
 // ToMarkdownChecklist converts an evaluation plan into a markdown checklist.
 // Generates a pre-execution checklist showing what needs to be checked.
-func (e EvaluationPlan) ToMarkdownChecklist() string {
+func (e EvaluationPlan) ToMarkdownChecklist() (string, error) {
 	checklist := e.ToChecklist()
 
 	tmpl, err := template.New("checklist").Parse(MarkdownTemplate)
