@@ -2,14 +2,16 @@
 
 package layer4
 
-// EvaluationPlan defines how a set of Layer 2 controls are to be evaluated.
-type EvaluationPlan struct {
+// EvaluationDocument defines how a set of Layer 2 controls are to be evaluated and the associated outcomes of the evaluation.
+type EvaluationDocument struct {
 	Metadata	Metadata	`json:"metadata" yaml:"metadata"`
 
-	Plans	[]AssessmentPlan	`json:"plans" yaml:"plans"`
+	Plan	*EvaluationPlan	`json:"plan,omitempty" yaml:"plan,omitempty"`
+
+	Logs	[]EvaluationLog	`json:"logs,omitempty" yaml:"logs,omitempty"`
 }
 
-// Metadata contains metadata about the Layer 4 evaluation plan and log.
+// Metadata contains metadata about the Layer 4 evaluation document.
 type Metadata struct {
 	Id	string	`json:"id" yaml:"id"`
 
@@ -20,7 +22,7 @@ type Metadata struct {
 	MappingReferences	[]MappingReference	`json:"mapping-references,omitempty" yaml:"mapping-references,omitempty"`
 }
 
-// Author contains the information about the entity that produced the evaluation plan or log.
+// Author contains the information about the entity that produced the evaluation document.
 type Author struct {
 	Name	string	`json:"name" yaml:"name"`
 
@@ -48,6 +50,7 @@ type Contact struct {
 	Social	*string	`json:"social,omitempty" yaml:"social,omitempty"`
 }
 
+// MappingReference references an external mapping document.
 type MappingReference struct {
 	Id	string	`json:"id" yaml:"id"`
 
@@ -58,6 +61,14 @@ type MappingReference struct {
 	Description	string	`json:"description,omitempty" yaml:"description,omitempty"`
 
 	Url	string	`json:"url,omitempty" yaml:"url,omitempty"`
+}
+
+// EvaluationPlan defines how a set of Layer 2 controls are to be evaluated.
+type EvaluationPlan struct {
+	Plans	[]AssessmentPlan	`json:"plans" yaml:"plans"`
+
+	// Executors defines the assessment executors that can be used to execute assessment procedures.
+	Executors	[]AssessmentExecutor	`json:"executors,omitempty" yaml:"executors,omitempty"`
 }
 
 // AssessmentPlan defines all testing procedures for a control id.
@@ -86,11 +97,86 @@ type Mapping struct {
 	Remarks	string	`json:"remarks,omitempty" yaml:"remarks,omitempty"`
 }
 
+// AssessmentExecutor describes an assessment method (tool or manual approach) that can be used to execute assessment procedures.
+type AssessmentExecutor struct {
+	// Id uniquely identifies the assessment method.
+	Id	string	`json:"id" yaml:"id"`
+
+	// Name provides the name of the assessment method.
+	Name	string	`json:"name" yaml:"name"`
+
+	// Type specifies whether the executor is automated or manual.
+	Type	ExecutorType	`json:"type" yaml:"type"`
+
+	// Version specifies the version of the assessment method (if applicable, e.g., for tools).
+	Version	string	`json:"version,omitempty" yaml:"version,omitempty"`
+
+	// Description provides additional context about the assessment method.
+	Description	string	`json:"description,omitempty" yaml:"description,omitempty"`
+
+	// Documentation provides a URL to documentation for the assessment method.
+	Documentation	string	`json:"documentation,omitempty" yaml:"documentation,omitempty"`
+}
+
 // EvaluationLog contains the results of evaluating a set of Layer 2 controls.
 type EvaluationLog struct {
-	Evaluations	[]*ControlEvaluation	`json:"evaluations" yaml:"evaluations"`
+	// Executor defines the assessment executor that produces the log
+	Executor	AssessmentExecutor	`json:"executor,omitempty" yaml:"executor,omitempty"`
 
-	Metadata	Metadata	`json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Evaluations	[]*ControlEvaluation	`json:"evaluations" yaml:"evaluations"`
+}
+
+// Assessment defines all testing procedures for a requirement.
+type Assessment struct {
+	// RequirementId points to the requirement being tested.
+	Requirement	Mapping	`json:"requirement" yaml:"requirement"`
+
+	// Procedures defines possible testing procedures to evaluate the requirement.
+	Procedures	[]AssessmentProcedure	`json:"procedures" yaml:"procedures"`
+
+	// Strategy defines the rules for aggregating results from multiple procedures when they conflict.
+	Strategy	*Strategy	`json:"strategy,omitempty" yaml:"strategy,omitempty"`
+}
+
+// AssessmentProcedure describes a testing procedure for evaluating a Layer 2 control requirement.
+type AssessmentProcedure struct {
+	// Id uniquely identifies the assessment procedure being executed
+	Id	string	`json:"id" yaml:"id"`
+
+	// Name provides a summary of the procedure
+	Name	string	`json:"name" yaml:"name"`
+
+	// Description provides a detailed explanation of the procedure
+	Description	string	`json:"description" yaml:"description"`
+
+	// Documentation provides a URL to documentation that describes how the assessment procedure evaluates the control requirement
+	Documentation	string	`json:"documentation,omitempty" yaml:"documentation,omitempty"`
+
+	// Executors lists which assessment executors can execute this procedure.
+	Executors	[]ExecutorMapping	`json:"executors" yaml:"executors"`
+
+	// Strategy defines the rules for aggregating results from multiple executors running the same procedure.
+	Strategy	*Strategy	`json:"strategy,omitempty" yaml:"strategy,omitempty"`
+}
+
+// ExecutorMapping maps an assessment executor to a procedure.
+type ExecutorMapping struct {
+	Id	string	`json:"id" yaml:"id"`
+
+	// Role determines how this executor participates in conflict resolution when using AdvisoryRequiresConfirmation strategy.
+	Role	ExecutorRole	`json:"role,omitempty" yaml:"role,omitempty"`
+
+	// Remarks provides context about why this executor-procedure combination was chosen.
+	Remarks	string	`json:"remarks,omitempty" yaml:"remarks,omitempty"`
+}
+
+// Strategy defines the rules for resolving conflicts between multiple executor results.
+type Strategy struct {
+	// ConflictRuleType specifies the aggregation logic used to resolve conflicts when multiple executors provide results for the same assessment procedure.
+	ConflictRuleType	ConflictRuleType	`json:"conflict-rule-type" yaml:"conflict-rule-type"`
+
+	// Remarks provides context for why this specific conflict resolution strategy was chosen.
+	Remarks	string	`json:"remarks,omitempty" yaml:"remarks,omitempty"`
 }
 
 // ControlEvaluation contains the results of evaluating a single Layer 4 control.
@@ -142,32 +228,11 @@ type AssessmentLog struct {
 
 	// Recommendation provides guidance on how to address a failed assessment.
 	Recommendation	string	`json:"recommendation,omitempty" yaml:"recommendation,omitempty"`
+
+	// Confidence describes the confidence level in this assessment result on a scale of 1 to 10, with 10 being the most confident.
+	Confidence	int64	`json:"confidence,omitempty" yaml:"confidence,omitempty"`
 }
 
 type Datetime string
-
-// Assessment defines all testing procedures for a requirement.
-type Assessment struct {
-	// RequirementId points to the requirement being tested.
-	Requirement	Mapping	`json:"requirement" yaml:"requirement"`
-
-	// Procedures defines possible testing procedures to evaluate the requirement.
-	Procedures	[]AssessmentProcedure	`json:"procedures" yaml:"procedures"`
-}
-
-// AssessmentProcedure describes a testing procedure for evaluating a Layer 2 control requirement.
-type AssessmentProcedure struct {
-	// Id uniquely identifies the assessment procedure being executed
-	Id	string	`json:"id" yaml:"id"`
-
-	// Name provides a summary of the procedure
-	Name	string	`json:"name" yaml:"name"`
-
-	// Description provides a detailed explanation of the procedure
-	Description	string	`json:"description" yaml:"description"`
-
-	// Documentation provides a URL to documentation that describes how the assessment procedure evaluates the control requirement
-	Documentation	string	`json:"documentation,omitempty" yaml:"documentation,omitempty"`
-}
 
 type Email string

@@ -29,9 +29,9 @@ func TestToSARIF(t *testing.T) {
 			name:        "basic conversion with multiple results",
 			artifactURI: "",
 			catalog:     nil,
-			evaluationLog: makeEvaluationLog(Author{
+			evaluationLog: makeEvaluationLog(AssessmentExecutor{
 				Name:    "gemara",
-				Uri:     "https://github.com/ossf/gemara",
+				Documentation:     "https://github.com/ossf/gemara",
 				Version: "1.0.0",
 			}, []*AssessmentLog{
 				makeAssessmentLog("REQ-1", "should do a thing", Failed, "thing was not done", nil),
@@ -58,9 +58,9 @@ func TestToSARIF(t *testing.T) {
 			name:        "with artifactURI parameter",
 			artifactURI: "README.md",
 			catalog:     nil,
-			evaluationLog: makeEvaluationLog(Author{
+			evaluationLog: makeEvaluationLog(AssessmentExecutor{
 				Name:    "gemara",
-				Uri:     "https://github.com/test/repo",
+				Documentation:     "https://github.com/test/repo",
 				Version: "1.0.0",
 			}, []*AssessmentLog{
 				makeAssessmentLog("REQ-1", "Test requirement", Failed, "Test message", nil),
@@ -83,9 +83,9 @@ func TestToSARIF(t *testing.T) {
 			name:        "empty author URI",
 			artifactURI: "",
 			catalog:     nil,
-			evaluationLog: makeEvaluationLog(Author{
+			evaluationLog: makeEvaluationLog(AssessmentExecutor{
 				Name:    "gemara",
-				Uri:     "",
+				Documentation:     "",
 				Version: "1.0.0",
 			}, []*AssessmentLog{
 				makeAssessmentLog("REQ-1", "should do a thing", Failed, "thing was not done", nil),
@@ -108,9 +108,9 @@ func TestToSARIF(t *testing.T) {
 			name:        "with catalog enrichment",
 			artifactURI: "README.md",
 			catalog:     testCatalog,
-			evaluationLog: makeEvaluationLog(Author{
+			evaluationLog: makeEvaluationLog(AssessmentExecutor{
 				Name:    "test-tool",
-				Uri:     "https://github.com/test/tool",
+				Documentation:     "https://github.com/test/tool",
 				Version: "1.0.0",
 			}, []*AssessmentLog{
 				{
@@ -147,9 +147,9 @@ func TestToSARIF(t *testing.T) {
 			name:        "without catalog",
 			artifactURI: "README.md",
 			catalog:     nil,
-			evaluationLog: makeEvaluationLog(Author{
+			evaluationLog: makeEvaluationLog(AssessmentExecutor{
 				Name:    "test-tool",
-				Uri:     "https://github.com/test/tool",
+				Documentation:     "https://github.com/test/tool",
 				Version: "1.0.0",
 			}, []*AssessmentLog{
 				{
@@ -182,9 +182,9 @@ func TestToSARIF(t *testing.T) {
 			name:        "catalog recommendation when assessment log has none",
 			artifactURI: "README.md",
 			catalog:     testCatalog,
-			evaluationLog: makeEvaluationLog(Author{
+			evaluationLog: makeEvaluationLog(AssessmentExecutor{
 				Name:    "test-tool",
-				Uri:     "https://github.com/test/tool",
+				Documentation:     "https://github.com/test/tool",
 				Version: "1.0.0",
 			}, []*AssessmentLog{
 				{
@@ -267,9 +267,9 @@ func TestToSARIF_ResultLevels(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.result.String(), func(t *testing.T) {
-			evaluationLog := makeEvaluationLog(Author{
+			evaluationLog := makeEvaluationLog(AssessmentExecutor{
 				Name:    "test",
-				Uri:     "https://test",
+				Documentation:     "https://test",
 				Version: "1.0.0",
 			}, []*AssessmentLog{
 				makeAssessmentLog("REQ-1", "test", tt.result, "", nil),
@@ -290,8 +290,9 @@ func TestToSARIF_ResultLevels(t *testing.T) {
 
 // Helper functions
 
-func makeEvaluationLog(author Author, logs []*AssessmentLog) EvaluationLog {
+func makeEvaluationLog(executor AssessmentExecutor, logs []*AssessmentLog) EvaluationLog {
 	return EvaluationLog{
+		Executor: executor,
 		Evaluations: []*ControlEvaluation{
 			{
 				Name:           "Example Control",
@@ -300,7 +301,6 @@ func makeEvaluationLog(author Author, logs []*AssessmentLog) EvaluationLog {
 				AssessmentLogs: logs,
 			},
 		},
-		Metadata: Metadata{Author: author},
 	}
 }
 
