@@ -29,9 +29,13 @@ func (e EvaluationLog) ToSARIF(artifactURI string, catalog *layer2.Catalog) ([]b
 		Version: "2.1.0",
 	}
 	driver := ToolComponent{
-		Name:           e.Metadata.Author.Name,
-		InformationURI: e.Metadata.Author.Uri,
-		Version:        e.Metadata.Author.Version,
+		Name: e.Executor.Name,
+	}
+	if e.Executor.Documentation != "" {
+		driver.InformationURI = e.Executor.Documentation
+	}
+	if e.Executor.Version != "" {
+		driver.Version = e.Executor.Version
 	}
 	run := Run{Tool: Tool{Driver: driver}}
 

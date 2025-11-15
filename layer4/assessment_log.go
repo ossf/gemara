@@ -80,6 +80,20 @@ func (a *AssessmentLog) Run(targetData interface{}) Result {
 	return a.Result
 }
 
+// SetConfidence sets the confidence level for this assessment result.
+// Confidence must be between 1 and 10, with 10 being the most confident and returns
+// an error if the confidence value is out of range or if the assessment hasn't been run yet.
+func (a *AssessmentLog) SetConfidence(confidence int64) error {
+	if a.Result == NotRun {
+		return fmt.Errorf("cannot set confidence before assessment has been run (current result: %s)", a.Result)
+	}
+	if confidence < 1 || confidence > 10 {
+		return fmt.Errorf("confidence must be between 1 and 10, got %d", confidence)
+	}
+	a.Confidence = confidence
+	return nil
+}
+
 // precheck verifies that the assessment has all the required fields.
 // It returns an error if the assessment is not valid.
 func (a *AssessmentLog) precheck() error {

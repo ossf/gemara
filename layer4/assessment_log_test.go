@@ -1,6 +1,7 @@
 package layer4
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -185,8 +186,105 @@ func TestNewAssessment(t *testing.T) {
 			if !data.expectedError && err != nil {
 				t.Errorf("expected no error, got %v", err)
 			}
-			if assessment == nil && !data.expectedError {
-				t.Error("expected assessment object, got nil")
+		if assessment == nil && !data.expectedError {
+			t.Error("expected assessment object, got nil")
+		}
+	})
+	}
+}
+
+func TestSetConfidence(t *testing.T) {
+	tests := []struct {
+		name        string
+		setupResult Result // Result to set before calling SetConfidence
+		confidence  int64
+		wantErr     bool
+		expectedErr string
+	}{
+		{
+			name:        "Cannot set confidence before Run",
+			setupResult: NotRun,
+			confidence:  5,
+			wantErr:     true,
+			expectedErr: "cannot set confidence before assessment has been run",
+		},
+		{
+			name:        "Valid confidence - minimum after Run",
+			setupResult: Passed,
+			confidence:  1,
+			wantErr:     false,
+		},
+		{
+			name:        "Valid confidence - maximum after Run",
+			setupResult: Passed,
+			confidence:  10,
+			wantErr:     false,
+		},
+		{
+			name:        "Valid confidence - middle after Run",
+			setupResult: Passed,
+			confidence:  5,
+			wantErr:     false,
+		},
+		{
+			name:        "Invalid confidence - too low",
+			setupResult: Passed,
+			confidence:  0,
+			wantErr:     true,
+			expectedErr: "confidence must be between 1 and 10",
+		},
+		{
+			name:        "Invalid confidence - negative",
+			setupResult: Passed,
+			confidence:  -1,
+			wantErr:     true,
+			expectedErr: "confidence must be between 1 and 10",
+		},
+		{
+			name:        "Invalid confidence - too high",
+			setupResult: Passed,
+			confidence:  11,
+			wantErr:     true,
+			expectedErr: "confidence must be between 1 and 10",
+		},
+		{
+			name:        "Can set confidence after Failed result",
+			setupResult: Failed,
+			confidence:  8,
+			wantErr:     false,
+		},
+		{
+			name:        "Can set confidence after NeedsReview result",
+			setupResult: NeedsReview,
+			confidence:  6,
+			wantErr:     false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assessment, err := NewAssessment("test", "test description", []string{"test"}, []AssessmentStep{passingAssessmentStep})
+			if err != nil {
+				t.Fatalf("Failed to create assessment: %v", err)
+			}
+
+			// Set the result to simulate assessment completion (or NotRun state)
+			assessment.Result = tt.setupResult
+
+			err = assessment.SetConfidence(tt.confidence)
+			if tt.wantErr {
+				if err == nil {
+					t.Error("expected error, got nil")
+				} else if tt.expectedErr != "" && !strings.Contains(err.Error(), tt.expectedErr) {
+					t.Errorf("expected error containing %q, got %q", tt.expectedErr, err.Error())
+				}
+			} else {
+				if err != nil {
+					t.Errorf("unexpected error: %v", err)
+				}
+				if assessment.Confidence != tt.confidence {
+					t.Errorf("expected confidence %d, got %d", tt.confidence, assessment.Confidence)
+				}
 			}
 		})
 	}
