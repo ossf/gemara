@@ -7,7 +7,6 @@ import (
 	"os"
 
 	oscal "github.com/defenseunicorns/go-oscal/src/types/oscal-1-1-3"
-	"github.com/goccy/go-yaml"
 
 	"github.com/ossf/gemara/layer1"
 	"github.com/ossf/gemara/layer2"
@@ -21,13 +20,9 @@ func Guidance(path string, args []string) error {
 		return err
 	}
 
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return err
-	}
-
 	var guidanceDocument layer1.GuidanceDocument
-	if err := yaml.Unmarshal(data, &guidanceDocument); err != nil {
+	pathWithScheme := fmt.Sprintf("file://%s", path)
+	if err := guidanceDocument.LoadFile(pathWithScheme); err != nil {
 		return err
 	}
 
