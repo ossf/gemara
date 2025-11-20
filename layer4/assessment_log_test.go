@@ -1,6 +1,7 @@
 package layer4
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -185,8 +186,84 @@ func TestNewAssessment(t *testing.T) {
 			if !data.expectedError && err != nil {
 				t.Errorf("expected no error, got %v", err)
 			}
-			if assessment == nil && !data.expectedError {
-				t.Error("expected assessment object, got nil")
+		if assessment == nil && !data.expectedError {
+			t.Error("expected assessment object, got nil")
+		}
+	})
+	}
+}
+
+func TestSetConfidenceLevel(t *testing.T) {
+	tests := []struct {
+		name           string
+		setupResult    Result // Result to set before calling SetConfidenceLevel
+		confidenceLevel ConfidenceLevel
+		wantErr        bool
+		expectedErr   string
+	}{
+		{
+			name:           "Cannot set confidence level before Run",
+			setupResult:    NotRun,
+			confidenceLevel: High,
+			wantErr:        true,
+			expectedErr:    "cannot set confidence level before assessment has been run",
+		},
+		{
+			name:           "Can set confidence level to High after Run",
+			setupResult:    Passed,
+			confidenceLevel: High,
+			wantErr:        false,
+		},
+		{
+			name:           "Can set confidence level to Medium after Run",
+			setupResult:    Passed,
+			confidenceLevel: Medium,
+			wantErr:        false,
+		},
+		{
+			name:           "Can set confidence level to Low after Run",
+			setupResult:    Passed,
+			confidenceLevel: Low,
+			wantErr:        false,
+		},
+		{
+			name:           "Can set confidence level after Failed result",
+			setupResult:    Failed,
+			confidenceLevel: High,
+			wantErr:        false,
+		},
+		{
+			name:           "Can set confidence level after NeedsReview result",
+			setupResult:    NeedsReview,
+			confidenceLevel: Low,
+			wantErr:        false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assessment, err := NewAssessment("test", "test description", []string{"test"}, []AssessmentStep{passingAssessmentStep})
+			if err != nil {
+				t.Fatalf("Failed to create assessment: %v", err)
+			}
+
+			// Set the result to simulate assessment completion (or NotRun state)
+			assessment.Result = tt.setupResult
+
+			err = assessment.SetConfidenceLevel(tt.confidenceLevel)
+			if tt.wantErr {
+				if err == nil {
+					t.Error("expected error, got nil")
+				} else if tt.expectedErr != "" && !strings.Contains(err.Error(), tt.expectedErr) {
+					t.Errorf("expected error containing %q, got %q", tt.expectedErr, err.Error())
+				}
+			} else {
+				if err != nil {
+					t.Errorf("unexpected error: %v", err)
+				}
+				if assessment.ConfidenceLevel != tt.confidenceLevel {
+					t.Errorf("expected confidence level %v, got %v", tt.confidenceLevel, assessment.ConfidenceLevel)
+				}
 			}
 		})
 	}
