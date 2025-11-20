@@ -82,7 +82,7 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 				Metadata: Metadata{
 					Id:      "plan-2024-01",
 					Version: "1.0.0",
-					Author: Author{
+					Author: Actor{
 						Name:    "gemara",
 						Uri:     "https://github.com/ossf/gemara",
 						Version: "1.0.0",
@@ -150,7 +150,7 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 					},
 				},
 				Metadata: Metadata{
-					Author: Author{Name: "test"},
+					Author: Actor{Name: "test"},
 					MappingReferences: []MappingReference{
 						{
 							Id:      "OSPS-B",
@@ -174,7 +174,7 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 				Plans: []AssessmentPlan{},
 				Metadata: Metadata{
 					Id: "empty-plan",
-					Author: Author{
+					Author: Actor{
 						Name: "test",
 					},
 				},
@@ -235,7 +235,7 @@ func Test_ToChecklist(t *testing.T) {
 		},
 		Metadata: Metadata{
 			Id: "test-plan",
-			Author: Author{
+			Author: Actor{
 				Name:    "test-author",
 				Version: "1.0.0",
 			},
