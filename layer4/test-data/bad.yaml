@@ -1,0 +1,6 @@
+metadata:
+  id: test-plan
+  invalid-field: this should cause an error
+plans:
+  - invalid: structure
+  invalid: yaml structure

@@ -1,0 +1,205 @@
+metadata:
+  id: test-multi-tool-osps-plan
+  version: "1.0.0"
+  author:
+    id: test-plan-generator
+    name: Test Evaluation Plan Generator
+    type: Automated
+    uri: https://example.com/test-plans
+    version: "1.0.0"
+  mapping-references:
+    - id: OSPS-B
+      title: Open Source Project Security Baseline
+      version: "2025"
+      description: The Open Source Project Security (OSPS) Baseline
+evaluators:
+  - id: pvtr-baseline-scanner
+    name: PVTR Baseline Scanner
+    type: Automated
+    description: Automated security baseline scanner for GitHub repositories
+    uri: https://github.com/revanite-io/pvtr-github-repo
+  
+  - id: openssf-scorecard
+    name: OpenSSF Scorecard
+    type: Automated
+    description: Security health scorecard for open source projects
+    uri: https://github.com/ossf/scorecard
+  
+  - id: manual-review
+    name: Manual Security Review
+    type: Manual
+    description: Human expert review of security controls and documentation
+    uri: https://example.com/manual-review-guide
+
+  - id: ci-test-detector
+    name: CI Test Suite Detector
+    type: Automated
+    description: Automated tool that detects test suites in CI/CD pipeline configurations
+    uri: https://example.com/ci-test-detector
+  
+  - id: test-coverage-analyzer
+    name: Test Coverage Analyzer
+    type: Automated
+    description: Analyzes test coverage metrics and identifies gaps in test suites
+    uri: https://example.com/test-coverage-analyzer
+plans:
+  - control:
+      reference-id: OSPS-B
+      entry-id: OSPS-AC-03
+    assessments:
+      - requirement:
+          reference-id: OSPS-B
+          entry-id: OSPS-AC-03.01
+        strategy:
+          conflict-rule-type: Strict
+        procedures:
+          - id: check-branch-protection-automated
+            name: Automated Branch Protection Check
+            description: |
+              Verify that branch protection rules prevent direct commits to the primary branch
+              by querying the version control system API. Multiple automated tools can perform this check.
+            evaluators:
+              - id: pvtr-baseline-scanner
+                authoritative: true
+              - id: openssf-scorecard
+                authoritative: true
+            strategy:
+              conflict-rule-type: Strict
+              remarks: |
+                Any automated tool reporting a failure should cause the procedure to fail.
+          
+          - id: check-branch-protection-manual
+            name: Manual Branch Protection Review
+            description: |
+              Review repository settings in the GitHub UI to confirm branch protection is configured
+              and requires pull request reviews before merging.
+            evaluators:
+              - id: manual-review
+                authoritative: true
+
+  - control:
+      reference-id: OSPS-B
+      entry-id: OSPS-QA-06
+    assessments:
+      - requirement:
+          reference-id: OSPS-B
+          entry-id: OSPS-QA-06.01
+        strategy:
+          conflict-rule-type: Strict
+          remarks: |
+            Both automated detection and manual verification are required. Automated tools
+            check CI/CD configuration, but manual review ensures tests are actually meaningful
+            and properly configured. Any failure from either procedure should cause the requirement to fail.
+        procedures:
+          - id: check-ci-test-automated
+            name: Automated CI Test Suite Detection
+            description: |
+              Automatically detect test suites configured in CI/CD pipelines by analyzing
+              workflow files, pipeline configurations, and test execution patterns. This checks
+              that tests are configured to run automatically before commits are accepted.
+            evaluators:
+              - id: ci-test-detector
+                authoritative: true
+              - id: pvtr-baseline-scanner
+                authoritative: true
+              - id: test-coverage-analyzer
+                authoritative: false
+            strategy:
+              conflict-rule-type: AuthoritativeConfirmation
+              remarks: |
+                Authoritative evaluators (ci-test-detector, pvtr-baseline-scanner) can independently
+                confirm test suite presence. Test-coverage-analyzer is non-authoritative and provides
+                additional insights but requires authoritative confirmation before triggering findings.
+          
+          - id: check-ci-test-manual
+            name: Manual CI Test Suite Verification
+            description: |
+              Manually review CI/CD pipeline configurations and test execution logs to verify
+              that automated test suites are properly configured, actually run, and produce
+              meaningful results. This ensures tests aren't just present but are functional.
+            evaluators:
+              - id: manual-review
+                authoritative: true
+            strategy:
+              conflict-rule-type: ManualOverride
+              remarks: |
+                Manual review can override automated detection results when human judgment
+                determines that automated tools have false positives or missed configurations.
+
+  - control:
+      reference-id: OSPS-B
+      entry-id: OSPS-QA-07
+    assessments:
+      - requirement:
+          reference-id: OSPS-B
+          entry-id: OSPS-QA-07.01
+        strategy:
+          conflict-rule-type: Strict
+          remarks: |
+            Both configuration verification and behavior verification are required. Configuration
+            checks ensure the rules are set up correctly, while behavior checks verify the system
+            actually enforces them. Any failure from either procedure should cause the requirement to fail.
+        procedures:
+          - id: check-approval-configuration
+            name: Approval Requirement Configuration Verification
+            description: |
+              Verify that branch protection rules are configured to require at least one
+              non-author approval before merging to the primary branch. This checks the actual
+              configuration settings in the version control system (e.g., GitHub branch protection
+              rules, GitLab merge request settings) to ensure the requirement is properly configured.
+            evaluators:
+              - id: pvtr-baseline-scanner
+                authoritative: true
+              - id: openssf-scorecard
+                authoritative: true
+            strategy:
+              conflict-rule-type: Strict
+          
+          - id: check-approval-enforcement-behavior
+            name: Approval Requirement Enforcement Behavior Verification
+            description: |
+              Verify that the version control system actually enforces the approval requirement
+              by checking recent merge history, pull request patterns, and attempting to verify
+              that merges without non-author approval were blocked or prevented. This behavior
+              check ensures the configuration is not just present but actively enforced.
+            evaluators:
+              - id: pvtr-baseline-scanner
+                authoritative: true
+
+  - control:
+      reference-id: OSPS-B
+      entry-id: OSPS-QA-05
+    assessments:
+      - requirement:
+          reference-id: OSPS-B
+          entry-id: OSPS-QA-05.01
+        procedures:
+          - id: check-binary-files
+            name: Binary File Detection
+            description: |
+              Scan the repository to detect binary or executable files that should
+              not be stored in version control.
+            evaluators:
+              - id: pvtr-baseline-scanner
+                authoritative: true
+
+  - control:
+      reference-id: OSPS-B
+      entry-id: OSPS-GV-03
+    assessments:
+      - requirement:
+          reference-id: OSPS-B
+          entry-id: OSPS-GV-03.01
+        procedures:
+          - id: check-contribution-guide
+            name: Contribution Guide Detection
+            description: |
+              Scan the repository for contribution guide files (CONTRIBUTING.md,
+              CONTRIBUTING.rst, etc.) and verify their presence.
+            evaluators:
+              - id: pvtr-baseline-scanner
+                authoritative: true
+              - id: manual-review
+                authoritative: true
+            strategy:
+              conflict-rule-type: ManualOverride
