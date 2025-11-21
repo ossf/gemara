@@ -1,7 +1,7 @@
 header:
   schema-version: 2.0.0
-  last-updated: '2025-08-21'
-  last-reviewed: '2025-08-21'
+  last-updated: '2025-11-14'
+  last-reviewed: '2025-11-14'
   url: https://github.com/ossf/gemara
 
 project:
@@ -38,6 +38,10 @@ repository:
     - name: Eddie Knight
       affiliation: Sonatype
       email: knight@linux.com
+      primary: true
+    - name: Jenn Power
+      affiliation: Red Hat
+      email: barnabei.jennifer@gmail.com
       primary: true
     - name: Jason Meridth
       affiliation: GitHub
