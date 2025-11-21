@@ -71,4 +71,52 @@ lintinsights:
 	@rm schema.cue
 	@echo "  >  Linting security-insights.yml complete."
 
-PHONY: tidy test testcov lintcue cuegen dirtycheck lintinsights
+# Documentation site targets
+CONTAINER_CMD := $(shell command -v podman 2> /dev/null || command -v docker 2> /dev/null)
+VOLUME_FLAGS := $(shell [ "$$(uname -s)" = "Linux" ] && echo ":Z" || echo "")
+
+check-container:
+	@if [ -z "$(CONTAINER_CMD)" ]; then \
+		echo "ERROR: Neither podman nor docker found."; \
+		exit 1; \
+	fi
+
+serve: check-container
+	@echo "  >  Starting Jekyll documentation site..."
+	@echo "  >  Using container runtime: $(CONTAINER_CMD)"
+	@$(CONTAINER_CMD) stop gemara-docs 2>/dev/null || true
+	@$(CONTAINER_CMD) rm gemara-docs 2>/dev/null || true
+	@echo "  >  Site will be available at: http://localhost:4000"
+	@echo ""
+	@$(CONTAINER_CMD) run --rm \
+		--name gemara-docs \
+		--volume="$$PWD/docs:/srv/jekyll$(VOLUME_FLAGS)" \
+		--publish 4000:4000 \
+		--publish 35729:35729 \
+		docker.io/jekyll/jekyll:latest \
+		jekyll serve --host 0.0.0.0 --livereload --force_polling
+
+build: check-container
+	@echo "  >  Building Jekyll documentation site..."
+	@$(CONTAINER_CMD) run --rm \
+		--volume="$$PWD/docs:/srv/jekyll$(VOLUME_FLAGS)" \
+		docker.io/jekyll/jekyll:latest \
+		jekyll build
+
+clean: check-container
+	@echo "  >  Cleaning generated files..."
+	@rm -rf docs/_site docs/.jekyll-cache docs/.jekyll-metadata
+	@echo "  >  Stopping and removing any running containers..."
+	@$(CONTAINER_CMD) stop gemara-docs 2>/dev/null || true
+	@$(CONTAINER_CMD) rm gemara-docs 2>/dev/null || true
+	@echo "  >  Clean complete!"
+
+stop: check-container
+	@echo "  >  Stopping documentation server..."
+	@$(CONTAINER_CMD) stop gemara-docs 2>/dev/null || true
+	@$(CONTAINER_CMD) rm gemara-docs 2>/dev/null || true
+	@echo "  >  Server stopped!"
+
+restart: stop serve
+
+.PHONY: tidy test testcov lintcue cuegen dirtycheck lintinsights serve build clean stop restart check-container
