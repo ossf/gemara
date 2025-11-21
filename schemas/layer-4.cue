@@ -4,23 +4,33 @@ import "time"
 
 @go(layer4)
 
+// EvaluationDocument defines how a set of Layer 2 controls are to be evaluated and the associated outcomes of the evaluation.
+#EvaluationDocument: {
+	metadata:           #Metadata
+	"evaluation-plan"?: #EvaluationPlan @go(EvaluationPlan,optional=nillable)
+	"evaluation-logs"?: [...#EvaluationLog] @go(EvaluationLogs)
+}
+
 // EvaluationPlan defines how a set of Layer 2 controls are to be evaluated.
 #EvaluationPlan: {
 	metadata: #Metadata
+	// Evaluators defines the assessment evaluators that can be used to execute assessment procedures.
+	evaluators: [...#Actor] @go(Evaluators)
 	plans: [...#AssessmentPlan]
 }
 
 // EvaluationLog contains the results of evaluating a set of Layer 2 controls.
 #EvaluationLog: {
+	"metadata"?: #Metadata
 	"evaluations": [#ControlEvaluation, ...#ControlEvaluation] @go(Evaluations,type=[]*ControlEvaluation)
-	"metadata"?: #Metadata @go(Metadata)
 }
 
-// Metadata contains metadata about the Layer 4 evaluation plan and log.
+// Metadata contains common fields shared across all metadata types.
 #Metadata: {
-	id:       string
-	version?: string
-	author:   #Author
+	id:           string
+	version?:     string
+	author:       #Actor
+	description?: string
 	"mapping-references"?: [...#MappingReference] @go(MappingReferences) @yaml("mapping-references,omitempty")
 }
 
@@ -43,13 +53,26 @@ import "time"
 	remarks?: string
 }
 
-// Author contains the information about the entity that produced the evaluation plan or log.
-#Author: {
-	"name":     string
-	"uri"?:     string
-	"version"?: string
-	"contact"?: #Contact @go(Contact)
+// Actor represents an entity (human or tool) that can perform actions in evaluations.
+#Actor: {
+	// Id uniquely identifies the actor.
+	id: string
+	// Name provides the name of the actor.
+	name: string
+	// Type specifies how the evaluation is executed (automated tool or manual/human evaluator).
+	type: #ExecutionType @go(Type)
+	// Version specifies the version of the actor (if applicable, e.g., for tools).
+	version?: string
+	// Description provides additional context about the actor.
+	description?: string
+	// Uri provides a general URI for the actor information.
+	uri?: =~"^https?://[^\\s]+$"
+	// Contact provides contact information for the actor.
+	contact?: #Contact @go(Contact)
 }
+
+// ExecutionType specifies how the evaluation is executed (automated or manual).
+#ExecutionType: "Automated" | "Manual" @go(-)
 
 // ControlEvaluation contains the results of evaluating a single Layer 4 control.
 #ControlEvaluation: {
@@ -89,6 +112,8 @@ import "time"
 	end?: #Datetime
 	// Recommendation provides guidance on how to address a failed assessment.
 	recommendation?: string
+	// ConfidenceLevel indicates the evaluator's confidence level in this specific assessment result.
+	"confidence-level"?: #ConfidenceLevel @go(ConfidenceLevel)
 }
 
 #AssessmentStep: string @go(-)
@@ -96,6 +121,9 @@ import "time"
 #Result: "Not Run" | "Passed" | "Failed" | "Needs Review" | "Not Applicable" | "Unknown" @go(-)
 
 #Datetime: time.Format("2006-01-02T15:04:05Z07:00") @go(Datetime)
+
+// ConfidenceLevel indicates the evaluator's confidence level in an assessment result.
+#ConfidenceLevel: "Undetermined" | "Low" | "Medium" | "High" @go(-)
 
 // AssessmentPlan defines all testing procedures for a control id.
 #AssessmentPlan: {
@@ -128,7 +156,33 @@ import "time"
 	description: string
 	// Documentation provides a URL to documentation that describes how the assessment procedure evaluates the control requirement
 	documentation?: =~"^https?://[^\\s]+$"
+	// Evaluators lists which assessment evaluators can execute this procedure.
+	evaluators: [...#EvaluatorMapping] @go(Evaluators)
+	// Strategy defines the rules for aggregating results from multiple evaluators running the same procedure.
+	strategy?: #Strategy @go(Strategy,optional=nillable)
 }
+
+// EvaluatorMapping maps an assessment evaluator to a procedure.
+#EvaluatorMapping: {
+	id: string
+	// Authoritative determines how this evaluator participates in conflict resolution when using AuthoritativeConfirmation strategy.
+	// If true, the evaluator can trigger findings independently. If false (default), the evaluator requires confirmation from authoritative evaluators before triggering findings.
+	// Note: This field is only used with AuthoritativeConfirmation strategy. With Strict (default) or ManualOverride strategies, this field is ignored.
+	authoritative?: bool @go(Authoritative)
+	// Remarks provides context about why this evaluator-procedure combination was chosen.
+	remarks?: string
+}
+
+// Strategy defines the rules for resolving conflicts between multiple evaluator results.
+#Strategy: {
+	// ConflictRuleType specifies the aggregation logic used to resolve conflicts when multiple evaluators provide results for the same assessment procedure.
+	"conflict-rule-type": #ConflictRuleType @go(ConflictRuleType)
+	// Remarks provides context for why this specific conflict resolution strategy was chosen.
+	remarks?: string
+}
+
+// ConflictRuleType defines how to resolve conflicts when multiple evaluators produce different results.
+#ConflictRuleType: "Strict" | "ManualOverride" | "AuthoritativeConfirmation" @go(-)
 
 #Contact: {
 	// The contact person's name.

@@ -1,14 +1,28 @@
-service_name: pvtr
-plugin_name: github-repo
-payload: omitted
-evaluation-set:
-  - name: ""
-    control-id: OSPS-AC-01
+metadata:
+  id: pvtr-baseline-scan
+  mapping-references:
+  - id: OSPS-B
+    title: Open Source Project Security Baseline
+    version: '2024'
+  author:
+    id: pvtr-github-repo  # References evaluator from the plan
+    name: PVTR GitHub Repo Plugin
+    type: Automated
+    uri: https://github.com/revanite-io/pvtr-github-repo
+evaluations:
+  - name: OSPS-AC-01
     result: Passed
     message: Two-factor authentication is configured as required by the parent organization
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-AC-01
     assessment-logs:
-    - requirement-id: OSPS-AC-01.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-AC-01.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-AC-01.01
       applicability:
       - Maturity Level 1
       - Maturity Level 2
@@ -19,17 +33,21 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/access_control.orgRequiresMFA
       steps-executed: 1
-      start: 2025-08-22T16:02:00.000000000Z
-      end: 2025-08-22T16:02:00.000003708Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-AC-02
+      start: 2025-08-22T16:02:00+00:00
+      end: 2025-08-22T16:02:00+00:00
+  - name: OSPS-AC-02
     result: Passed
     message: This control is enforced by GitHub for all projects
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-AC-02
     assessment-logs:
-    - requirement-id: OSPS-AC-02.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-AC-02.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-AC-02.01
       applicability:
       - Maturity Level 1
       - Maturity Level 2
@@ -40,17 +58,21 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.GithubBuiltIn
       steps-executed: 1
-      start: 2025-08-22T16:02:00.000000000Z
-      end: 2025-08-22T16:02:00.000001208Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-AC-03
+      start: 2025-08-22T16:02:00+00:00
+      end: 2025-08-22T16:02:00+00:00
+  - name: OSPS-AC-03
     result: Passed
     message: Branch protection rule prevents deletions
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-AC-03
     assessment-logs:
-    - requirement-id: OSPS-AC-03.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-AC-03.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-AC-03.01
       applicability:
       - Maturity Level 1
       - Maturity Level 2
@@ -62,11 +84,14 @@ evaluation-set:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.IsCodeRepo
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/access_control.branchProtectionRestrictsPushes
       steps-executed: 2
-      start: 2025-08-22T16:02:00.000000000Z
-      end: 2025-08-22T16:02:00.000002750Z
-      value: null
-      changes: {}
-    - requirement-id: OSPS-AC-03.02
+      start: 2025-08-22T16:02:00+00:00
+      end: 2025-08-22T16:02:00+00:00
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-AC-03.02
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-AC-03.02
       applicability:
       - Maturity Level 1
       - Maturity Level 2
@@ -77,17 +102,21 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/access_control.branchProtectionPreventsDeletion
       steps-executed: 1
-      start: 2025-08-22T16:02:00.000000000Z
-      end: 2025-08-22T16:02:00.000001167Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-AC-04
+      start: 2025-08-22T16:02:00+00:00
+      end: 2025-08-22T16:02:00+00:00
+  - name: OSPS-AC-04
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-AC-04
     assessment-logs:
-    - requirement-id: OSPS-AC-04.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-AC-04.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-AC-04.01
       applicability:
       - Maturity Level 2
       - Maturity Level 3
@@ -97,16 +126,20 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/access_control.workflowDefaultReadPermissions
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-BR-01
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-BR-01
     result: Needs Review
     message: Not implemented
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-BR-01
     assessment-logs:
-    - requirement-id: OSPS-BR-01.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-BR-01.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-BR-01.01
       applicability:
       - Maturity Level 1
       - Maturity Level 2
@@ -118,11 +151,14 @@ evaluation-set:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.IsCodeRepo
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/build_release.cicdSanitizedInputParameters
       steps-executed: 2
-      start: 2025-08-22T16:02:00.000000000Z
-      end: 2025-08-22T16:02:01.711621250Z
-      value: null
-      changes: {}
-    - requirement-id: OSPS-BR-01.02
+      start: 2025-08-22T16:02:00+00:00
+      end: 2025-08-22T16:02:01+00:00
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-BR-01.02
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-BR-01.02
       applicability:
       - Maturity Level 1
       - Maturity Level 2
@@ -133,17 +169,21 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.NotImplemented
       steps-executed: 1
-      start: 2025-08-22T16:02:00.000000000Z
-      end: 2025-08-22T16:02:00.000000708Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-BR-02
+      start: 2025-08-22T16:02:00+00:00
+      end: 2025-08-22T16:02:00+00:00
+  - name: OSPS-BR-02
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-BR-02
     assessment-logs:
-    - requirement-id: OSPS-BR-02.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-BR-02.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-BR-02.01
       applicability:
       - Maturity Level 2
       - Maturity Level 3
@@ -154,16 +194,20 @@ evaluation-set:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.HasMadeReleases
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/build_release.releaseHasUniqueIdentifier
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-BR-03
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-BR-03
     result: Needs Review
     message: No official distribution points found in Security Insights data
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-BR-03
     assessment-logs:
-    - requirement-id: OSPS-BR-03.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-BR-03.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-BR-03.01
       applicability:
       - Maturity Level 1
       - Maturity Level 2
@@ -175,11 +219,14 @@ evaluation-set:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.HasSecurityInsightsFile
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/build_release.ensureInsightsLinksUseHTTPS
       steps-executed: 2
-      start: 2025-08-22T16:02:00.000000000Z
-      end: 2025-08-22T16:02:00.000003417Z
-      value: null
-      changes: {}
-    - requirement-id: OSPS-BR-03.02
+      start: 2025-08-22T16:02:00+00:00
+      end: 2025-08-22T16:02:00+00:00
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-BR-03.02
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-BR-03.02
       applicability:
       - Maturity Level 1
       - Maturity Level 2
@@ -190,17 +237,21 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/build_release.distributionPointsUseHTTPS
       steps-executed: 1
-      start: 2025-08-22T16:02:00.000000000Z
-      end: 2025-08-22T16:02:00.000000584Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-BR-04
+      start: 2025-08-22T16:02:00+00:00
+      end: 2025-08-22T16:02:00+00:00
+  - name: OSPS-BR-04
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-BR-04
     assessment-logs:
-    - requirement-id: OSPS-BR-04.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-BR-04.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-BR-04.01
       applicability:
       - Maturity Level 2
       - Maturity Level 3
@@ -211,16 +262,20 @@ evaluation-set:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.HasMadeReleases
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/build_release.ensureLatestReleaseHasChangelog
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-BR-05
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-BR-05
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-BR-05
     assessment-logs:
-    - requirement-id: OSPS-BR-05.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-BR-05.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-BR-05.01
       applicability:
       - Maturity Level 2
       - Maturity Level 3
@@ -230,16 +285,20 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.NotImplemented
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-BR-06
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-BR-06
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-BR-06
     assessment-logs:
-    - requirement-id: OSPS-BR-06.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-BR-06.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-BR-06.01
       applicability:
       - Maturity Level 2
       - Maturity Level 3
@@ -251,16 +310,20 @@ evaluation-set:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.HasSecurityInsightsFile
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/build_release.insightsHasSlsaAttestation
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-DO-01
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-DO-01
     result: Failed
     message: User guide was NOT specified in Security Insights data
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-DO-01
     assessment-logs:
-    - requirement-id: OSPS-DO-01.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-DO-01.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-DO-01.01
       applicability:
       - Maturity Level 1
       - Maturity Level 2
@@ -273,16 +336,20 @@ evaluation-set:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.HasSecurityInsightsFile
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/docs.hasUserGuides
       steps-executed: 3
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-DO-02
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-DO-02
     result: Failed
     message: Repository does not accept vulnerability reports
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-DO-02
     assessment-logs:
-    - requirement-id: OSPS-DO-02.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-DO-02.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-DO-02.01
       applicability:
       - Maturity Level 1
       - Maturity Level 2
@@ -295,16 +362,20 @@ evaluation-set:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.HasIssuesOrDiscussionsEnabled
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/docs.acceptsVulnReports
       steps-executed: 3
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-DO-03
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-DO-03
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-DO-03
     assessment-logs:
-    - requirement-id: OSPS-DO-03.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-DO-03.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-DO-03.01
       applicability:
       - Maturity Level 3
       description: When the project has made a release, the project documentation MUST contain instructions to verify the integrity and authenticity of the release assets.
@@ -315,16 +386,20 @@ evaluation-set:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.HasSecurityInsightsFile
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/docs.hasSignatureVerificationGuide
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-DO-04
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-DO-04
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-DO-04
     assessment-logs:
-    - requirement-id: OSPS-DO-04.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-DO-04.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-DO-04.01
       applicability:
       - Maturity Level 3
       description: When the project has made a release, the project documentation MUST include a descriptive statement about the scope and duration of support for each release.
@@ -333,16 +408,20 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/docs.hasSupportDocs
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-DO-05
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-DO-05
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-DO-05
     assessment-logs:
-    - requirement-id: OSPS-DO-05.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-DO-05.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-DO-05.01
       applicability:
       - Maturity Level 3
       description: When the project has made a release, the project documentation MUST provide a descriptive statement when releases or versions will no longer receive security updates.
@@ -351,16 +430,20 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/docs.hasSupportDocs
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-DO-06
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-DO-06
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-DO-06
     assessment-logs:
-    - requirement-id: OSPS-DO-06.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-DO-06.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-DO-06.01
       applicability:
       - Maturity Level 2
       - Maturity Level 3
@@ -373,16 +456,20 @@ evaluation-set:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.HasSecurityInsightsFile
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/docs.hasDependencyManagementPolicy
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-GV-01
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-GV-01
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-GV-01
     assessment-logs:
-    - requirement-id: OSPS-GV-01.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-GV-01.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-GV-01.01
       applicability:
       - Maturity Level 2
       - Maturity Level 3
@@ -395,10 +482,13 @@ evaluation-set:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/governance.coreTeamIsListed
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/governance.projectAdminsListed
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-    - requirement-id: OSPS-GV-01.02
+      start: 2025-08-22T16:02:00+00:00
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-GV-01.02
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-GV-01.02
       applicability:
       - Maturity Level 2
       - Maturity Level 3
@@ -408,16 +498,20 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/governance.hasRolesAndResponsibilities
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-GV-02
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-GV-02
     result: Passed
     message: Issues are enabled for the repository
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-GV-02
     assessment-logs:
-    - requirement-id: OSPS-GV-02.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-GV-02.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-GV-02.01
       applicability:
       - Maturity Level 1
       - Maturity Level 2
@@ -428,32 +522,39 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.HasIssuesOrDiscussionsEnabled
       steps-executed: 1
-      start: 2025-08-22T16:02:00.000000000Z
-      end: 2025-08-22T16:02:00.000000292Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-GV-03
+      start: 2025-08-22T16:02:00+00:00
+      end: 2025-08-22T16:02:00+00:00
+  - name: OSPS-GV-03
     result: Needs Review
-    message: "Contributing guide was found via GitHub API (Recommendation: Add code of conduct location to Security Insights data)"
-    corrupted-state: false
+    message: 'Contributing guide was found via GitHub API (Recommendation: Add code of conduct location to Security Insights data)'
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-GV-03
     assessment-logs:
-    - requirement-id: OSPS-GV-03.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-GV-03.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-GV-03.01
       applicability:
       - Maturity Level 1
       - Maturity Level 2
       - Maturity Level 3
       description: While active, the project documentation MUST include an explanation of the contribution process.
       result: Needs Review
-      message: "Contributing guide was found via GitHub API (Recommendation: Add code of conduct location to Security Insights data)"
+      message: 'Contributing guide was found via GitHub API (Recommendation: Add code of conduct location to Security Insights data)'
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/governance.hasContributionGuide
       steps-executed: 1
-      start: 2025-08-22T16:02:00.000000000Z
-      end: 2025-08-22T16:02:00.000000792Z
-      value: null
-      changes: {}
-    - requirement-id: OSPS-GV-03.02
+      start: 2025-08-22T16:02:00+00:00
+      end: 2025-08-22T16:02:00+00:00
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-GV-03.02
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-GV-03.02
       applicability:
       - Maturity Level 2
       - Maturity Level 3
@@ -466,16 +567,20 @@ evaluation-set:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.IsActive
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/governance.hasContributionReviewPolicy
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-GV-04
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-GV-04
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-GV-04
     assessment-logs:
-    - requirement-id: OSPS-GV-04.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-GV-04.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-GV-04.01
       applicability:
       - Maturity Level 3
       description: While active, the project documentation MUST have a policy that code contributors are reviewed prior to granting escalated permissions to sensitive resources.
@@ -484,16 +589,20 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.NotImplemented
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-LE-01
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-LE-01
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-LE-01
     assessment-logs:
-    - requirement-id: OSPS-LE-01.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-LE-01.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-LE-01.01
       applicability:
       - Maturity Level 2
       - Maturity Level 3
@@ -503,16 +612,20 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.GithubTermsOfService
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-LE-02
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-LE-02
     result: Needs Review
     message: All license found are OSI or FSF approved
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-LE-02
     assessment-logs:
-    - requirement-id: OSPS-LE-02.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-LE-02.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-LE-02.01
       applicability:
       - Maturity Level 1
       - Maturity Level 2
@@ -524,17 +637,21 @@ evaluation-set:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/legal.foundLicense
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/legal.goodLicense
       steps-executed: 2
-      start: 2025-08-22T16:02:00.000000000Z
-      end: 2025-08-22T16:02:00.269504834Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-LE-03
+      start: 2025-08-22T16:02:00+00:00
+      end: 2025-08-22T16:02:00+00:00
+  - name: OSPS-LE-03
     result: Passed
     message: GitHub releases include the license(s) in the released source code.
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-LE-03
     assessment-logs:
-    - requirement-id: OSPS-LE-03.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-LE-03.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-LE-03.01
       applicability:
       - Maturity Level 1
       - Maturity Level 2
@@ -545,11 +662,14 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/legal.foundLicense
       steps-executed: 1
-      start: 2025-08-22T16:02:00.000000000Z
-      end: 2025-08-22T16:02:00.000000875Z
-      value: null
-      changes: {}
-    - requirement-id: OSPS-LE-03.02
+      start: 2025-08-22T16:02:00+00:00
+      end: 2025-08-22T16:02:00+00:00
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-LE-03.02
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-LE-03.02
       applicability:
       - Maturity Level 1
       - Maturity Level 2
@@ -560,17 +680,21 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/legal.releasesLicensed
       steps-executed: 1
-      start: 2025-08-22T16:02:00.000000000Z
-      end: 2025-08-22T16:02:00.000000375Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-QA-01
+      start: 2025-08-22T16:02:00+00:00
+      end: 2025-08-22T16:02:00+00:00
+  - name: OSPS-QA-01
     result: Passed
     message: This control is enforced by GitHub for all projects
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-QA-01
     assessment-logs:
-    - requirement-id: OSPS-QA-01.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-QA-01.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-QA-01.01
       applicability:
       - Maturity Level 1
       - Maturity Level 2
@@ -581,11 +705,14 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/quality.repoIsPublic
       steps-executed: 1
-      start: 2025-08-22T16:02:00.000000000Z
-      end: 2025-08-22T16:02:00.000000958Z
-      value: null
-      changes: {}
-    - requirement-id: OSPS-QA-01.02
+      start: 2025-08-22T16:02:00+00:00
+      end: 2025-08-22T16:02:00+00:00
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-QA-01.02
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-QA-01.02
       applicability:
       - Maturity Level 1
       - Maturity Level 2
@@ -596,17 +723,21 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.GithubBuiltIn
       steps-executed: 1
-      start: 2025-08-22T16:02:00.000000000Z
-      end: 2025-08-22T16:02:00.000000375Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-QA-02
+      start: 2025-08-22T16:02:00+00:00
+      end: 2025-08-22T16:02:00+00:00
+  - name: OSPS-QA-02
     result: Passed
     message: Found 8 dependency manifests from GitHub API
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-QA-02
     assessment-logs:
-    - requirement-id: OSPS-QA-02.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-QA-02.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-QA-02.01
       applicability:
       - Maturity Level 1
       - Maturity Level 2
@@ -617,11 +748,14 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/quality.verifyDependencyManagement
       steps-executed: 1
-      start: 2025-08-22T16:02:00.000000000Z
-      end: 2025-08-22T16:02:00.000002667Z
-      value: null
-      changes: {}
-    - requirement-id: OSPS-QA-02.02
+      start: 2025-08-22T16:02:00+00:00
+      end: 2025-08-22T16:02:00+00:00
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-QA-02.02
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-QA-02.02
       applicability:
       - Maturity Level 3
       description: When the project has made a release, all compiled released software assets MUST be delivered with a software bill of materials.
@@ -630,16 +764,20 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.NotImplemented
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-QA-03
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-QA-03
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-QA-03
     assessment-logs:
-    - requirement-id: OSPS-QA-03.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-QA-03.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-QA-03.01
       applicability:
       - Maturity Level 2
       - Maturity Level 3
@@ -650,16 +788,20 @@ evaluation-set:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/quality.statusChecksAreRequiredByRulesets
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/quality.statusChecksAreRequiredByBranchProtection
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-QA-04
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-QA-04
     result: Failed
     message: Insights does NOT contains a list of repositories
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-QA-04
     assessment-logs:
-    - requirement-id: OSPS-QA-04.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-QA-04.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-QA-04.01
       applicability:
       - Maturity Level 1
       - Maturity Level 2
@@ -673,16 +815,20 @@ evaluation-set:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.IsActive
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/quality.insightsListsRepositories
       steps-executed: 4
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-QA-05
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-QA-05
     result: Passed
     message: No common binary file extensions were found in the repository
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-QA-05
     assessment-logs:
-    - requirement-id: OSPS-QA-05.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-QA-05.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-QA-05.01
       applicability:
       - Maturity Level 1
       - Maturity Level 2
@@ -693,17 +839,21 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/quality.noBinariesInRepo
       steps-executed: 1
-      start: 2025-08-22T16:02:00.000000000Z
-      end: 2025-08-22T16:02:00.729000709Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-QA-06
+      start: 2025-08-22T16:02:00+00:00
+      end: 2025-08-22T16:02:00+00:00
+  - name: OSPS-QA-06
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-QA-06
     assessment-logs:
-    - requirement-id: OSPS-QA-06.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-QA-06.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-QA-06.01
       applicability:
       - Maturity Level 2
       - Maturity Level 3
@@ -714,10 +864,13 @@ evaluation-set:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.IsCodeRepo
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/quality.hasOneOrMoreStatusChecks
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-    - requirement-id: OSPS-QA-06.02
+      start: 2025-08-22T16:02:00+00:00
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-QA-06.02
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-QA-06.02
       applicability:
       - Maturity Level 3
       description: While active, project's documentation MUST clearly document when and how tests are run.
@@ -726,10 +879,13 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/quality.documentsTestExecution
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-    - requirement-id: OSPS-QA-06.03
+      start: 2025-08-22T16:02:00+00:00
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-QA-06.03
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-QA-06.03
       applicability:
       - Maturity Level 3
       description: While active, the project's documentation MUST include a policy that all major changes to the software produced by the project should add or update tests of the functionality in an automated test suite.
@@ -739,16 +895,20 @@ evaluation-set:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.IsCodeRepo
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/quality.documentsTestMaintenancePolicy
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-QA-07
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-QA-07
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-QA-07
     assessment-logs:
-    - requirement-id: OSPS-QA-07.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-QA-07.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-QA-07.01
       applicability:
       - Maturity Level 3
       description: When a commit is made to the primary branch, the project's version control system MUST require at least one non-author approval of the changes before merging.
@@ -757,16 +917,20 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/quality.requiresNonAuthorApproval
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-SA-01
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-SA-01
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-SA-01
     assessment-logs:
-    - requirement-id: OSPS-SA-01.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-SA-01.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-SA-01.01
       applicability:
       - Maturity Level 2
       - Maturity Level 3
@@ -776,16 +940,20 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.NotImplemented
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-SA-02
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-SA-02
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-SA-02
     assessment-logs:
-    - requirement-id: OSPS-SA-02.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-SA-02.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-SA-02.01
       applicability:
       - Maturity Level 2
       - Maturity Level 3
@@ -793,18 +961,22 @@ evaluation-set:
       result: Not Run
       message: ""
       steps:
-        - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.NotImplemented
+      - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.NotImplemented
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-SA-03
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-SA-03
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-SA-03
     assessment-logs:
-    - requirement-id: OSPS-SA-03.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-SA-03.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-SA-03.01
       applicability:
       - Maturity Level 2
       - Maturity Level 3
@@ -814,10 +986,13 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.NotImplemented
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-    - requirement-id: OSPS-SA-03.02
+      start: 2025-08-22T16:02:00+00:00
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-SA-03.02
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-SA-03.02
       applicability:
       - Maturity Level 3
       description: When the project has made a release, the project MUST perform a threat modeling and attack surface analysis to understand and protect against attacks on critical code paths, functions, and interactions within the system.
@@ -826,16 +1001,20 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.NotImplemented
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-VM-01
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-VM-01
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-VM-01
     assessment-logs:
-    - requirement-id: OSPS-VM-01.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-VM-01.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-VM-01.01
       applicability:
       - Maturity Level 2
       - Maturity Level 3
@@ -843,18 +1022,22 @@ evaluation-set:
       result: Not Run
       message: ""
       steps:
-        - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.NotImplemented
+      - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.NotImplemented
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-VM-02
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-VM-02
     result: Failed
     message: Security contacts were not specified in Security Insights data
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-VM-02
     assessment-logs:
-    - requirement-id: OSPS-VM-02.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-VM-02.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-VM-02.01
       applicability:
       - Maturity Level 1
       description: While active, the project documentation MUST contain security contacts.
@@ -864,16 +1047,20 @@ evaluation-set:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.IsCodeRepo
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/vuln_management.hasSecContact
       steps-executed: 2
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-VM-03
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-VM-03
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-VM-03
     assessment-logs:
-    - requirement-id: OSPS-VM-03.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-VM-03.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-VM-03.01
       applicability:
       - Maturity Level 2
       - Maturity Level 3
@@ -883,16 +1070,20 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.NotImplemented
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-VM-04
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-VM-04
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-VM-04
     assessment-logs:
-    - requirement-id: OSPS-VM-04.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-VM-04.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-VM-04.01
       applicability:
       - Maturity Level 2
       - Maturity Level 3
@@ -902,10 +1093,13 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.NotImplemented
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-    - requirement-id: OSPS-VM-04.02
+      start: 2025-08-22T16:02:00+00:00
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-VM-04.02
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-VM-04.02
       applicability:
       - Maturity Level 3
       description: While active, any vulnerabilities in the software components not affecting the project MUST be accounted for in a VEX document, augmenting the vulnerability report with non-exploitability details.
@@ -914,16 +1108,20 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.NotImplemented
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-VM-05
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-VM-05
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-VM-05
     assessment-logs:
-    - requirement-id: OSPS-VM-05.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-VM-05.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-VM-05.01
       applicability:
       - Maturity Level 3
       description: While active, the project documentation MUST include a policy that defines a threshold for remediation of SCA findings related to vulnerabilities and licenses.
@@ -932,10 +1130,13 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.NotImplemented
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-    - requirement-id: OSPS-VM-05.02
+      start: 2025-08-22T16:02:00+00:00
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-VM-05.02
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-VM-05.02
       applicability:
       - Maturity Level 3
       description: While active, the project documentation MUST include a policy to address SCA violations prior to any release.
@@ -944,10 +1145,13 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.NotImplemented
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-    - requirement-id: OSPS-VM-05.03
+      start: 2025-08-22T16:02:00+00:00
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-VM-05.03
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-VM-05.03
       applicability:
       - Maturity Level 3
       description: While active, all changes to the project's codebase MUST be automatically evaluated against a documented policy for malicious dependencies and known vulnerabilities in dependencies, then blocked in the event of violations, except when declared and suppressed as non-exploitable.
@@ -956,16 +1160,20 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.NotImplemented
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-  - name: ""
-    control-id: OSPS-VM-06
+      start: 2025-08-22T16:02:00+00:00
+  - name: OSPS-VM-06
     result: Not Run
     message: ""
-    corrupted-state: false
+    control:
+      reference-id: OSPS-B
+      entry-id: OSPS-VM-06
     assessment-logs:
-    - requirement-id: OSPS-VM-06.01
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-VM-06.01
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-VM-06.01
       applicability:
       - Maturity Level 3
       description: While active, the project documentation MUST include a policy that defines a threshold for remediation of SAST findings.
@@ -974,10 +1182,13 @@ evaluation-set:
       steps:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.HasDependencyManagementPolicy
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
-    - requirement-id: OSPS-VM-06.02
+      start: 2025-08-22T16:02:00+00:00
+    - requirement:
+        reference-id: OSPS-B
+        entry-id: OSPS-VM-06.02
+      procedure:
+        reference-id: OSPS-B
+        entry-id: PROC-OSPS-VM-06.02
       applicability:
       - Maturity Level 3
       description: While active, all changes to the project's codebase MUST be automatically evaluated against a documented policy for security weaknesses and blocked in the event of violations except when declared and suppressed as non-exploitable.
@@ -988,6 +1199,4 @@ evaluation-set:
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/reusable_steps.HasSecurityInsightsFile
       - github.com/revanite-io/pvtr-github-repo/evaluation_plans/osps/vuln_management.sastToolDefined
       steps-executed: 0
-      start: 2025-08-22T16:02:00.000000000Z
-      value: null
-      changes: {}
+      start: 2025-08-22T16:02:00+00:00

@@ -2,32 +2,49 @@
 
 package layer4
 
-// EvaluationPlan defines how a set of Layer 2 controls are to be evaluated.
-type EvaluationPlan struct {
+// EvaluationDocument defines how a set of Layer 2 controls are to be evaluated and the associated outcomes of the evaluation.
+type EvaluationDocument struct {
 	Metadata	Metadata	`json:"metadata" yaml:"metadata"`
 
-	Plans	[]AssessmentPlan	`json:"plans" yaml:"plans"`
+	EvaluationPlan	*EvaluationPlan	`json:"evaluation-plan,omitempty" yaml:"evaluation-plan,omitempty"`
+
+	EvaluationLogs	[]EvaluationLog	`json:"evaluation-logs,omitempty" yaml:"evaluation-logs,omitempty"`
 }
 
-// Metadata contains metadata about the Layer 4 evaluation plan and log.
+// Metadata contains common fields shared across all metadata types.
 type Metadata struct {
 	Id	string	`json:"id" yaml:"id"`
 
 	Version	string	`json:"version,omitempty" yaml:"version,omitempty"`
 
-	Author	Author	`json:"author" yaml:"author"`
+	Author	Actor	`json:"author" yaml:"author"`
+
+	Description	string	`json:"description,omitempty" yaml:"description,omitempty"`
 
 	MappingReferences	[]MappingReference	`json:"mapping-references,omitempty" yaml:"mapping-references,omitempty"`
 }
 
-// Author contains the information about the entity that produced the evaluation plan or log.
-type Author struct {
+// Actor represents an entity (human or tool) that can perform actions in evaluations.
+type Actor struct {
+	// Id uniquely identifies the actor.
+	Id	string	`json:"id" yaml:"id"`
+
+	// Name provides the name of the actor.
 	Name	string	`json:"name" yaml:"name"`
 
-	Uri	string	`json:"uri,omitempty" yaml:"uri,omitempty"`
+	// Type specifies how the evaluation is executed (automated tool or manual/human evaluator).
+	Type	ExecutionType	`json:"type" yaml:"type"`
 
+	// Version specifies the version of the actor (if applicable, e.g., for tools).
 	Version	string	`json:"version,omitempty" yaml:"version,omitempty"`
 
+	// Description provides additional context about the actor.
+	Description	string	`json:"description,omitempty" yaml:"description,omitempty"`
+
+	// Uri provides a general URI for the actor information.
+	Uri	string	`json:"uri,omitempty" yaml:"uri,omitempty"`
+
+	// Contact provides contact information for the actor.
 	Contact	Contact	`json:"contact,omitempty" yaml:"contact,omitempty"`
 }
 
@@ -60,6 +77,16 @@ type MappingReference struct {
 	Url	string	`json:"url,omitempty" yaml:"url,omitempty"`
 }
 
+// EvaluationPlan defines how a set of Layer 2 controls are to be evaluated.
+type EvaluationPlan struct {
+	Metadata	Metadata	`json:"metadata" yaml:"metadata"`
+
+	// Evaluators defines the assessment evaluators that can be used to execute assessment procedures.
+	Evaluators	[]Actor	`json:"evaluators" yaml:"evaluators"`
+
+	Plans	[]AssessmentPlan	`json:"plans" yaml:"plans"`
+}
+
 // AssessmentPlan defines all testing procedures for a control id.
 type AssessmentPlan struct {
 	// Control points to the Layer 2 control being evaluated.
@@ -88,9 +115,9 @@ type Mapping struct {
 
 // EvaluationLog contains the results of evaluating a set of Layer 2 controls.
 type EvaluationLog struct {
-	Evaluations	[]*ControlEvaluation	`json:"evaluations" yaml:"evaluations"`
-
 	Metadata	Metadata	`json:"metadata,omitempty" yaml:"metadata,omitempty"`
+
+	Evaluations	[]*ControlEvaluation	`json:"evaluations" yaml:"evaluations"`
 }
 
 // ControlEvaluation contains the results of evaluating a single Layer 4 control.
@@ -142,6 +169,9 @@ type AssessmentLog struct {
 
 	// Recommendation provides guidance on how to address a failed assessment.
 	Recommendation	string	`json:"recommendation,omitempty" yaml:"recommendation,omitempty"`
+
+	// ConfidenceLevel indicates the evaluator's confidence level in this specific assessment result.
+	ConfidenceLevel	ConfidenceLevel	`json:"confidence-level,omitempty" yaml:"confidence-level,omitempty"`
 }
 
 type Datetime string
@@ -168,6 +198,34 @@ type AssessmentProcedure struct {
 
 	// Documentation provides a URL to documentation that describes how the assessment procedure evaluates the control requirement
 	Documentation	string	`json:"documentation,omitempty" yaml:"documentation,omitempty"`
+
+	// Evaluators lists which assessment evaluators can execute this procedure.
+	Evaluators	[]EvaluatorMapping	`json:"evaluators" yaml:"evaluators"`
+
+	// Strategy defines the rules for aggregating results from multiple evaluators running the same procedure.
+	Strategy	*Strategy	`json:"strategy,omitempty" yaml:"strategy,omitempty"`
+}
+
+// EvaluatorMapping maps an assessment evaluator to a procedure.
+type EvaluatorMapping struct {
+	Id	string	`json:"id" yaml:"id"`
+
+	// Authoritative determines how this evaluator participates in conflict resolution when using AuthoritativeConfirmation strategy.
+	// If true, the evaluator can trigger findings independently. If false (default), the evaluator requires confirmation from authoritative evaluators before triggering findings.
+	// Note: This field is only used with AuthoritativeConfirmation strategy. With Strict (default) or ManualOverride strategies, this field is ignored.
+	Authoritative	bool	`json:"authoritative,omitempty" yaml:"authoritative,omitempty"`
+
+	// Remarks provides context about why this evaluator-procedure combination was chosen.
+	Remarks	string	`json:"remarks,omitempty" yaml:"remarks,omitempty"`
+}
+
+// Strategy defines the rules for resolving conflicts between multiple evaluator results.
+type Strategy struct {
+	// ConflictRuleType specifies the aggregation logic used to resolve conflicts when multiple evaluators provide results for the same assessment procedure.
+	ConflictRuleType	ConflictRuleType	`json:"conflict-rule-type" yaml:"conflict-rule-type"`
+
+	// Remarks provides context for why this specific conflict resolution strategy was chosen.
+	Remarks	string	`json:"remarks,omitempty" yaml:"remarks,omitempty"`
 }
 
 type Email string
