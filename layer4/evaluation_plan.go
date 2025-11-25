@@ -43,7 +43,7 @@ type Checklist struct {
 }
 
 // ToChecklist converts an EvaluationPlan into a structured Checklist.
-func (e EvaluationPlan) ToChecklist() (Checklist, error) {
+func (e *EvaluationPlan) ToChecklist() (Checklist, error) {
 	checklist := Checklist{}
 
 	if e.Metadata.Id != "" {
@@ -92,7 +92,7 @@ func (e EvaluationPlan) ToChecklist() (Checklist, error) {
 
 // ToMarkdownChecklist converts an evaluation plan into a markdown checklist.
 // Generates a pre-execution checklist showing what needs to be checked.
-func (e EvaluationPlan) ToMarkdownChecklist() (string, error) {
+func (e *EvaluationPlan) ToMarkdownChecklist() (string, error) {
 	checklist, err := e.ToChecklist()
 	if err != nil {
 		return "", fmt.Errorf("failed to build checklist: %w", err)
