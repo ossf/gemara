@@ -29,7 +29,7 @@ func TestToSARIF(t *testing.T) {
 			name:        "basic conversion with multiple results",
 			artifactURI: "",
 			catalog:     nil,
-			evaluationLog: makeEvaluationLog(Author{
+			evaluationLog: makeEvaluationLog(Actor{
 				Name:    "gemara",
 				Uri:     "https://github.com/ossf/gemara",
 				Version: "1.0.0",
@@ -58,7 +58,7 @@ func TestToSARIF(t *testing.T) {
 			name:        "with artifactURI parameter",
 			artifactURI: "README.md",
 			catalog:     nil,
-			evaluationLog: makeEvaluationLog(Author{
+			evaluationLog: makeEvaluationLog(Actor{
 				Name:    "gemara",
 				Uri:     "https://github.com/test/repo",
 				Version: "1.0.0",
@@ -83,7 +83,7 @@ func TestToSARIF(t *testing.T) {
 			name:        "empty author URI",
 			artifactURI: "",
 			catalog:     nil,
-			evaluationLog: makeEvaluationLog(Author{
+			evaluationLog: makeEvaluationLog(Actor{
 				Name:    "gemara",
 				Uri:     "",
 				Version: "1.0.0",
@@ -108,7 +108,7 @@ func TestToSARIF(t *testing.T) {
 			name:        "with catalog enrichment",
 			artifactURI: "README.md",
 			catalog:     testCatalog,
-			evaluationLog: makeEvaluationLog(Author{
+			evaluationLog: makeEvaluationLog(Actor{
 				Name:    "test-tool",
 				Uri:     "https://github.com/test/tool",
 				Version: "1.0.0",
@@ -147,7 +147,7 @@ func TestToSARIF(t *testing.T) {
 			name:        "without catalog",
 			artifactURI: "README.md",
 			catalog:     nil,
-			evaluationLog: makeEvaluationLog(Author{
+			evaluationLog: makeEvaluationLog(Actor{
 				Name:    "test-tool",
 				Uri:     "https://github.com/test/tool",
 				Version: "1.0.0",
@@ -182,7 +182,7 @@ func TestToSARIF(t *testing.T) {
 			name:        "catalog recommendation when assessment log has none",
 			artifactURI: "README.md",
 			catalog:     testCatalog,
-			evaluationLog: makeEvaluationLog(Author{
+			evaluationLog: makeEvaluationLog(Actor{
 				Name:    "test-tool",
 				Uri:     "https://github.com/test/tool",
 				Version: "1.0.0",
@@ -267,7 +267,7 @@ func TestToSARIF_ResultLevels(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.result.String(), func(t *testing.T) {
-			evaluationLog := makeEvaluationLog(Author{
+			evaluationLog := makeEvaluationLog(Actor{
 				Name:    "test",
 				Uri:     "https://test",
 				Version: "1.0.0",
@@ -290,8 +290,26 @@ func TestToSARIF_ResultLevels(t *testing.T) {
 
 // Helper functions
 
-func makeEvaluationLog(author Author, logs []*AssessmentLog) EvaluationLog {
+func makeEvaluationLog(evaluator Actor, logs []*AssessmentLog) EvaluationLog {
+	// Convert evaluator to author (evaluator is the author of the log)
+	// The author.id references the evaluator from the plan
 	return EvaluationLog{
+		Metadata: Metadata{
+			Id: "test-evaluation-log",
+			Author: Actor{
+				Id:      evaluator.Id,
+				Name:    evaluator.Name,
+				Uri:     evaluator.Uri,
+				Version: evaluator.Version,
+			},
+			MappingReferences: []MappingReference{
+				{
+					Id:      "TEST-REF",
+					Title:   "Test Reference",
+					Version: "1.0",
+				},
+			},
+		},
 		Evaluations: []*ControlEvaluation{
 			{
 				Name:           "Example Control",
@@ -300,7 +318,6 @@ func makeEvaluationLog(author Author, logs []*AssessmentLog) EvaluationLog {
 				AssessmentLogs: logs,
 			},
 		},
-		Metadata: Metadata{Author: author},
 	}
 }
 

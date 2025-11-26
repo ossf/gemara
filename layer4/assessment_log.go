@@ -80,6 +80,16 @@ func (a *AssessmentLog) Run(targetData interface{}) Result {
 	return a.Result
 }
 
+// SetConfidenceLevel sets the evaluator's confidence level in this specific assessment result.
+// Returns an error if the assessment hasn't been run yet.
+func (a *AssessmentLog) SetConfidenceLevel(confidenceLevel ConfidenceLevel) error {
+	if a.Result == NotRun {
+		return errors.New("cannot set confidence level before assessment has been run")
+	}
+	a.ConfidenceLevel = confidenceLevel
+	return nil
+}
+
 // precheck verifies that the assessment has all the required fields.
 // It returns an error if the assessment is not valid.
 func (a *AssessmentLog) precheck() error {

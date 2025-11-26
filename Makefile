@@ -30,6 +30,7 @@ lintcue:
 	@cue eval ./schemas/layer-2.cue --all-errors --verbose
 	@cue eval ./schemas/layer-3.cue --all-errors --verbose
 	@cue eval ./schemas/layer-4.cue --all-errors --verbose
+	@cue eval ./schemas/layer-5.cue --all-errors --verbose
 
 cuegen:
 	@echo "  >  Generating types from cue schema ..."
@@ -41,11 +42,14 @@ cuegen:
 	@mv cue_types_gen.go layer3/generated_types.go
 	@cue exp gengotypes ./schemas/layer-4.cue
 	@mv cue_types_gen.go layer4/generated_types.go
+	@cue exp gengotypes ./schemas/layer-5.cue
+	@mv cue_types_gen.go layer5/generated_types.go
 	@go build -o utils/types_tagger utils/types_tagger.go
 	@utils/types_tagger layer1/generated_types.go
 	@utils/types_tagger layer2/generated_types.go
 	@utils/types_tagger layer3/generated_types.go
 	@utils/types_tagger layer4/generated_types.go
+	@utils/types_tagger layer5/generated_types.go
 	@rm utils/types_tagger
 
 dirtycheck:
