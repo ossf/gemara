@@ -1,9 +1,10 @@
 package schemas
 
-@go(layer2)
+@go(gemara)
 
 #Catalog: {
-	metadata?: #Metadata
+	"metadata"?: #Metadata @go(Metadata)
+	title:       string
 
 	"control-families"?: [...#ControlFamily] @go(ControlFamilies)
 	threats?: [...#Threat] @go(Threats)
@@ -12,23 +13,6 @@ package schemas
 	"imported-controls"?: [...#Mapping] @go(ImportedControls)
 	"imported-threats"?: [...#Mapping] @go(ImportedThreats)
 	"imported-capabilities"?: [...#Mapping] @go(ImportedCapabilities)
-}
-
-// Resuable types //
-#Metadata: {
-	id:               string
-	title:            string
-	description:      string
-	version?:         string
-	"last-modified"?: string @go(LastModified) @yaml("last-modified,omitempty")
-	"applicability-categories"?: [...#Category] @go(ApplicabilityCategories) @yaml("applicability-categories,omitempty")
-	"mapping-references"?: [...#MappingReference] @go(MappingReferences) @yaml("mapping-references,omitempty")
-}
-
-#Category: {
-	id:          string
-	title:       string
-	description: string
 }
 
 #ControlFamily: {
@@ -60,26 +44,6 @@ package schemas
 	id:          string
 	title:       string
 	description: string
-}
-
-#MappingReference: {
-	id:           string
-	title:        string
-	version:      string
-	description?: string
-	url?:         =~"^https?://[^\\s]+$"
-}
-
-#Mapping: {
-	"reference-id": string @go(ReferenceId)
-	entries: [...#MappingEntry]
-	remarks?: string
-}
-
-#MappingEntry: {
-	"reference-id": string @go(ReferenceId)
-	strength:       int & >=1 & <=10
-	remarks?:       string
 }
 
 #AssessmentRequirement: {

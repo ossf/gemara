@@ -1,33 +1,22 @@
 package schemas
 
-import "time"
-
-@go(layer3)
+@go(gemara)
 
 // Core Document Structure
 #PolicyDocument: {
-	metadata:               #Metadata
+	metadata:          #Metadata
+	"organization-id": string @go(OrganizationID) @yaml("organization-id")
+	title:             string
+	purpose:           string
+	contacts:          #Contacts
+
 	scope:                  #Scope
 	"implementation-plan"?: #ImplementationPlan @go(ImplementationPlan) @yaml("implementation-plan,omitempty")
-	"guidance-references": [...#Mapping] @go(GuidanceReferences) @yaml("guidance-references")
-	"control-references": [...#Mapping] @go(ControlReferences) @yaml("control-references")
-}
-
-#Metadata: {
-	id:        string
-	title:     string
-	objective: string
-	version:   string
-	contacts:  #Contacts
-
-	"last-modified":    string @go(LastModified) @yaml("last-modified,omitempty")
-	"organization-id"?: string @go(OrganizationID) @yaml("organization-id,omitempty")
-	"author-notes"?:    string @go(AuthorNotes) @yaml("author-notes,omitempty")
-	"mapping-references"?: [...#MappingReference] @go(MappingReferences) @yaml("mapping-references,omitempty")
+	"guidance-references": [...#PolicyMapping] @go(GuidanceReferences) @yaml("guidance-references")
+	"control-references": [...#PolicyMapping] @go(ControlReferences) @yaml("control-references")
 }
 
 #Contacts: {
-	author: #Contact
 	responsible: [...#Contact] // The person or group responsible for implementing controls for technical requirements
 	accountable: [...#Contact] // The person or group accountable for evaluating and enforcing the efficacy of technical controls
 	consulted?: [...#Contact] // Optional person or group who may be consulted for more information about the technical requirements
@@ -64,7 +53,7 @@ import "time"
 	providers?: [...string]
 }
 
-#Mapping: {
+#PolicyMapping: {
 	"reference-id": string @go(ReferenceId) @yaml("reference-id",omitempty)
 	"in-scope":     #Scope @go(InScope) @yaml("in-scope",omitempty)
 	"out-of-scope": #Scope @go(OutOfScope) @yaml("out-of-scope",omitempty)
@@ -119,27 +108,6 @@ import "time"
 	recommendations?: [...string]
 }
 
-#Contact: {
-	// The contact person's name.
-	name: string
-	// Indicates whether this admin is the first point of contact for inquiries. Only one entry should be marked as primary.
-	primary: bool
-	// The entity with which the contact is affiliated, such as a school or employer.
-	affiliation?: string @go(Affiliation,type=*string)
-	// A preferred email address to reach the contact.
-	email?: #Email @go(Email,type=*Email)
-	// A social media handle or profile for the contact.
-	social?: string @go(Social,type=*string)
-}
-
-#MappingReference: {
-	id:           string
-	title:        string
-	version:      string
-	description?: string
-	url?:         =~"^https?://[^\\s]+$"
-}
-
 #EvaluationPoint: "development-tools" |
 	// For noncompliance risk to workflows or local machines
 	"pre-commit-hook" |
@@ -168,6 +136,4 @@ import "time"
 	"Consulted" |
 	"Informed"
 
-#Datetime: time.Format("2006-01-02T15:04:05Z07:00") @go(Datetime,format="date-time")
-#ModType:  "increase-strictness" | "clarify" | "reduce-strictness" | "exclude"
-#Email:    =~"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
+#ModType: "increase-strictness" | "clarify" | "reduce-strictness" | "exclude"
