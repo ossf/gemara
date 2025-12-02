@@ -13,11 +13,11 @@ type Catalog struct {
 
 	Capabilities []Capability `json:"capabilities,omitempty" yaml:"capabilities,omitempty"`
 
-	ImportedControls []Mapping `json:"imported-controls,omitempty" yaml:"imported-controls,omitempty"`
+	ImportedControls []MultiMapping `json:"imported-controls,omitempty" yaml:"imported-controls,omitempty"`
 
-	ImportedThreats []Mapping `json:"imported-threats,omitempty" yaml:"imported-threats,omitempty"`
+	ImportedThreats []MultiMapping `json:"imported-threats,omitempty" yaml:"imported-threats,omitempty"`
 
-	ImportedCapabilities []Mapping `json:"imported-capabilities,omitempty" yaml:"imported-capabilities,omitempty"`
+	ImportedCapabilities []MultiMapping `json:"imported-capabilities,omitempty" yaml:"imported-capabilities,omitempty"`
 }
 
 // Metadata represents common metadata fields shared across all layers
@@ -129,10 +129,10 @@ type Guideline struct {
 	GuidelineParts []Part `json:"guideline-parts,omitempty" yaml:"guideline-parts,omitempty"`
 
 	// Crosswalking this guideline to other guidelines in other documents
-	GuidelineMappings []Mapping `json:"guideline-mappings,omitempty" yaml:"guideline-mappings,omitempty"`
+	GuidelineMappings []MultiMapping `json:"guideline-mappings,omitempty" yaml:"guideline-mappings,omitempty"`
 
 	// A list for associated key principle ids
-	PrincipleMappings []Mapping `json:"principle-mappings,omitempty" yaml:"principle-mappings,omitempty"`
+	PrincipleMappings []MultiMapping `json:"principle-mappings,omitempty" yaml:"principle-mappings,omitempty"`
 
 	// This is akin to related controls, but using more explicit terminology
 	SeeAlso []string `json:"see-also,omitempty" yaml:"see-also,omitempty"`
@@ -171,8 +171,8 @@ type Part struct {
 	Recommendations []string `json:"recommendations,omitempty" yaml:"recommendations,omitempty"`
 }
 
-// Mapping represents a mapping to an external reference with one or more entries.
-type Mapping struct {
+// MultiMapping represents a mapping to an external reference with one or more entries.
+type MultiMapping struct {
 	// ReferenceId should reference the corresponding MappingReference id from metadata
 	ReferenceId string `json:"reference-id" yaml:"reference-id"`
 
@@ -209,9 +209,9 @@ type Control struct {
 
 	AssessmentRequirements []AssessmentRequirement `json:"assessment-requirements" yaml:"assessment-requirements"`
 
-	GuidelineMappings []Mapping `json:"guideline-mappings,omitempty" yaml:"guideline-mappings,omitempty"`
+	GuidelineMappings []MultiMapping `json:"guideline-mappings,omitempty" yaml:"guideline-mappings,omitempty"`
 
-	ThreatMappings []Mapping `json:"threat-mappings,omitempty" yaml:"threat-mappings,omitempty"`
+	ThreatMappings []MultiMapping `json:"threat-mappings,omitempty" yaml:"threat-mappings,omitempty"`
 }
 
 type AssessmentRequirement struct {
@@ -231,9 +231,9 @@ type Threat struct {
 
 	Description string `json:"description" yaml:"description"`
 
-	Capabilities []Mapping `json:"capabilities" yaml:"capabilities"`
+	Capabilities []MultiMapping `json:"capabilities" yaml:"capabilities"`
 
-	ExternalMappings []Mapping `json:"external-mappings,omitempty" yaml:"external-mappings,omitempty"`
+	ExternalMappings []MultiMapping `json:"external-mappings,omitempty" yaml:"external-mappings,omitempty"`
 }
 
 type Capability struct {
@@ -260,7 +260,7 @@ type EvaluationPlan struct {
 // AssessmentPlan defines all testing procedures for a control id.
 type AssessmentPlan struct {
 	// Control points to the Layer 2 control being evaluated.
-	Control EntryMapping `json:"control" yaml:"control"`
+	Control SingleMapping `json:"control" yaml:"control"`
 
 	// Assessments defines possible testing procedures to evaluate the control.
 	//
@@ -269,8 +269,8 @@ type AssessmentPlan struct {
 	Assessments []Assessment `json:"assessments" yaml:"assessments"`
 }
 
-// EntryMapping represents how a specific entry (control/requirement/procedure) maps to a MappingReference.
-type EntryMapping struct {
+// SingleMapping represents how a specific entry (control/requirement/procedure) maps to a MappingReference.
+type SingleMapping struct {
 	// ReferenceId should reference the corresponding MappingReference id from metadata
 	ReferenceId string `json:"reference-id,omitempty" yaml:"reference-id,omitempty"`
 
@@ -294,7 +294,7 @@ type ControlEvaluation struct {
 
 	Message string `json:"message" yaml:"message"`
 
-	Control EntryMapping `json:"control" yaml:"control"`
+	Control SingleMapping `json:"control" yaml:"control"`
 
 	// Enforce that control reference and the assessments' references match
 	// This formulation uses the control's reference if the assessment doesn't include a reference
@@ -304,10 +304,10 @@ type ControlEvaluation struct {
 // AssessmentLog contains the results of executing a single assessment procedure for a control requirement.
 type AssessmentLog struct {
 	// Requirement should map to the assessment requirement for this assessment.
-	Requirement EntryMapping `json:"requirement" yaml:"requirement"`
+	Requirement SingleMapping `json:"requirement" yaml:"requirement"`
 
 	// Procedure should map to the assessment procedure being executed.
-	Procedure EntryMapping `json:"procedure" yaml:"procedure"`
+	Procedure SingleMapping `json:"procedure" yaml:"procedure"`
 
 	// Description provides a summary of the assessment procedure.
 	Description string `json:"description" yaml:"description"`
@@ -352,9 +352,9 @@ type GuidanceDocument struct {
 	Categories []Category `json:"categories,omitempty" yaml:"categories,omitempty"`
 
 	// For inheriting from other guidance documents to create tailored documents/baselines
-	ImportedGuidelines []Mapping `json:"imported-guidelines,omitempty" yaml:"imported-guidelines,omitempty"`
+	ImportedGuidelines []MultiMapping `json:"imported-guidelines,omitempty" yaml:"imported-guidelines,omitempty"`
 
-	ImportedPrinciples []Mapping `json:"imported-principles,omitempty" yaml:"imported-principles,omitempty"`
+	ImportedPrinciples []MultiMapping `json:"imported-principles,omitempty" yaml:"imported-principles,omitempty"`
 }
 
 type DocumentType string
@@ -363,7 +363,7 @@ type DocumentType string
 type Exemption struct {
 	Reason string `json:"reason" yaml:"reason"`
 
-	Redirect Mapping `json:"redirect,omitempty" yaml:"redirect,omitempty"`
+	Redirect MultiMapping `json:"redirect,omitempty" yaml:"redirect,omitempty"`
 }
 
 // Core Document Structure
@@ -500,9 +500,9 @@ type GuidelineModifier struct {
 
 	Rationale *string `json:"rationale,omitempty" yaml:"rationale,omitempty"`
 
-	GuidelineMappings []Mapping `json:"guideline-mappings,omitempty" yaml:"guideline-mappings,omitempty"`
+	GuidelineMappings []MultiMapping `json:"guideline-mappings,omitempty" yaml:"guideline-mappings,omitempty"`
 
-	PrincipleMappings []Mapping `json:"principle-mappings,omitempty" yaml:"principle-mappings,omitempty"`
+	PrincipleMappings []MultiMapping `json:"principle-mappings,omitempty" yaml:"principle-mappings,omitempty"`
 
 	SeeAlso []string `json:"see-also,omitempty" yaml:"see-also,omitempty"`
 
@@ -512,7 +512,7 @@ type GuidelineModifier struct {
 // Assessment defines all testing procedures for a requirement.
 type Assessment struct {
 	// RequirementId points to the requirement being tested.
-	Requirement EntryMapping `json:"requirement" yaml:"requirement"`
+	Requirement SingleMapping `json:"requirement" yaml:"requirement"`
 
 	// Procedures defines possible testing procedures to evaluate the requirement.
 	Procedures []AssessmentProcedure `json:"procedures" yaml:"procedures"`

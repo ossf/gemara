@@ -33,7 +33,7 @@ func (as AssessmentStep) MarshalYAML() (interface{}, error) {
 // NewAssessment creates a new AssessmentLog object and returns a pointer to it.
 func NewAssessment(requirementId string, description string, applicability []string, steps []AssessmentStep) (*AssessmentLog, error) {
 	a := &AssessmentLog{
-		Requirement: EntryMapping{
+		Requirement: SingleMapping{
 			EntryId: requirementId,
 		},
 		Description:   description,

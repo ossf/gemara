@@ -114,7 +114,7 @@ func TestFromEvaluationLog(t *testing.T) {
 				Version: "1.0.0",
 			}, []*gemara.AssessmentLog{
 				{
-					Requirement:    gemara.EntryMapping{EntryId: "REQ-1"},
+					Requirement:    gemara.SingleMapping{EntryId: "REQ-1"},
 					Description:    "Test description",
 					Result:         gemara.Failed,
 					Message:        "Test failed",
@@ -153,7 +153,7 @@ func TestFromEvaluationLog(t *testing.T) {
 				Version: "1.0.0",
 			}, []*gemara.AssessmentLog{
 				{
-					Requirement:    gemara.EntryMapping{EntryId: "REQ-1"},
+					Requirement:    gemara.SingleMapping{EntryId: "REQ-1"},
 					Description:    "Test description",
 					Result:         gemara.Failed,
 					Message:        "Test failed",
@@ -188,7 +188,7 @@ func TestFromEvaluationLog(t *testing.T) {
 				Version: "1.0.0",
 			}, []*gemara.AssessmentLog{
 				{
-					Requirement:   gemara.EntryMapping{EntryId: "REQ-1"},
+					Requirement:   gemara.SingleMapping{EntryId: "REQ-1"},
 					Description:   "Test description",
 					Result:        gemara.Failed,
 					Message:       "Test failed",
@@ -295,7 +295,7 @@ func makeEvaluationLog(author gemara.Actor, logs []*gemara.AssessmentLog) gemara
 		Evaluations: []*gemara.ControlEvaluation{
 			{
 				Name:           "Example Control",
-				Control:        gemara.EntryMapping{EntryId: "CTRL-1"},
+				Control:        gemara.SingleMapping{EntryId: "CTRL-1"},
 				Result:         gemara.Passed,
 				AssessmentLogs: logs,
 			},
@@ -309,7 +309,7 @@ func makeAssessmentLog(entryID, description string, result gemara.Result, messag
 		steps = []gemara.AssessmentStep{func(interface{}) (gemara.Result, string) { return result, "" }}
 	}
 	return &gemara.AssessmentLog{
-		Requirement:   gemara.EntryMapping{EntryId: entryID},
+		Requirement:   gemara.SingleMapping{EntryId: entryID},
 		Description:   description,
 		Result:        result,
 		Message:       message,

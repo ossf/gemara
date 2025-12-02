@@ -28,7 +28,7 @@ func failingAssessmentPtr() *AssessmentLog {
 
 func failingAssessment() AssessmentLog {
 	return AssessmentLog{
-		Requirement: EntryMapping{
+		Requirement: SingleMapping{
 			EntryId: "failingAssessment()",
 		},
 		Description: "failing assessment",
@@ -46,7 +46,7 @@ func passingAssessmentPtr() *AssessmentLog {
 
 func passingAssessment() AssessmentLog {
 	return AssessmentLog{
-		Requirement: EntryMapping{
+		Requirement: SingleMapping{
 			EntryId: "passingAssessment()",
 		},
 		Description: "passing assessment",
@@ -63,7 +63,7 @@ func needsReviewAssessmentPtr() *AssessmentLog {
 
 func needsReviewAssessment() AssessmentLog {
 	return AssessmentLog{
-		Requirement: EntryMapping{
+		Requirement: SingleMapping{
 			EntryId: "needsReviewAssessment()",
 		},
 		Description: "needs review assessment",
@@ -82,7 +82,7 @@ func unknownAssessmentPtr() *AssessmentLog {
 
 func unknownAssessment() AssessmentLog {
 	return AssessmentLog{
-		Requirement: EntryMapping{
+		Requirement: SingleMapping{
 			EntryId: "unknownAssessment()",
 		},
 		Description: "unknown assessment",
@@ -97,7 +97,7 @@ func unknownAssessment() AssessmentLog {
 
 func badRevertPassingAssessment() AssessmentLog {
 	return AssessmentLog{
-		Requirement: EntryMapping{
+		Requirement: SingleMapping{
 			EntryId: "badRevertPassingAssessment()",
 		},
 		Description: "bad revert passing assessment",

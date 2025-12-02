@@ -18,13 +18,13 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 			evaluationPlan: EvaluationPlan{
 				Plans: []AssessmentPlan{
 					{
-						Control: EntryMapping{
+						Control: SingleMapping{
 							ReferenceId: "OSPS-B",
 							EntryId:     "OSPS-AC-01",
 						},
 						Assessments: []Assessment{
 							{
-								Requirement: EntryMapping{
+								Requirement: SingleMapping{
 									ReferenceId: "OSPS-B",
 									EntryId:     "OSPS-AC-01.01",
 								},
@@ -43,7 +43,7 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 								},
 							},
 							{
-								Requirement: EntryMapping{
+								Requirement: SingleMapping{
 									ReferenceId: "OSPS-B",
 									EntryId:     "OSPS-AC-01.02",
 								},
@@ -58,13 +58,13 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 						},
 					},
 					{
-						Control: EntryMapping{
+						Control: SingleMapping{
 							ReferenceId: "OSPS-B",
 							EntryId:     "OSPS-AC-03",
 						},
 						Assessments: []Assessment{
 							{
-								Requirement: EntryMapping{
+								Requirement: SingleMapping{
 									ReferenceId: "OSPS-B",
 									EntryId:     "OSPS-AC-03.01",
 								},
@@ -118,13 +118,13 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 			evaluationPlan: EvaluationPlan{
 				Plans: []AssessmentPlan{
 					{
-						Control: EntryMapping{
+						Control: SingleMapping{
 							ReferenceId: "OSPS-B",
 							EntryId:     "OSPS-AC-02",
 						},
 						Assessments: []Assessment{
 							{
-								Requirement: EntryMapping{
+								Requirement: SingleMapping{
 									ReferenceId: "OSPS-B",
 									EntryId:     "",
 								}, // Empty ID should be numbered
@@ -136,7 +136,7 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 								},
 							},
 							{
-								Requirement: EntryMapping{
+								Requirement: SingleMapping{
 									ReferenceId: "OSPS-B",
 									EntryId:     "OSPS-AC-02.02",
 								},
@@ -212,13 +212,13 @@ func Test_ToChecklist(t *testing.T) {
 	plan := EvaluationPlan{
 		Plans: []AssessmentPlan{
 			{
-				Control: EntryMapping{
+				Control: SingleMapping{
 					ReferenceId: "OSPS-B",
 					EntryId:     "OSPS-AC-01",
 				},
 				Assessments: []Assessment{
 					{
-						Requirement: EntryMapping{
+						Requirement: SingleMapping{
 							ReferenceId: "OSPS-B",
 							EntryId:     "OSPS-AC-01.01",
 						},
@@ -268,7 +268,7 @@ func Test_ToChecklist_ErrorCases(t *testing.T) {
 		plan := EvaluationPlan{
 			Plans: []AssessmentPlan{
 				{
-					Control: EntryMapping{
+					Control: SingleMapping{
 						ReferenceId: "OSPS-B",
 						EntryId:     "OSPS-AC-01",
 					},
@@ -286,13 +286,13 @@ func Test_ToChecklist_ErrorCases(t *testing.T) {
 		plan := EvaluationPlan{
 			Plans: []AssessmentPlan{
 				{
-					Control: EntryMapping{
+					Control: SingleMapping{
 						ReferenceId: "OSPS-B",
 						EntryId:     "OSPS-AC-01",
 					},
 					Assessments: []Assessment{
 						{
-							Requirement: EntryMapping{
+							Requirement: SingleMapping{
 								ReferenceId: "OSPS-B",
 								EntryId:     "OSPS-AC-01.01",
 							},

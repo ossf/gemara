@@ -19,7 +19,7 @@ package schemas
 	name:    string
 	result:  #Result
 	message: string
-	control: #EntryMapping
+	control: #SingleMapping
 	"assessment-logs": [...#AssessmentLog] @go(AssessmentLogs,type=[]*AssessmentLog)
 	// Enforce that control reference and the assessments' references match
 	// This formulation uses the control's reference if the assessment doesn't include a reference
@@ -31,9 +31,9 @@ package schemas
 // AssessmentLog contains the results of executing a single assessment procedure for a control requirement.
 #AssessmentLog: {
 	// Requirement should map to the assessment requirement for this assessment.
-	requirement: #EntryMapping
+	requirement: #SingleMapping
 	// Procedure should map to the assessment procedure being executed.
-	procedure: #EntryMapping
+	procedure: #SingleMapping
 	// Description provides a summary of the assessment procedure.
 	description: string
 	// Result is the overall outcome of the assessment procedure, matching the result of the last step that was run.
@@ -61,7 +61,7 @@ package schemas
 // AssessmentPlan defines all testing procedures for a control id.
 #AssessmentPlan: {
 	// Control points to the Layer 2 control being evaluated.
-	control: #EntryMapping
+	control: #SingleMapping
 	// Assessments defines possible testing procedures to evaluate the control.
 	assessments: [...#Assessment] @go(Assessments,type=[]Assessment)
 	// Enforce that control reference and the assessments' references match
@@ -74,7 +74,7 @@ package schemas
 // Assessment defines all testing procedures for a requirement.
 #Assessment: {
 	// RequirementId points to the requirement being tested.
-	requirement: #EntryMapping
+	requirement: #SingleMapping
 	// Procedures defines possible testing procedures to evaluate the requirement.
 	procedures: [...#AssessmentProcedure] @go(Procedures)
 }

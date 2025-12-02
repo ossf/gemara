@@ -13,8 +13,8 @@ package schemas
 	"categories"?: [...#Category] @go(Categories)
 
 	// For inheriting from other guidance documents to create tailored documents/baselines
-	"imported-guidelines"?: [...#Mapping] @go(ImportedGuidelines) @yaml("imported-guidelines,omitempty")
-	"imported-principles"?: [...#Mapping] @go(ImportedPrinciples) @yaml("imported-principles,omitempty")
+	"imported-guidelines"?: [...#MultiMapping] @go(ImportedGuidelines) @yaml("imported-guidelines,omitempty")
+	"imported-principles"?: [...#MultiMapping] @go(ImportedPrinciples) @yaml("imported-principles,omitempty")
 }
 
 #DocumentType: "Standard" | "Regulation" | "Best Practice" | "Framework"
@@ -30,7 +30,7 @@ package schemas
 // Exemption represents an exemption with a reason and optional redirect
 #Exemption: {
 	reason:    string
-	redirect?: #Mapping @go(Redirect)
+	redirect?: #MultiMapping @go(Redirect)
 }
 
 // Rationale provides contextual information to help with development and understanding of
@@ -69,9 +69,9 @@ package schemas
 	// Represents individual guideline parts/statements
 	"guideline-parts"?: [...#Part] @go(GuidelineParts) @yaml("guideline-parts,omitempty")
 	// Crosswalking this guideline to other guidelines in other documents
-	"guideline-mappings"?: [...#Mapping] @go(GuidelineMappings) @yaml("guideline-mappings,omitempty")
+	"guideline-mappings"?: [...#MultiMapping] @go(GuidelineMappings) @yaml("guideline-mappings,omitempty")
 	// A list for associated key principle ids
-	"principle-mappings"?: [...#Mapping] @go(PrincipleMappings) @yaml("principle-mappings,omitempty")
+	"principle-mappings"?: [...#MultiMapping] @go(PrincipleMappings) @yaml("principle-mappings,omitempty")
 
 	// This is akin to related controls, but using more explicit terminology
 	"see-also"?: [...string] @go(SeeAlso) @yaml("see-also,omitempty")

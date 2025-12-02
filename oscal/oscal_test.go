@@ -163,7 +163,7 @@ func TestProfileFromGuidanceDocument(t *testing.T) {
 		Url:         "https://example.com",
 	}
 
-	importedGuidelines := gemara.Mapping{
+	importedGuidelines := gemara.MultiMapping{
 		ReferenceId: "EXP",
 		Entries: []gemara.MappingEntry{
 			{

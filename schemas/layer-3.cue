@@ -92,8 +92,8 @@ package schemas
 	recommendations?: [...string]
 	"base-guideline-id"?: string @go(BaseGuidelineID) @yaml("base-guideline-id,omitempty")
 	rationale?:           string @go(Rationale,optional=nillable)
-	"guideline-mappings"?: [...#Mapping] @go(GuidelineMappings) @yaml("guideline-mappings,omitempty")
-	"principle-mappings"?: [...#Mapping] @go(PrincipleMappings) @yaml("principle-mappings,omitempty")
+	"guideline-mappings"?: [...#MultiMapping] @go(GuidelineMappings) @yaml("guideline-mappings,omitempty")
+	"principle-mappings"?: [...#MultiMapping] @go(PrincipleMappings) @yaml("principle-mappings,omitempty")
 	"see-also"?: [...string] @go(SeeAlso) @yaml("see-also,omitempty")
 	"external-references"?: [...string] @go(ExternalReferences) @yaml("external-references,omitempty")
 }

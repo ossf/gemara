@@ -328,7 +328,7 @@ func guidelineToControl(g *gemara.GuidanceDocument, guideline gemara.Guideline, 
 	return control, oscalUtils.NormalizeControl(guideline.BaseGuidelineID, false)
 }
 
-func mappingToLinks(mappings []gemara.Mapping, resourcesMap map[string]string) []oscal.Link {
+func mappingToLinks(mappings []gemara.MultiMapping, resourcesMap map[string]string) []oscal.Link {
 	links := make([]oscal.Link, 0, len(mappings))
 	for _, mapping := range mappings {
 		ref, found := resourcesMap[mapping.ReferenceId]

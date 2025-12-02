@@ -10,9 +10,9 @@ package schemas
 	threats?: [...#Threat] @go(Threats)
 	capabilities?: [...#Capability] @go(Capabilities)
 
-	"imported-controls"?: [...#Mapping] @go(ImportedControls)
-	"imported-threats"?: [...#Mapping] @go(ImportedThreats)
-	"imported-capabilities"?: [...#Mapping] @go(ImportedCapabilities)
+	"imported-controls"?: [...#MultiMapping] @go(ImportedControls)
+	"imported-threats"?: [...#MultiMapping] @go(ImportedThreats)
+	"imported-capabilities"?: [...#MultiMapping] @go(ImportedCapabilities)
 }
 
 #ControlFamily: {
@@ -27,17 +27,17 @@ package schemas
 	title:     string
 	objective: string
 	"assessment-requirements": [...#AssessmentRequirement] @go(AssessmentRequirements)
-	"guideline-mappings"?: [...#Mapping] @go(GuidelineMappings)
-	"threat-mappings"?: [...#Mapping] @go(ThreatMappings)
+	"guideline-mappings"?: [...#MultiMapping] @go(GuidelineMappings)
+	"threat-mappings"?: [...#MultiMapping] @go(ThreatMappings)
 }
 
 #Threat: {
 	id:          string
 	title:       string
 	description: string
-	capabilities: [...#Mapping]
+	capabilities: [...#MultiMapping]
 
-	"external-mappings"?: [...#Mapping] @go(ExternalMappings)
+	"external-mappings"?: [...#MultiMapping] @go(ExternalMappings)
 }
 
 #Capability: {
