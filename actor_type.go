@@ -15,16 +15,20 @@ const (
 	Software ActorType = iota
 	// Human indicates the actor creates outputs as a result of human review or judgment.
 	Human
+	// SoftwareAssisted indicates the actor creates outputs with software assistance but requires human oversight or judgment.
+	SoftwareAssisted
 )
 
 var evaluatorTypeToString = map[ActorType]string{
-	Software: "Software",
-	Human:    "Human",
+	Software:        "Software",
+	Human:           "Human",
+	SoftwareAssisted: "Software-Assisted",
 }
 
 var stringToEvaluatorType = map[string]ActorType{
-	"Software": Software,
-	"Human":    Human,
+	"Software":         Software,
+	"Human":            Human,
+	"Software-Assisted": SoftwareAssisted,
 }
 
 func (e *ActorType) String() string {

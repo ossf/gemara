@@ -23,6 +23,11 @@ func TestActorType_String(t *testing.T) {
 			typ:  Human,
 			want: "Human",
 		},
+		{
+			name: "Software-Assisted type",
+			typ:  SoftwareAssisted,
+			want: "Software-Assisted",
+		},
 	}
 
 	for _, tt := range tests {
@@ -50,6 +55,12 @@ func TestActorType_MarshalYAML(t *testing.T) {
 			name:    "Human type",
 			typ:     Human,
 			want:    "Human",
+			wantErr: false,
+		},
+		{
+			name:    "Software-Assisted type",
+			typ:     SoftwareAssisted,
+			want:    "Software-Assisted",
 			wantErr: false,
 		},
 	}
@@ -84,6 +95,12 @@ func TestActorType_UnmarshalYAML(t *testing.T) {
 			name:    "Human type",
 			data:    "Human",
 			want:    Human,
+			wantErr: false,
+		},
+		{
+			name:    "Software-Assisted type",
+			data:    "Software-Assisted",
+			want:    SoftwareAssisted,
 			wantErr: false,
 		},
 		{
@@ -140,6 +157,12 @@ func TestActorType_MarshalJSON(t *testing.T) {
 			want:    `"Human"`,
 			wantErr: false,
 		},
+		{
+			name:    "Software-Assisted type",
+			typ:     SoftwareAssisted,
+			want:    `"Software-Assisted"`,
+			wantErr: false,
+		},
 	}
 
 	for _, tt := range tests {
@@ -172,6 +195,12 @@ func TestActorType_UnmarshalJSON(t *testing.T) {
 			name:    "Human type",
 			data:    `"Human"`,
 			want:    Human,
+			wantErr: false,
+		},
+		{
+			name:    "Software-Assisted type",
+			data:    `"Software-Assisted"`,
+			want:    SoftwareAssisted,
 			wantErr: false,
 		},
 		{
