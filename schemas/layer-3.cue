@@ -132,7 +132,7 @@ package schemas
 	"Manual Remediation"
 
 #NotificationGroup: "Responsible" |
-	"Acccountable" |
+	"Accountable" |
 	"Consulted" |
 	"Informed"
 

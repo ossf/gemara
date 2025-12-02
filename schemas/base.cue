@@ -22,7 +22,7 @@ import "time"
 	id: string
 	// Name provides the name of the actor.
 	name: string
-	// Type specifies the type of entity interacting in the wofklow.
+	// Type specifies the type of entity interacting in the workflow.
 	type: #ActorType @go(Type)
 	// Version specifies the version of the actor (if applicable, e.g., for tools).
 	version?: string

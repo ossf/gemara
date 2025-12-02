@@ -52,7 +52,7 @@ type Actor struct {
 	// Name provides the name of the actor.
 	Name string `json:"name" yaml:"name"`
 
-	// Type specifies the type of entity interacting in the wofklow.
+	// Type specifies the type of entity interacting in the workflow.
 	Type ActorType `json:"type" yaml:"type"`
 
 	// Version specifies the version of the actor (if applicable, e.g., for tools).
@@ -344,10 +344,10 @@ type GuidanceDocument struct {
 
 	DocumentType DocumentType `json:"document-type" yaml:"document-type"`
 
+	Exemptions []Exemption `json:"exemptions,omitempty" yaml:"exemptions,omitempty"`
+
 	// Introductory text for the document to be used during rendering
 	FrontMatter string `json:"front-matter,omitempty" yaml:"front-matter,omitempty"`
-
-	Exemptions []Exemption `json:"exemptions,omitempty" yaml:"exemptions,omitempty"`
 
 	Categories []Category `json:"categories,omitempty" yaml:"categories,omitempty"`
 

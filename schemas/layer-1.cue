@@ -6,8 +6,6 @@ package schemas
 	metadata?:       #Metadata @go(Metadata)
 	title:           string
 	"document-type": #DocumentType @go(DocumentType) @yaml("document-type")
-
-	"front-matter"?: string @go(FrontMatter) @yaml("front-matter,omitempty")
 	exemptions?: [...#Exemption] @go(Exemptions)
 
 	// Introductory text for the document to be used during rendering
