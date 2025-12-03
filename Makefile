@@ -86,7 +86,7 @@ serve: check-container
 	@echo "  >  Using container runtime: $(CONTAINER_CMD)"
 	@$(CONTAINER_CMD) stop gemara-docs 2>/dev/null || true
 	@$(CONTAINER_CMD) rm gemara-docs 2>/dev/null || true
-	@echo "  >  Site will be available at: http://localhost:4000"
+	@echo "  >  Site will be available at: http://localhost:4000/gemara"
 	@echo ""
 	@$(CONTAINER_CMD) run --rm \
 		--name gemara-docs \
