@@ -1,34 +1,18 @@
 package schemas
 
-@go(layer2)
+@go(gemara)
 
 #Catalog: {
-	metadata?: #Metadata
+	"metadata"?: #Metadata @go(Metadata)
+	title:       string
 
 	"control-families"?: [...#ControlFamily] @go(ControlFamilies)
 	threats?: [...#Threat] @go(Threats)
 	capabilities?: [...#Capability] @go(Capabilities)
 
-	"imported-controls"?: [...#Mapping] @go(ImportedControls)
-	"imported-threats"?: [...#Mapping] @go(ImportedThreats)
-	"imported-capabilities"?: [...#Mapping] @go(ImportedCapabilities)
-}
-
-// Resuable types //
-#Metadata: {
-	id:               string
-	title:            string
-	description:      string
-	version?:         string
-	"last-modified"?: string @go(LastModified) @yaml("last-modified,omitempty")
-	"applicability-categories"?: [...#Category] @go(ApplicabilityCategories) @yaml("applicability-categories,omitempty")
-	"mapping-references"?: [...#MappingReference] @go(MappingReferences) @yaml("mapping-references,omitempty")
-}
-
-#Category: {
-	id:          string
-	title:       string
-	description: string
+	"imported-controls"?: [...#MultiMapping] @go(ImportedControls)
+	"imported-threats"?: [...#MultiMapping] @go(ImportedThreats)
+	"imported-capabilities"?: [...#MultiMapping] @go(ImportedCapabilities)
 }
 
 #ControlFamily: {
@@ -43,43 +27,23 @@ package schemas
 	title:     string
 	objective: string
 	"assessment-requirements": [...#AssessmentRequirement] @go(AssessmentRequirements)
-	"guideline-mappings"?: [...#Mapping] @go(GuidelineMappings)
-	"threat-mappings"?: [...#Mapping] @go(ThreatMappings)
+	"guideline-mappings"?: [...#MultiMapping] @go(GuidelineMappings)
+	"threat-mappings"?: [...#MultiMapping] @go(ThreatMappings)
 }
 
 #Threat: {
 	id:          string
 	title:       string
 	description: string
-	capabilities: [...#Mapping]
+	capabilities: [...#MultiMapping]
 
-	"external-mappings"?: [...#Mapping] @go(ExternalMappings)
+	"external-mappings"?: [...#MultiMapping] @go(ExternalMappings)
 }
 
 #Capability: {
 	id:          string
 	title:       string
 	description: string
-}
-
-#MappingReference: {
-	id:           string
-	title:        string
-	version:      string
-	description?: string
-	url?:         =~"^https?://[^\\s]+$"
-}
-
-#Mapping: {
-	"reference-id": string @go(ReferenceId)
-	entries: [...#MappingEntry]
-	remarks?: string
-}
-
-#MappingEntry: {
-	"reference-id": string @go(ReferenceId)
-	strength:       int & >=1 & <=10
-	remarks?:       string
 }
 
 #AssessmentRequirement: {
