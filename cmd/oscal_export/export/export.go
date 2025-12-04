@@ -20,7 +20,7 @@ func Guidance(path string, args []string) error {
 		return err
 	}
 
-	var guidanceDocument gemara.GuidanceDocument
+	var guidanceDocument gemara.Guidance
 	pathWithScheme := fmt.Sprintf("file://%s", path)
 	if err := guidanceDocument.LoadFile(pathWithScheme); err != nil {
 		return err

@@ -3,45 +3,46 @@ package schemas
 @go(gemara)
 
 // Core Document Structure
-#PolicyDocument: {
+#Policy: {
 	metadata:          #Metadata
 	"organization-id": string @go(OrganizationID) @yaml("organization-id")
 	title:             string
 	purpose:           string
 	contacts:          #Contacts
 
-	scope:                  #Scope
+	scope: #Scope
+	"imported-policies"?: [...#PolicyMapping] @go(ImportedPolicies) @yaml("imported-policies,omitempty")
 	"implementation-plan"?: #ImplementationPlan @go(ImplementationPlan) @yaml("implementation-plan,omitempty")
-	"guidance-references": [...#PolicyMapping] @go(GuidanceReferences) @yaml("guidance-references")
-	"control-references": [...#PolicyMapping] @go(ControlReferences) @yaml("control-references")
+	"guidance-references"?: [...#PolicyMapping] @go(GuidanceReferences) @yaml("guidance-references")
+	"control-references"?: [...#PolicyMapping] @go(ControlReferences) @yaml("control-references")
 }
 
 #Contacts: {
 	responsible: [...#Contact] // The person or group responsible for implementing controls for technical requirements
 	accountable: [...#Contact] // The person or group accountable for evaluating and enforcing the efficacy of technical controls
 	consulted?: [...#Contact] // Optional person or group who may be consulted for more information about the technical requirements
-	informed?: [...#Contact] // Optional person or group who must recieve updates about compliance with this policy
+	informed?: [...#Contact] // Optional person or group who must receive updates about compliance with this policy
 }
 
 #ImplementationPlan: {
 	// The process through which notified parties should be made aware of this policy
-	"notification-process"?: string @go(NotificationProcess) @yaml("notification-process",omitempty)
-	"notified-parties"?: [...#NotificationGroup] @go(NotifiedParties) @yaml("notified-parties",omitempty)
+	"notification-process"?: string @go(NotificationProcess) @yaml("notification-process,omitempty")
+	"notified-parties"?: [...#NotificationGroup] @go(NotifiedParties) @yaml("notified-parties,omitempty")
 
-	evaluation: #ImplementationDetails
-	"evaluation-points"?: [...#EvaluationPoint] @go(EvaluationPoints) @yaml("evaluation-points",omitempty)
+	"evaluation-timeline": #ImplementationDetails @go(EvaluationTimeline) @yaml("evaluation-timeline")
+	evaluators?: [...#Actor] @go(Evaluators) @yaml("evaluators,omitempty")
 
-	enforcement: #ImplementationDetails
-	"enforcement-methods"?: [...#EnforcementMethod] @go(EnforcementMethods) @yaml("enforcement-methods",omitempty)
+	"enforcement-timeline": #ImplementationDetails @go(EnforcementTimeline) @yaml("enforcement-timeline")
+	"enforcement-methods"?: [...#EnforcementMethod] @go(EnforcementMethods) @yaml("enforcement-methods,omitempty")
 
-	// The process that will be followed in the event that noncompliance is detected in an applicable resource
-	"noncompliance-plan"?: string @go(NoncompliancePlan) @yaml("noncompliance-plan",omitempty)
+	// The consequence that will be applied in the event that noncompliance is detected
+	"noncompliance-consequence"?: string @go(NoncomplianceConsequence) @yaml("noncompliance-consequence,omitempty")
 }
 
 #ImplementationDetails: {
-	start: #Datetime
-	end?:  #Datetime
-	notes: string
+	start:  #Datetime
+	end?:   #Datetime
+	notes?: string
 }
 
 #Scope: {
@@ -53,59 +54,67 @@ package schemas
 	providers?: [...string]
 }
 
+// Layer 3 specific mapping that extends common Mapping with modifications
 #PolicyMapping: {
-	"reference-id": string @go(ReferenceId) @yaml("reference-id",omitempty)
-	"in-scope":     #Scope @go(InScope) @yaml("in-scope",omitempty)
-	"out-of-scope": #Scope @go(OutOfScope) @yaml("out-of-scope",omitempty)
-	"control-modifications": [...#ControlModifier] @go(ControlModifications) @yaml("control-modifications",omitempty)
-	"assessment-requirement-modifications": [...#AssessmentRequirementModifier] @go(AssessmentRequirementModifications) @yaml("assessment-requirement-modifications",omitempty)
-	"guideline-modifications": [...#GuidelineModifier] @go(GuidelineModifications) @yaml("guideline-modifications",omitempty)
+	"reference-id": string @go(ReferenceId) @yaml("reference-id")
+	"control-modifications"?: [...#ControlModifier] @go(ControlModifications) @yaml("control-modifications,omitempty")
+	"assessment-requirement-modifications"?: [...#AssessmentRequirementModifier] @go(AssessmentRequirementModifications) @yaml("assessment-requirement-modifications,omitempty")
+	"guideline-modifications"?: [...#GuidelineModifier] @go(GuidelineModifications) @yaml("guideline-modifications,omitempty")
+	"statement-modifications"?: [...#StatementModifier] @go(StatementModifications) @yaml("statement-modifications,omitempty")
 }
 
 // Modifier Types
 #ControlModifier: {
+	id?:                      string   @go(Id)
 	"target-id":              string   @go(TargetId) @yaml("target-id")
 	"modification-type":      #ModType @go(ModType) @yaml("modification-type")
 	"modification-rationale": string   @go(ModificationRationale) @yaml("modification-rationale")
 
-	title?:     string
-	objective?: string
+	overrides?:  #Control           @go(Overrides,optional=nillable)
+	extensions?: #ControlExtensions @go(Extensions,optional=nillable)
 }
 
+#ControlExtensions: {
+	severity?:                   #Severity @go(Severity)
+	"auto-remediation-allowed"?: bool      @go(AutoRemediationAllowed) @yaml("auto-remediation-allowed,omitempty")
+	"deployment-gate-allowed"?:  bool      @go(DeploymentGateAllowed) @yaml("deployment-gate-allowed,omitempty")
+}
+
+// Severity represents the severity level of a control
+#Severity: "Critical" | "High" | "Medium" | "Low" | "Info" | "Unknown" @go(-)
+
 #AssessmentRequirementModifier: {
+	id?:                      string   @go(Id)
 	"target-id":              string   @go(TargetId) @yaml("target-id")
 	"modification-type":      #ModType @go(ModType) @yaml("modification-type")
 	"modification-rationale": string   @go(ModificationRationale) @yaml("modification-rationale")
 
-	text: string
-	applicability: [...string]
-	recommendation?: string
+	overrides?:  #AssessmentRequirement           @go(Overrides,optional=nillable)
+	extensions?: #AssessmentRequirementExtensions @go(Extensions,optional=nillable)
+}
+
+#AssessmentRequirementExtensions: {
+	"required-evaluators"?: [...string] @go(RequiredEvaluators) @yaml("required-evaluators,omitempty")
+	"optional-evaluators"?: [...string] @go(OptionalEvaluators) @yaml("optional-evaluators,omitempty")
+	"evidence-requirements"?: string              @go(EvidenceRequirements) @yaml("evidence-requirements,omitempty")
+	"resolution-strategy"?:   #ResolutionStrategy @go(ResolutionStrategy) @yaml("resolution-strategy,omitempty")
+	"evaluation-points"?: [...#EvaluationPoint] @go(EvaluationPoints) @yaml("evaluation-points,omitempty")
 }
 
 #GuidelineModifier: {
-	"target-id":              string   @go(TargetId) @yaml("target-id")
-	"modification-type":      #ModType @go(ModType) @yaml("modification-type")
-	"modification-rationale": string   @go(ModificationRationale) @yaml("modification-rationale")
-
-	title:      string
-	objective?: string
-	recommendations?: [...string]
-	"base-guideline-id"?: string @go(BaseGuidelineID) @yaml("base-guideline-id,omitempty")
-	rationale?:           string @go(Rationale,optional=nillable)
-	"guideline-mappings"?: [...#MultiMapping] @go(GuidelineMappings) @yaml("guideline-mappings,omitempty")
-	"principle-mappings"?: [...#MultiMapping] @go(PrincipleMappings) @yaml("principle-mappings,omitempty")
-	"see-also"?: [...string] @go(SeeAlso) @yaml("see-also,omitempty")
-	"external-references"?: [...string] @go(ExternalReferences) @yaml("external-references,omitempty")
+	id?:                      string     @go(Id)
+	"target-id":              string     @go(TargetId) @yaml("target-id")
+	"modification-type":      #ModType   @go(ModType) @yaml("modification-type")
+	"modification-rationale": string     @go(ModificationRationale) @yaml("modification-rationale")
+	overrides?:               #Guideline @go(Overrides,optional=nillable)
 }
 
-#PartModifier: {
-	"target-id":              string   @go(TargetId) @yaml("target-id")
-	"modification-type":      #ModType @go(ModType) @yaml("modification-type")
-	"modification-rationale": string   @go(ModificationRationale) @yaml("modification-rationale")
-
-	title?: string
-	prose:  string
-	recommendations?: [...string]
+#StatementModifier: {
+	id?:                      string     @go(Id)
+	"target-id":              string     @go(TargetId) @yaml("target-id")
+	"modification-type":      #ModType   @go(ModType) @yaml("modification-type")
+	"modification-rationale": string     @go(ModificationRationale) @yaml("modification-rationale")
+	overrides?:               #Statement @go(Overrides,optional=nillable)
 }
 
 #EvaluationPoint: "development-tools" |
@@ -137,3 +146,10 @@ package schemas
 	"Informed"
 
 #ModType: "increase-strictness" | "clarify" | "reduce-strictness" | "exclude"
+
+// ResolutionStrategy defines how to resolve conflicts when multiple evaluators produce different results
+// for the same assessment requirement. Options:
+// - "MostSevere": Use the most severe result from all evaluators (Failed > Unknown > NeedsReview > Passed)
+// - "ManualOverride": Give precedence to manual review evaluators over automated evaluators when results conflict
+// - "AuthoritativeConfirmation": Require confirmation from authoritative evaluators before triggering findings from non-authoritative evaluators
+#ResolutionStrategy: "MostSevere" | "ManualOverride" | "AuthoritativeConfirmation" @go(-)

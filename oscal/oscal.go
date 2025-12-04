@@ -2,6 +2,7 @@ package oscal
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 
@@ -12,13 +13,15 @@ import (
 	oscalUtils "github.com/ossf/gemara/internal/oscal"
 )
 
+const defaultVersion = "0.0.1"
+
 type generateOpts struct {
 	version       string
 	imports       map[string]string
 	canonicalHref string
 }
 
-func (g *generateOpts) complete(doc gemara.GuidanceDocument) {
+func (g *generateOpts) complete(doc gemara.Guidance) {
 	if g.version == "" {
 		g.version = doc.Metadata.Version
 	}
@@ -61,7 +64,7 @@ func WithCanonicalHrefFormat(canonicalHref string) GenerateOption {
 
 // ProfileFromGuidanceDocument creates an OSCAL Profile from the imported and local guidelines from
 // Layer 1 Guidance Document with a given location to the OSCAL Catalog for the guidance document.
-func ProfileFromGuidanceDocument(g *gemara.GuidanceDocument, guidanceDocHref string, opts ...GenerateOption) (oscal.Profile, error) {
+func ProfileFromGuidanceDocument(g *gemara.Guidance, guidanceDocHref string, opts ...GenerateOption) (oscal.Profile, error) {
 	options := generateOpts{}
 	for _, opt := range opts {
 		opt(&options)
@@ -70,7 +73,7 @@ func ProfileFromGuidanceDocument(g *gemara.GuidanceDocument, guidanceDocHref str
 
 	metadata, err := createMetadata(g, options)
 	if err != nil {
-		return oscal.Profile{}, fmt.Errorf("error creating profile mapping.cue: %w", err)
+		return oscal.Profile{}, fmt.Errorf("error creating profile metadata: %w", err)
 	}
 
 	importMap := make(map[string]oscal.Import)
@@ -78,48 +81,129 @@ func ProfileFromGuidanceDocument(g *gemara.GuidanceDocument, guidanceDocHref str
 		importMap[mappingId] = oscal.Import{Href: mappingRef}
 	}
 
-	for _, mapping := range g.ImportedGuidelines {
-		imp, ok := importMap[mapping.ReferenceId]
-		if !ok {
-			continue
-		}
+	// Process extends mappings from guidelines as imports and "add" modifications
+	alterationMap := make(map[string]*oscal.Alteration)
 
-		withIds := make([]string, 0, len(mapping.Entries))
-		for _, entry := range mapping.Entries {
-			withIds = append(withIds, oscalUtils.NormalizeControl(entry.ReferenceId, false))
-		}
+	for _, category := range g.Categories {
+		for _, guideline := range category.Guidelines {
+			refId := guideline.Extends.ReferenceId
+			if refId != "" && guideline.Extends.EntryId != "" {
+				href, found := options.imports[refId]
+				if found && href != "" {
+					imp, exists := importMap[refId]
+					if !exists {
+						imp = oscal.Import{Href: href}
+					}
 
-		selector := oscal.SelectControlById{WithIds: &withIds}
-		imp.IncludeControls = &[]oscal.SelectControlById{selector}
-		importMap[mapping.ReferenceId] = imp
+					normalizedId := oscalUtils.NormalizeControl(guideline.Extends.EntryId, false)
+					withIds := []string{normalizedId}
+
+					// Merge with existing IncludeControls if any
+					if imp.IncludeControls == nil {
+						imp.IncludeControls = &[]oscal.SelectControlById{}
+					}
+
+					// Check if we already have a selector for this set of controls
+					// If not, create a new one and merge all control IDs
+					allControlIds := make(map[string]bool)
+					for _, selector := range *imp.IncludeControls {
+						if selector.WithIds != nil {
+							for _, id := range *selector.WithIds {
+								allControlIds[id] = true
+							}
+						}
+					}
+					for _, id := range withIds {
+						allControlIds[id] = true
+					}
+
+					// Create a single selector with all unique control IDs
+					mergedIds := make([]string, 0, len(allControlIds))
+					for id := range allControlIds {
+						mergedIds = append(mergedIds, id)
+					}
+					sort.Strings(mergedIds)
+					selector := oscal.SelectControlById{WithIds: &mergedIds}
+					imp.IncludeControls = &[]oscal.SelectControlById{selector}
+					importMap[refId] = imp
+
+					// Create or update alteration for this control
+					alteration, exists := alterationMap[normalizedId]
+					if !exists {
+						alteration = &oscal.Alteration{
+							ControlId: normalizedId,
+						}
+						alterationMap[normalizedId] = alteration
+					}
+
+					// Use document ID as prefix for framework-level extensions (e.g., 800-161 extending 800-53)
+					// This ensures all enhancements from the same framework use consistent naming
+					frameworkPrefix := g.Metadata.Id
+					parts := guidelineToParts(guideline, normalizedId, frameworkPrefix)
+					if len(parts) > 0 {
+						if alteration.Adds == nil {
+							alteration.Adds = &[]oscal.Addition{}
+						}
+						// Merge parts into existing addition if one exists, otherwise create new
+						if len(*alteration.Adds) > 0 {
+							// Merge parts into the first addition
+							existingParts := (*alteration.Adds)[0].Parts
+							if existingParts == nil {
+								(*alteration.Adds)[0].Parts = &parts
+							} else {
+								*existingParts = append(*existingParts, parts...)
+							}
+						} else {
+							addition := oscal.Addition{
+								Parts: &parts,
+							}
+							*alteration.Adds = append(*alteration.Adds, addition)
+						}
+					}
+				}
+			}
+		}
 	}
 
 	var imports []oscal.Import
 	for _, imp := range importMap {
-		if imp.IncludeControls != nil {
+		if imp.IncludeControls != nil || imp.IncludeAll != nil {
 			imports = append(imports, imp)
 		}
 	}
 
 	// Add an import for each control defined locally in the Layer 1 Guidance Document
-	// `CatalogFromGuidanceDocument` would need to be used to create an OSCAL Catalog for the document.
+	// `ToOSCALCatalog` would need to be used to create an OSCAL Catalog for the document.
 	localImport := oscal.Import{
 		Href:       guidanceDocHref,
 		IncludeAll: &oscal.IncludeAll{},
 	}
 	imports = append(imports, localImport)
 
+	// Build modify section if we have any alterations
+	var modify *oscal.Modify
+	if len(alterationMap) > 0 {
+		alterations := make([]oscal.Alteration, 0, len(alterationMap))
+		for _, alteration := range alterationMap {
+			alterations = append(alterations, *alteration)
+		}
+		modify = &oscal.Modify{
+			Alters: &alterations,
+		}
+	}
+
 	profile := oscal.Profile{
 		UUID:     uuid.NewUUID(),
 		Imports:  imports,
 		Metadata: metadata,
+		Modify:   modify,
 	}
 	return profile, nil
 }
 
 // CatalogFromGuidanceDocument creates an OSCAL Catalog from the locally defined guidelines in a given
 // Layer 1 Guidance Document.
-func CatalogFromGuidanceDocument(g *gemara.GuidanceDocument, opts ...GenerateOption) (oscal.Catalog, error) {
+func CatalogFromGuidanceDocument(g *gemara.Guidance, opts ...GenerateOption) (oscal.Catalog, error) {
 	// Return early for empty documents
 	if len(g.Categories) == 0 {
 		return oscal.Catalog{}, fmt.Errorf("document %s does not have defined guidance categories", g.Metadata.Id)
@@ -133,7 +217,7 @@ func CatalogFromGuidanceDocument(g *gemara.GuidanceDocument, opts ...GenerateOpt
 
 	metadata, err := createMetadata(g, options)
 	if err != nil {
-		return oscal.Catalog{}, fmt.Errorf("error creating catalog mapping.cue: %w", err)
+		return oscal.Catalog{}, fmt.Errorf("error creating catalog metadata: %w", err)
 	}
 
 	// Create a resource map for control linking
@@ -162,7 +246,7 @@ func CatalogFromGuidanceDocument(g *gemara.GuidanceDocument, opts ...GenerateOpt
 	return catalog, nil
 }
 
-func createMetadata(guidance *gemara.GuidanceDocument, opts generateOpts) (oscal.Metadata, error) {
+func createMetadata(guidance *gemara.Guidance, opts generateOpts) (oscal.Metadata, error) {
 	now := time.Now()
 	metadata := oscal.Metadata{
 		Title:        guidance.Title,
@@ -204,7 +288,7 @@ func createMetadata(guidance *gemara.GuidanceDocument, opts generateOpts) (oscal
 	return metadata, nil
 }
 
-func createControlGroup(g *gemara.GuidanceDocument, category gemara.Category, resourcesMap map[string]string) oscal.Group {
+func createControlGroup(g *gemara.Guidance, category gemara.Category, resourcesMap map[string]string) oscal.Group {
 	group := oscal.Group{
 		Class: "category",
 		ID:    category.Id,
@@ -213,6 +297,12 @@ func createControlGroup(g *gemara.GuidanceDocument, category gemara.Category, re
 
 	controlMap := make(map[string]oscal.Control)
 	for _, guideline := range category.Guidelines {
+		// Don't process this as a local catalog control
+		// It extend another and would need to be
+		// resolved through a profile.
+		if guideline.Extends.ReferenceId != "" {
+			continue
+		}
 		control, parent := guidelineToControl(g, guideline, resourcesMap)
 
 		if parent == "" {
@@ -236,56 +326,40 @@ func createControlGroup(g *gemara.GuidanceDocument, category gemara.Category, re
 	return group
 }
 
-func guidelineToControl(g *gemara.GuidanceDocument, guideline gemara.Guideline, resourcesMap map[string]string) (oscal.Control, string) {
-	controlId := oscalUtils.NormalizeControl(guideline.Id, false)
+// guidelineToParts converts a guideline to OSCAL parts that can be added to an existing control.
+// This is used when a guideline extends an existing control via the profile's modify mechanism.
+// If guidelineId is provided, parts use the naming convention: {controlId}_{guidelineId}_{partType}
+// If guidelineId is empty, parts use the standard naming convention: {controlId}_{partType}
+func guidelineToParts(guideline gemara.Guideline, controlId string, guidelineId string) []oscal.Part {
+	var parts []oscal.Part
 
-	control := oscal.Control{
-		ID:    controlId,
-		Title: guideline.Title,
-		Class: g.Metadata.Id,
+	// Determine the part ID prefix based on whether this is an alteration or a full control
+	var prefix string
+	if guidelineId != "" {
+		// For alterations: {controlId}_{guidelineId}
+		normalizedGuidelineId := oscalUtils.NormalizeControl(guidelineId, false)
+		prefix = fmt.Sprintf("%s_%s", controlId, normalizedGuidelineId)
+	} else {
+		// For full controls: {controlId}
+		prefix = controlId
 	}
 
-	var links []oscal.Link
-	for _, also := range guideline.SeeAlso {
-		relatedLink := oscal.Link{
-			Href: fmt.Sprintf("#%s", oscalUtils.NormalizeControl(also, false)),
-			Rel:  "related",
+	// Add overview part if objective exists
+	if guideline.Objective != "" {
+		overviewPart := oscal.Part{
+			Name:  "overview",
+			ID:    fmt.Sprintf("%s_ovw", prefix),
+			Prose: guideline.Objective,
 		}
-		links = append(links, relatedLink)
+		parts = append(parts, overviewPart)
 	}
 
-	guidanceLinks := mappingToLinks(guideline.GuidelineMappings, resourcesMap)
-	principleLinks := mappingToLinks(guideline.PrincipleMappings, resourcesMap)
-	links = append(links, guidanceLinks...)
-	links = append(links, principleLinks...)
-	control.Links = oscalUtils.NilIfEmpty(links)
-
-	// Top-level statements are required for controls per OSCAL guidance
-	smtPart := oscal.Part{
-		Name: "statement",
-		ID:   fmt.Sprintf("%s_smt", controlId),
-	}
-
-	objPart := oscal.Part{
-		Name: "assessment-objective",
-		ID:   fmt.Sprintf("%s_obj", controlId),
-	}
-
-	if len(guideline.Recommendations) > 0 {
-		objPart.Prose = strings.Join(guideline.Recommendations, " ")
-		objPart.Links = &[]oscal.Link{
-			{
-				Href: fmt.Sprintf("#%s_smt", controlId),
-				Rel:  "assessment-for",
-			},
-		}
-	}
-
+	// Add statement parts if they exist
 	var smtParts []oscal.Part
 	var objParts []oscal.Part
-	for _, part := range guideline.GuidelineParts {
+	for _, part := range guideline.Statements {
 		partId := oscalUtils.NormalizeControl(part.Id, true)
-		smtID := fmt.Sprintf("%s_smt.%s", controlId, partId)
+		smtID := fmt.Sprintf("%s_smt.%s", prefix, partId)
 		itemSubSmt := oscal.Part{
 			Name:  "item",
 			ID:    smtID,
@@ -295,9 +369,10 @@ func guidelineToControl(g *gemara.GuidanceDocument, guideline gemara.Guideline, 
 		smtParts = append(smtParts, itemSubSmt)
 
 		if len(part.Recommendations) > 0 {
+			objID := fmt.Sprintf("%s_obj.%s", prefix, partId)
 			objSubPart := oscal.Part{
 				Name:  "assessment-objective",
-				ID:    fmt.Sprintf("%s_obj.%s", controlId, partId),
+				ID:    objID,
 				Prose: strings.Join(part.Recommendations, " "),
 				Links: &[]oscal.Link{
 					{
@@ -310,22 +385,106 @@ func guidelineToControl(g *gemara.GuidanceDocument, guideline gemara.Guideline, 
 		}
 	}
 
-	// Ensure the parts are set to nil if nothing was added for
-	// schema compliance.
-	smtPart.Parts = oscalUtils.NilIfEmpty(smtParts)
-	objPart.Parts = oscalUtils.NilIfEmpty(objParts)
-	control.Parts = &[]oscal.Part{smtPart, objPart}
-
-	if guideline.Objective != "" {
-		overviewPart := oscal.Part{
-			Name:  "overview",
-			ID:    fmt.Sprintf("%s_ovw", controlId),
-			Prose: guideline.Objective,
+	// Add statement part with sub-items if any exist
+	if len(smtParts) > 0 {
+		smtPart := oscal.Part{
+			Name:  "statement",
+			ID:    fmt.Sprintf("%s_smt", prefix),
+			Parts: &smtParts,
 		}
-		*control.Parts = append(*control.Parts, overviewPart)
+		parts = append(parts, smtPart)
 	}
 
-	return control, oscalUtils.NormalizeControl(guideline.BaseGuidelineID, false)
+	// Add assessment-objective part with sub-items if recommendations exist
+	if len(guideline.Recommendations) > 0 || len(objParts) > 0 {
+		objPart := oscal.Part{
+			Name: "assessment-objective",
+			ID:   fmt.Sprintf("%s_obj", prefix),
+		}
+		if len(guideline.Recommendations) > 0 {
+			objPart.Prose = strings.Join(guideline.Recommendations, " ")
+			objPart.Links = &[]oscal.Link{
+				{
+					Href: fmt.Sprintf("#%s_smt", prefix),
+					Rel:  "assessment-for",
+				},
+			}
+		}
+		if len(objParts) > 0 {
+			objPart.Parts = &objParts
+		}
+		parts = append(parts, objPart)
+	}
+
+	return parts
+}
+
+func guidelineToControl(g *gemara.Guidance, guideline gemara.Guideline, resourcesMap map[string]string) (oscal.Control, string) {
+	controlId := oscalUtils.NormalizeControl(guideline.Id, false)
+
+	control := oscal.Control{
+		ID:    controlId,
+		Title: guideline.Title,
+		Class: g.Metadata.Id,
+	}
+
+	var links []oscal.Link
+	for _, also := range guideline.SeeAlso {
+		relatedLink := oscal.Link{
+			Href: fmt.Sprintf("#%s", oscalUtils.NormalizeControl(also.EntryId, false)),
+			Rel:  "related",
+		}
+		links = append(links, relatedLink)
+	}
+
+	guidanceLinks := mappingToLinks(guideline.GuidelineMappings, resourcesMap)
+	principleLinks := mappingToLinks(guideline.PrincipleMappings, resourcesMap)
+	links = append(links, guidanceLinks...)
+	links = append(links, principleLinks...)
+	control.Links = oscalUtils.NilIfEmpty(links)
+
+	// Use guidelineToParts to generate the parts (empty guidelineId for full controls)
+	parts := guidelineToParts(guideline, controlId, "")
+
+	// OSCAL requires statement and assessment-objective parts to always exist
+	var statementPart oscal.Part
+	var assessmentObjectivePart oscal.Part
+	var otherParts []oscal.Part
+	hasStatement := false
+	hasAssessmentObjective := false
+
+	for _, part := range parts {
+		switch part.Name {
+		case "statement":
+			statementPart = part
+			hasStatement = true
+		case "assessment-objective":
+			assessmentObjectivePart = part
+			hasAssessmentObjective = true
+		default:
+			otherParts = append(otherParts, part)
+		}
+	}
+
+	// Create default parts if they don't exist
+	if !hasStatement {
+		statementPart = oscal.Part{
+			Name: "statement",
+			ID:   fmt.Sprintf("%s_smt", controlId),
+		}
+	}
+	if !hasAssessmentObjective {
+		assessmentObjectivePart = oscal.Part{
+			Name: "assessment-objective",
+			ID:   fmt.Sprintf("%s_obj", controlId),
+		}
+	}
+
+	finalParts := []oscal.Part{statementPart, assessmentObjectivePart}
+	finalParts = append(finalParts, otherParts...)
+	control.Parts = &finalParts
+
+	return control, oscalUtils.NormalizeControl(guideline.Extends.EntryId, false)
 }
 
 func mappingToLinks(mappings []gemara.MultiMapping, resourcesMap map[string]string) []oscal.Link {
@@ -382,8 +541,6 @@ func mappingToBackMatter(resourceRefs []gemara.MappingReference) *oscal.BackMatt
 	}
 	return &backmatter
 }
-
-const defaultVersion = "0.0.1"
 
 // FromCatalog converts a Catalog to OSCAL Catalog format.
 // Parameters:

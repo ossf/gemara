@@ -48,7 +48,7 @@ func TestPolicyDocument_LoadFile(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := &PolicyDocument{}
+			p := &Policy{}
 			err := p.LoadFile(tt.sourcePath)
 
 			if tt.wantErr {
@@ -80,7 +80,7 @@ func TestPolicyDocument_LoadFile_UnsupportedFileType(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := &PolicyDocument{}
+			p := &Policy{}
 			err := p.LoadFile(tt.sourcePath)
 
 			if tt.wantErr {
@@ -119,7 +119,7 @@ func TestPolicyDocument_LoadFile_URI(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := &PolicyDocument{}
+			p := &Policy{}
 			err := p.LoadFile(tt.sourcePath)
 
 			if tt.wantErr {
@@ -164,7 +164,7 @@ func TestGuidanceDocument_LoadFile(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := &GuidanceDocument{}
+			g := &Guidance{}
 			err := g.LoadFile(tt.sourcePath)
 
 			if tt.wantErr {
@@ -181,13 +181,13 @@ func TestGuidanceDocument_LoadFile(t *testing.T) {
 
 func TestGuidanceDocument_LoadFiles_AppendsData(t *testing.T) {
 	// Load a single file to use as baseline
-	singleDoc := &GuidanceDocument{}
+	singleDoc := &Guidance{}
 	require.NoError(t, singleDoc.LoadFile("file://test-data/good-aigf.yaml"))
 	require.Greater(t, len(singleDoc.Categories), 0,
 		"expected at least one category in good-aigf.yaml")
 
 	// Load the same file twice to verify appending behavior
-	multiDoc := &GuidanceDocument{}
+	multiDoc := &Guidance{}
 	err := multiDoc.LoadFiles([]string{
 		"file://test-data/good-aigf.yaml",
 		"file://test-data/good-aigf.yaml",
@@ -227,7 +227,7 @@ func TestGuidanceDocument_LoadFile_URI(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := &GuidanceDocument{}
+			g := &Guidance{}
 			err := g.LoadFile(tt.sourcePath)
 
 			if tt.wantErr {
