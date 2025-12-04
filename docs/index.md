@@ -1,5 +1,6 @@
 ---
 layout: home
+title: Home
 ---
 
 # Gemara: GRC Engineering Model for Automated Risk Assessment

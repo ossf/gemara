@@ -368,14 +368,14 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
     display: none;
   }
 
-  .nav-items {
+  .trigger {
     display: flex;
     flex-wrap: wrap;
     gap: var(--spacing-sm);
     align-items: center;
   }
 
-  .nav-item {
+  .page-link {
     color: var(--color-text-primary);
     font-weight: 500;
     font-size: 1rem;
@@ -422,11 +422,11 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
       }
     }
 
-    input ~ .nav-items {
+    input ~ .trigger {
       display: none;
     }
 
-    input:checked ~ .nav-items {
+    input:checked ~ .trigger {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -434,7 +434,7 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
       width: 100%;
     }
 
-    .nav-item {
+    .page-link {
       display: block;
       width: 100%;
       padding: var(--spacing-sm) var(--spacing-md);

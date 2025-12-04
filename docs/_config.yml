@@ -24,10 +24,6 @@ plugins:
   - jekyll-feed
   - jekyll-seo-tag
 
-# Navigation
-header_pages:
-  - index.md
-
 # Exclude from processing
 # Note: Paths are relative to the source directory (./docs)
 exclude:
