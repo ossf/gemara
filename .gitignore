@@ -35,5 +35,25 @@ go.work.sum
 # artifacts
 artifacts/
 
-# docs
-docs/_site
+# Jekyll build output and cache
+_site/
+docs/_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+.jekyll/
+
+# Jekyll/Bundler dependencies
+docs/vendor/
+docs/.bundle/
+docs/node_modules/
+
+# Ruby LSP (Language Server Protocol)
+.ruby-lsp/
+
+# Compiled CSS (SCSS source is tracked)
+# Note: style.css and style.css.map are generated from style.scss but may be needed for builds
+docs/assets/css/*.css
+docs/assets/css/*.css.map
+!docs/assets/css/style.css
+!docs/assets/css/style.css.map

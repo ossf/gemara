@@ -539,7 +539,8 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
   }
 
   &:active {
-    color: var(--openssf-green);
+    color: var(--openssf-purple) !important;
+    background: var(--color-bg-tertiary) !important;
   }
 }
 
