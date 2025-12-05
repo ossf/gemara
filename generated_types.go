@@ -335,12 +335,25 @@ type Policy struct {
 
 	Scope Scope `json:"scope" yaml:"scope"`
 
+	// ImportedPolicies: References to other Layer 3 Policy documents for policy composition.
+	// When a policy imports another policy via ImportedPolicies:
+	//   - ImplementationPlan: Inherited, evaluators are ADDITIVE (union) if child also defines evaluators
+	//
+	// - Merged reference sets (can be modified):
+	//   - ControlReferences: Merged from imported policy, can be modified via ControlModifications
+	//   - GuidanceReferences: Merged from imported policy, can be modified via GuidelineModifications
+	//
+	// - Modifications chain sequentially (e.g., Base → Parent → Child), preserving all modifications
 	ImportedPolicies []PolicyMapping `json:"imported-policies,omitempty" yaml:"imported-policies,omitempty"`
 
 	ImplementationPlan ImplementationPlan `json:"implementation-plan,omitempty" yaml:"implementation-plan,omitempty"`
 
+	// GuidanceReferences: References to Layer 1 Guidance documents (abstract, high-level guidance).
+	// Modifications chain sequentially (e.g., Guidance → Parent → Child), preserving all modifications.
 	GuidanceReferences []PolicyMapping `json:"guidance-references,omitempty" yaml:"guidance-references,omitempty"`
 
+	// ControlReferences: References to Layer 2 Control catalogs (technology-specific, threat-informed controls).
+	// Modifications chain sequentially (e.g., Catalog → Parent → Child), preserving all modifications.
 	ControlReferences []PolicyMapping `json:"control-references,omitempty" yaml:"control-references,omitempty"`
 }
 
@@ -354,6 +367,8 @@ type Contacts struct {
 	Informed []Contact `json:"informed,omitempty" yaml:"informed,omitempty"`
 }
 
+// Scope is descriptive metadata for tools.
+// When importing policies: Inherited from imported policy, but child's scope OVERRIDES parent's if defined.
 type Scope struct {
 	// geopolitical boundaries such as region names or jurisdictions
 	Boundaries []string `json:"boundaries,omitempty" yaml:"boundaries,omitempty"`
@@ -365,16 +380,30 @@ type Scope struct {
 	Providers []string `json:"providers,omitempty" yaml:"providers,omitempty"`
 }
 
-// Layer 3 specific mapping that extends common Mapping with modifications
+// Layer 3 specific mapping that extends common Mapping with modifications.
+// Used by ImportedPolicies, GuidanceReferences, and ControlReferences.
+// Modifications chain sequentially when importing policies (e.g., Base → Parent → Child), preserving all modifications.
 type PolicyMapping struct {
 	ReferenceId string `json:"reference-id" yaml:"reference-id"`
 
+	// ControlModifications: Modify controls from referenced catalog/policy.
+	// When used in ImportedPolicies: Modifies controls from imported policy's ControlReferences (sequential chain).
+	// When used in ControlReferences: Modifies controls from referenced catalog (sequential chain).
 	ControlModifications []ControlModifier `json:"control-modifications,omitempty" yaml:"control-modifications,omitempty"`
 
+	// AssessmentRequirementModifications: Modify assessment requirements (which have evaluators).
+	// When used in ImportedPolicies: Modifies assessment requirements from imported policy's ControlReferences (sequential chain).
+	// When used in ControlReferences: Modifies assessment requirements from referenced catalog (sequential chain).
 	AssessmentRequirementModifications []AssessmentRequirementModifier `json:"assessment-requirement-modifications,omitempty" yaml:"assessment-requirement-modifications,omitempty"`
 
+	// GuidelineModifications: Modify guidelines from referenced guidance document.
+	// When used in ImportedPolicies: Modifies guidelines from imported policy's GuidanceReferences (sequential chain).
+	// When used in GuidanceReferences: Modifies guidelines from referenced guidance document (sequential chain).
 	GuidelineModifications []GuidelineModifier `json:"guideline-modifications,omitempty" yaml:"guideline-modifications,omitempty"`
 
+	// StatementModifications: Modify statements within guidelines.
+	// When used in ImportedPolicies: Modifies statements from imported policy's GuidanceReferences (sequential chain).
+	// When used in GuidanceReferences: Modifies statements from referenced guidance document (sequential chain).
 	StatementModifications []StatementModifier `json:"statement-modifications,omitempty" yaml:"statement-modifications,omitempty"`
 }
 
@@ -393,6 +422,7 @@ type ControlModifier struct {
 	Extensions *ControlExtensions `json:"extensions,omitempty" yaml:"extensions,omitempty"`
 }
 
+// ModType: Semantic modification types for policy tailoring.
 type ModType string
 
 type ControlExtensions struct {
@@ -463,6 +493,9 @@ type ImplementationPlan struct {
 
 	EvaluationTimeline ImplementationDetails `json:"evaluation-timeline" yaml:"evaluation-timeline"`
 
+	// Evaluators: Actors (human or software) that perform assessments.
+	// When importing policies: Inherited from imported policy, evaluators are ADDITIVE (union) if child also defines evaluators.
+	// This prevents broken evaluator references in assessment requirements.
 	Evaluators []Actor `json:"evaluators,omitempty" yaml:"evaluators,omitempty"`
 
 	EnforcementTimeline ImplementationDetails `json:"enforcement-timeline" yaml:"enforcement-timeline"`

@@ -11,9 +11,20 @@ package schemas
 	contacts:          #Contacts
 
 	scope: #Scope
+	// ImportedPolicies: References to other Layer 3 Policy documents for policy composition.
+	// When a policy imports another policy via ImportedPolicies:
+	//   * ImplementationPlan: Inherited, evaluators are ADDITIVE (union) if child also defines evaluators
+	// - Merged reference sets (can be modified):
+	//   * ControlReferences: Merged from imported policy, can be modified via ControlModifications
+	//   * GuidanceReferences: Merged from imported policy, can be modified via GuidelineModifications
+	// - Modifications chain sequentially (e.g., Base → Parent → Child), preserving all modifications
 	"imported-policies"?: [...#PolicyMapping] @go(ImportedPolicies) @yaml("imported-policies,omitempty")
 	"implementation-plan"?: #ImplementationPlan @go(ImplementationPlan) @yaml("implementation-plan,omitempty")
+	// GuidanceReferences: References to Layer 1 Guidance documents (abstract, high-level guidance).
+	// Modifications chain sequentially (e.g., Guidance → Parent → Child), preserving all modifications.
 	"guidance-references"?: [...#PolicyMapping] @go(GuidanceReferences) @yaml("guidance-references")
+	// ControlReferences: References to Layer 2 Control catalogs (technology-specific, threat-informed controls).
+	// Modifications chain sequentially (e.g., Catalog → Parent → Child), preserving all modifications.
 	"control-references"?: [...#PolicyMapping] @go(ControlReferences) @yaml("control-references")
 }
 
@@ -30,6 +41,9 @@ package schemas
 	"notified-parties"?: [...#NotificationGroup] @go(NotifiedParties) @yaml("notified-parties,omitempty")
 
 	"evaluation-timeline": #ImplementationDetails @go(EvaluationTimeline) @yaml("evaluation-timeline")
+	// Evaluators: Actors (human or software) that perform assessments.
+	// When importing policies: Inherited from imported policy, evaluators are ADDITIVE (union) if child also defines evaluators.
+	// This prevents broken evaluator references in assessment requirements.
 	evaluators?: [...#Actor] @go(Evaluators) @yaml("evaluators,omitempty")
 
 	"enforcement-timeline": #ImplementationDetails @go(EnforcementTimeline) @yaml("enforcement-timeline")
@@ -45,6 +59,8 @@ package schemas
 	notes?: string
 }
 
+// Scope is descriptive metadata for tools.
+// When importing policies: Inherited from imported policy, but child's scope OVERRIDES parent's if defined.
 #Scope: {
 	// geopolitical boundaries such as region names or jurisdictions
 	boundaries?: [...string]
@@ -54,12 +70,26 @@ package schemas
 	providers?: [...string]
 }
 
-// Layer 3 specific mapping that extends common Mapping with modifications
+// Layer 3 specific mapping that extends common Mapping with modifications.
+// Used by ImportedPolicies, GuidanceReferences, and ControlReferences.
+// Modifications chain sequentially when importing policies (e.g., Base → Parent → Child), preserving all modifications.
 #PolicyMapping: {
 	"reference-id": string @go(ReferenceId) @yaml("reference-id")
+	// ControlModifications: Modify controls from referenced catalog/policy.
+	// When used in ImportedPolicies: Modifies controls from imported policy's ControlReferences (sequential chain).
+	// When used in ControlReferences: Modifies controls from referenced catalog (sequential chain).
 	"control-modifications"?: [...#ControlModifier] @go(ControlModifications) @yaml("control-modifications,omitempty")
+	// AssessmentRequirementModifications: Modify assessment requirements (which have evaluators).
+	// When used in ImportedPolicies: Modifies assessment requirements from imported policy's ControlReferences (sequential chain).
+	// When used in ControlReferences: Modifies assessment requirements from referenced catalog (sequential chain).
 	"assessment-requirement-modifications"?: [...#AssessmentRequirementModifier] @go(AssessmentRequirementModifications) @yaml("assessment-requirement-modifications,omitempty")
+	// GuidelineModifications: Modify guidelines from referenced guidance document.
+	// When used in ImportedPolicies: Modifies guidelines from imported policy's GuidanceReferences (sequential chain).
+	// When used in GuidanceReferences: Modifies guidelines from referenced guidance document (sequential chain).
 	"guideline-modifications"?: [...#GuidelineModifier] @go(GuidelineModifications) @yaml("guideline-modifications,omitempty")
+	// StatementModifications: Modify statements within guidelines.
+	// When used in ImportedPolicies: Modifies statements from imported policy's GuidanceReferences (sequential chain).
+	// When used in GuidanceReferences: Modifies statements from referenced guidance document (sequential chain).
 	"statement-modifications"?: [...#StatementModifier] @go(StatementModifications) @yaml("statement-modifications,omitempty")
 }
 
@@ -145,6 +175,7 @@ package schemas
 	"Consulted" |
 	"Informed"
 
+// ModType: Semantic modification types for policy tailoring.
 #ModType: "increase-strictness" | "clarify" | "reduce-strictness" | "exclude"
 
 // ResolutionStrategy defines how to resolve conflicts when multiple evaluators produce different results
