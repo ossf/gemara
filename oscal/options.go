@@ -2,8 +2,6 @@ package oscal
 
 import "github.com/ossf/gemara"
 
-const defaultVersion = "0.0.1"
-
 type generateOpts struct {
 	version       string
 	imports       map[string]string
@@ -26,9 +24,6 @@ func (g *generateOpts) completeFromGuidance(doc gemara.GuidanceDocument) {
 func (g *generateOpts) completeFromCatalog(catalog *gemara.Catalog) {
 	if g.version == "" {
 		g.version = catalog.Metadata.Version
-		if g.version == "" {
-			g.version = defaultVersion
-		}
 	}
 }
 
@@ -54,7 +49,7 @@ func WithOSCALImports(imports map[string]string) GenerateOption {
 
 // WithCanonicalHrefFormat is a GenerateOption that provides an `href` format string
 // for the canonical version of the guidance document. If set, this will be added as a
-// link in the metadata with the rel="canonical" attribute. Ex - https://myguidance.org/versions/%s
+// link in the mapping.cue with the rel="canonical" attribute. Ex - https://myguidance.org/versions/%s
 func WithCanonicalHrefFormat(canonicalHref string) GenerateOption {
 	return func(opts *generateOpts) {
 		opts.canonicalHref = canonicalHref
