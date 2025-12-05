@@ -65,48 +65,36 @@ scope:
 
 guidance-references:
   - reference-id: "NIST-800-53"
-    in-scope:
-      boundaries: ["United States"]
-      technologies: ["Cloud Computing", "Web Applications"]
-      providers: ["Amazon Web Services", "Microsoft Azure"]
-    out-of-scope:
-      boundaries: ["International"]
-      technologies: ["Legacy Systems"]
-      providers: ["On-premises Infrastructure"]
     control-modifications:
       - target-id: "AC-1"
-        modification-type: "enhancement"
+        modification-type: "increase-strictness"
         modification-rationale: "Enhanced access control requirements for cloud environments"
-        title: "Enhanced Access Control"
-        objective: "Implement enhanced access controls for cloud environments"
+        overrides:
+          title: "Enhanced Access Control"
+          objective: "Implement enhanced access controls for cloud environments"
     assessment-requirement-modifications:
       - target-id: "AC-1.1"
-        modification-type: "clarification"
+        modification-type: "clarify"
         modification-rationale: "Clarified assessment procedures for multi-cloud environments"
-        text: "Assessment procedures must include multi-cloud environment considerations"
-        applicability: ["cloud", "multi-cloud"]
-        recommendation: "Conduct quarterly assessments"
+        overrides:
+          text: "Assessment procedures must include multi-cloud environment considerations"
+          applicability: ["cloud", "multi-cloud"]
+          recommendation: "Conduct quarterly assessments"
 
 control-references:
   - reference-id: "ISO-27001"
-    in-scope:
-      boundaries: ["European Union"]
-      technologies: ["Database Systems", "Mobile Devices"]
-      providers: ["Google Cloud Platform"]
-    out-of-scope:
-      boundaries: ["United States"]
-      technologies: ["Legacy Systems"]
-      providers: ["On-premises Infrastructure"]
     control-modifications:
       - target-id: "A.8.1.1"
-        modification-type: "enhancement"
+        modification-type: "increase-strictness"
         modification-rationale: "Enhanced mobile device management requirements"
-        title: "Enhanced Mobile Device Management"
-        objective: "Implement comprehensive mobile device management controls"
+        overrides:
+          title: "Enhanced Mobile Device Management"
+          objective: "Implement comprehensive mobile device management controls"
     assessment-requirement-modifications:
       - target-id: "A.8.1.1.1"
-        modification-type: "clarification"
+        modification-type: "clarify"
         modification-rationale: "Clarified mobile device encryption requirements"
-        text: "All mobile devices must use strong encryption for data at rest and in transit"
-        applicability: ["mobile", "BYOD"]
-        recommendation: "Use FIPS 140-2 validated encryption"
+        overrides:
+          text: "All mobile devices must use strong encryption for data at rest and in transit"
+          applicability: ["mobile", "BYOD"]
+          recommendation: "Use FIPS 140-2 validated encryption"
