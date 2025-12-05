@@ -10,7 +10,7 @@ import (
 
 // Adapted from: https://github.com/finos/ai-governance-framework/blob/main/docs/_mitigations/mi-11_human-feedback-loop-for-ai-systems.md
 
-func ExampleGuidanceDocument() {
+func ExampleGuidance() {
 	tmpl := `
 # {{ .Title }} ({{ .Metadata.Id }})
 ---
@@ -24,7 +24,7 @@ func ExampleGuidanceDocument() {
 ##### {{ .Title }} ({{ .Id }})
 **Objective:** {{ .Objective }}
 {{ if .SeeAlso }}
-**See Also:** {{ range .SeeAlso }}{{ . }} {{ end }}
+**See Also:** {{ range .SeeAlso }}{{ .EntryId }} {{ end }}
 {{ end }}
 {{ end }}
 {{ end }}
@@ -62,15 +62,15 @@ func ExampleGuidanceDocument() {
 	//**See Also:** AIR-DET-015 AIR-DET-004 AIR-PREV-005
 }
 
-func goodAIGFExample() (GuidanceDocument, error) {
+func goodAIGFExample() (Guidance, error) {
 	testdataPath := "./test-data/good-aigf.yaml"
 	data, err := os.ReadFile(testdataPath)
 	if err != nil {
-		return GuidanceDocument{}, err
+		return Guidance{}, err
 	}
-	var l1Docs GuidanceDocument
+	var l1Docs Guidance
 	if err := yaml.Unmarshal(data, &l1Docs); err != nil {
-		return GuidanceDocument{}, err
+		return Guidance{}, err
 	}
 	return l1Docs, nil
 }
