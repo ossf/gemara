@@ -209,7 +209,14 @@ func TestCatalogFromGuidanceDocument(t *testing.T) {
 				}
 				err = oscalUtils.Validate(oscalDocument)
 				assert.NoError(t, err)
-				if diff := cmp.Diff(tt.wantGroups, *catalog.Groups, cmpopts.IgnoreFields(oscalTypes.Link{}, "Href")); diff != "" {
+				// Sort slices to ignore order when comparing
+				sortGroups := cmpopts.SortSlices(func(a, b oscalTypes.Group) bool {
+					return a.ID < b.ID
+				})
+				sortControls := cmpopts.SortSlices(func(a, b oscalTypes.Control) bool {
+					return a.ID < b.ID
+				})
+				if diff := cmp.Diff(tt.wantGroups, *catalog.Groups, cmpopts.IgnoreFields(oscalTypes.Link{}, "Href"), sortGroups, sortControls); diff != "" {
 					t.Errorf("group mismatch (-want +got):\n%s", diff)
 				}
 			}
