@@ -28,15 +28,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Generate checklist (catalogs are loaded on-demand from metadata.mapping-references)
-	chk, err := checklist.ToChecklist(*policy)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error generating checklist: %v\n", err)
-		os.Exit(1)
-	}
-
-	// Generate markdown
-	markdown, err := checklist.ToMarkdownChecklist(chk)
+	// Generate markdown (catalogs are loaded on-demand from metadata.mapping-references)
+	markdown, err := checklist.ToMarkdownChecklist(*policy)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating markdown: %v\n", err)
 		os.Exit(1)

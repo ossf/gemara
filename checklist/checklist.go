@@ -86,7 +86,12 @@ func ToChecklist(policy gemara.Policy) (Checklist, error) {
 
 // ToMarkdownChecklist converts an evaluation plan into a checklist.
 // Generates a pre-execution checklist showing what needs to be checked.
-func ToMarkdownChecklist(checklist Checklist) (string, error) {
+func ToMarkdownChecklist(policy gemara.Policy) (string, error) {
+	checklist, err := ToChecklist(policy)
+	if err != nil {
+		return "", fmt.Errorf("failed to convert policy to checklist: %w", err)
+	}
+
 	tmpl, err := template.New("checklist").Parse(markdownTemplate)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse template: %w", err)

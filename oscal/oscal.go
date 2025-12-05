@@ -55,7 +55,7 @@ func WithOSCALImports(imports map[string]string) GenerateOption {
 
 // WithCanonicalHrefFormat is a GenerateOption that provides an `href` format string
 // for the canonical version of the guidance document. If set, this will be added as a
-// link in the mapping.cue with the rel="canonical" attribute. Ex - https://myguidance.org/versions/%s
+// link in the metadata with the rel="canonical" attribute. Ex - https://myguidance.org/versions/%s
 func WithCanonicalHrefFormat(canonicalHref string) GenerateOption {
 	return func(opts *generateOpts) {
 		opts.canonicalHref = canonicalHref
@@ -173,7 +173,7 @@ func ProfileFromGuidanceDocument(g *gemara.Guidance, guidanceDocHref string, opt
 	}
 
 	// Add an import for each control defined locally in the Layer 1 Guidance Document
-	// `ToOSCALCatalog` would need to be used to create an OSCAL Catalog for the document.
+	// `CatalogFromGuidanceDocument` would need to be used to create an OSCAL Catalog for the document.
 	localImport := oscal.Import{
 		Href:       guidanceDocHref,
 		IncludeAll: &oscal.IncludeAll{},

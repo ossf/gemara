@@ -30,67 +30,71 @@ func findProjectRoot(t *testing.T) string {
 func Test_ToMarkdownChecklist(t *testing.T) {
 	tests := []struct {
 		name     string
-		checklist Checklist
+		policy gemara.Policy
 		contains []string
 		notContains []string
 	}{
 		{
 			name: "comprehensive checklist with multiple controls and requirements",
-			checklist: Checklist{
-				PolicyId: "policy-2024-01",
-				Author:   "gemara",
-				AuthorVersion: "1.0.0",
-				Sections: []ControlSection{
+			policy: gemara.Policy{
+				Metadata: gemara.Metadata{
+					Id: "policy-2024-01",
+					Author: gemara.Actor{
+						Name:    "gemara",
+						Version: "1.0.0",
+					},
+				},
+				ImplementationPlan: gemara.ImplementationPlan{
+					Evaluators: []gemara.Actor{
+						{
+							Id:          "security-team",
+							Name:        "Security Assessment Team",
+							Description: "Check that MFA is configured for the repository",
+							Uri:         "https://github.com/ossf/security-baseline/blob/main/baseline/OSPS-AC.yaml",
+						},
+						{
+							Id:          "security-team-management",
+							Name:        "Security Assessment Team",
+							Description: "Verify the policy has been approved by management",
+						},
+						{
+							Id:          "baseline-scanner",
+							Name:        "OSPS Baseline Scanner",
+							Description: "Verify the policy contains required elements",
+						},
+					},
+				},
+				ControlReferences: []gemara.PolicyMapping{
 					{
-						ControlRef: "OSPS-B",
-						Requirements: []RequirementSection{
+						ReferenceId: "OSPS-B",
+						AssessmentRequirementModifications: []gemara.AssessmentRequirementModifier{
 							{
-								RequirementId: "OSPS-AC-01.01",
-								RequirementRecommendation: "Enforce multi-factor authentication for the project's version control system.",
-								Items: []Item{
-									{
-										RequirementId:         "OSPS-AC-01.01",
-										EvaluatorName:         "Security Assessment Team",
-										Description:           "Check that MFA is configured for the repository",
-										Documentation:         "https://github.com/ossf/security-baseline/blob/main/baseline/OSPS-AC.yaml",
-										IsAdditionalEvaluator: false,
-									},
-									{
-										RequirementId:         "OSPS-AC-01.01",
-										EvaluatorName:         "OSPS Baseline Scanner",
-										Description:           "Verify the policy contains required elements",
-										Documentation:         "",
-										IsAdditionalEvaluator: true,
-									},
+								TargetId: "OSPS-AC-01.01",
+								Overrides: &gemara.AssessmentRequirement{
+									Text: "Enforce multi-factor authentication for the project's version control system.",
+								},
+								Extensions: &gemara.AssessmentRequirementExtensions{
+									RequiredEvaluators: []string{"security-team", "baseline-scanner"},
 								},
 							},
 							{
-								RequirementId: "OSPS-AC-01.02",
-								RequirementRecommendation: "",
-								Items: []Item{
-									{
-										RequirementId:         "OSPS-AC-01.02",
-										EvaluatorName:         "Security Assessment Team",
-										Description:           "Verify the policy has been approved by management",
-										IsAdditionalEvaluator: false,
-									},
+								TargetId: "OSPS-AC-01.02",
+								Extensions: &gemara.AssessmentRequirementExtensions{
+									RequiredEvaluators: []string{"security-team-management"},
 								},
 							},
 						},
 					},
 					{
-						ControlRef: "OSPS-B",
-						Requirements: []RequirementSection{
+						ReferenceId: "OSPS-B",
+						AssessmentRequirementModifications: []gemara.AssessmentRequirementModifier{
 							{
-								RequirementId: "OSPS-AC-03.01",
-								RequirementRecommendation: "Configure branch protection rules.",
-								Items: []Item{
-									{
-										RequirementId:         "OSPS-AC-03.01",
-										EvaluatorName:         "Security Assessment Team",
-										Description:           "Check that the branch protection rules are configured for the primary branch",
-										IsAdditionalEvaluator: false,
-									},
+								TargetId: "OSPS-AC-03.01",
+								Overrides: &gemara.AssessmentRequirement{
+									Text: "Configure branch protection rules.",
+								},
+								Extensions: &gemara.AssessmentRequirementExtensions{
+									RequiredEvaluators: []string{"security-team"},
 								},
 							},
 						},
@@ -117,10 +121,14 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 		},
 		{
 			name: "empty checklist",
-			checklist: Checklist{
-				PolicyId: "empty-policy",
-				Author:   "test",
-				Sections: []ControlSection{},
+			policy: gemara.Policy{
+				Metadata: gemara.Metadata{
+					Id: "empty-policy",
+					Author: gemara.Actor{
+						Name: "test",
+					},
+				},
+				ControlReferences: []gemara.PolicyMapping{},
 			},
 			contains: []string{
 				"# Evaluation Plan: empty-policy",
@@ -134,7 +142,7 @@ func Test_ToMarkdownChecklist(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			markdown, err := ToMarkdownChecklist(tt.checklist)
+			markdown, err := ToMarkdownChecklist(tt.policy)
 			require.NoError(t, err)
 			require.NotEmpty(t, markdown)
 
