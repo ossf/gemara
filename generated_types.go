@@ -242,6 +242,143 @@ type Email string
 // Datetime represents an ISO 8601 formatted datetime string
 type Datetime string
 
+// #EnforcementAction defines an auditable record of enforcement actions taken to ensure
+// compliance with Layer 3 policy requirements based on Layer 4 evaluation findings.
+// Layer 5 links to Layer 3 (Policy) and Layer 4 (Findings via requirement/procedure mappings).
+// Layer 2 (Controls) are accessible through findings' requirement mappings.
+type EnforcementAction struct {
+	Metadata Metadata `json:"metadata" yaml:"metadata"`
+
+	// Executed indicates whether the enforcement action was successfully executed.
+	Executed bool `json:"executed" yaml:"executed"`
+
+	// ExecutedAt defines when the enforcement action was executed.
+	ExecutedAt Datetime `json:"executed-at" yaml:"executed-at"`
+
+	// Message defines a brief description of what enforcement action was actually taken.
+	Message string `json:"message,omitempty" yaml:"message,omitempty"`
+
+	// Target defines the subject of the enforcement action.
+	Target Target `json:"target,omitempty" yaml:"target,omitempty"`
+
+	// Action defines the high-level action performed during enforcement.
+	Action Action `json:"action" yaml:"action"`
+
+	// Policy defines the Layer 3 policy document whose requirements this enforcement action
+	// ensures compliance with.
+	Policy SingleMapping `json:"policy" yaml:"policy"`
+
+	// Findings defines Layer 4 AssessmentLog outcomes that triggered this enforcement action.
+	// Findings are required as they inform the action taken.
+	// Findings reference Layer 4 data through their requirement and procedure mappings.
+	// The Layer 2 control being enforced can be identified through the findings' requirement mappings.
+	Findings []Finding `json:"findings" yaml:"findings"`
+
+	// Exception defines an optional exception that applies to all findings in this enforcement action.
+	// When different exceptions are needed for different findings, create separate EnforcementAction records.
+	Exception Exception `json:"exception,omitempty" yaml:"exception,omitempty"`
+
+	// RemediationPlan uniquely identifies the remediation response when the Layer 3 Enforcement
+	// Method is AutoRemediation.
+	RemediationPlanId string `json:"remediation-plan,omitempty" yaml:"remediation-plan,omitempty"`
+
+	// NotificationPlan uniquely identifies the notification response when the Layer 3 Enforcement
+	// Method is Manual Remediation.
+	NotificationPlan string `json:"notification-plan,omitempty" yaml:"notification-plan,omitempty"`
+
+	// EnforcementPlan uniquely identifies the enforcement response when the Layer 3 Enforcement
+	// Method is Deployment Gate.
+	EnforcementPlan string `json:"enforcement-plan,omitempty" yaml:"enforcement-plan,omitempty"`
+}
+
+// Target defines the subject of the enforcement action.
+type Target struct {
+	// TargetId uniquely identifies the specific target instance.
+	TargetId string `json:"target-id" yaml:"target-id"`
+
+	// TargetName defines a human-readable name of the target.
+	TargetName string `json:"target-name" yaml:"target-name"`
+
+	// TargetType defines the type or category of the target.
+	TargetType string `json:"target-type" yaml:"target-type"`
+
+	// Environment defines the environment where the target exists.
+	Environment string `json:"environment,omitempty" yaml:"environment,omitempty"`
+}
+
+// Action is the high-level enforcement outcome.
+type Action string
+
+// Finding represents Layer 5's opinion about policy conformance based on Layer 4 evidence.
+// Findings reference Layer 4 AssessmentLogs (evidence) and form an opinion about that evidence.
+type Finding struct {
+	// Logs references the Layer 4 AssessmentLog entries that serve as evidence for this finding.
+	// These logs contain the actual evidence of policy conformance.
+	Logs []AssessmentLogReference `json:"logs" yaml:"logs"`
+
+	// Result defines Layer 5's opinion about the evidence from the referenced logs.
+	// This is the result of evaluating the evidence using conflict resolution strategies.
+	Result Result `json:"result" yaml:"result"`
+
+	// Message defines a human-readable description of Layer 5's opinion about what was found.
+	Message string `json:"message" yaml:"message"`
+
+	// WeightedScore defines the calculated weighted score from evaluator results.
+	// This score is computed using CVSS-inspired weighted averaging, incorporating
+	// strategy-based weights and confidence levels.
+	// Lower scores indicate more severe findings (0.0 = Failed, 3.0+ = Passed).
+	WeightedScore float64 `json:"weighted-score,omitempty" yaml:"weighted-score,omitempty"`
+}
+
+// AssessmentLogReference identifies a Layer 4 AssessmentLog that serves as evidence.
+// This reference allows Layer 5 findings to link to the evidence rather than copy it.
+type AssessmentLogReference struct {
+	// EvaluatorId identifies the evaluator that produced the assessment log.
+	EvaluatorId string `json:"evaluator-id" yaml:"evaluator-id"`
+
+	// Requirement identifies the requirement that was evaluated in the log.
+	// This matches AssessmentLog.Requirement.
+	Requirement SingleMapping `json:"requirement" yaml:"requirement"`
+
+	// StartTime identifies when the assessment began, used to uniquely identify the log instance.
+	// This matches AssessmentLog.Start.
+	StartTime Datetime `json:"start-time" yaml:"start-time"`
+
+	// LogId optionally provides a unique identifier for the log if one exists in the system.
+	// This can be used when logs are stored in a system that assigns unique IDs.
+	LogId string `json:"log-id,omitempty" yaml:"log-id,omitempty"`
+}
+
+// Exception represents an approved exception to policy enforcement.
+type Exception struct {
+	// Id defines the unique identifier for this exception.
+	Id string `json:"id" yaml:"id"`
+
+	// ApprovedBy defines the person or entity who approved this exception.
+	ApprovedBy Contact `json:"approved-by" yaml:"approved-by"`
+
+	// ApprovalDate defines the date and time when the exception was approved.
+	ApprovalDate Datetime `json:"approval-date" yaml:"approval-date"`
+
+	// ExpirationDate defines the optional date when this exception expires.
+	ExpirationDate Datetime `json:"expiration-date,omitempty" yaml:"expiration-date,omitempty"`
+
+	// Justification defines the justification for why this exception is necessary.
+	Justification string `json:"justification" yaml:"justification"`
+
+	// RiskLevel defines the risk level associated with this exception.
+	RiskLevel RiskLevel `json:"risk-level" yaml:"risk-level"`
+
+	// CompensatingControls defines an optional list of compensating controls implemented to mitigate risk.
+	CompensatingControls []MultiMapping `json:"compensating-controls,omitempty" yaml:"compensating-controls,omitempty"`
+
+	// ReviewDate defines the optional date when this exception should be reviewed.
+	ReviewDate Datetime `json:"review-date,omitempty" yaml:"review-date,omitempty"`
+}
+
+// RiskLevel from Layer 3 (Policy layer)
+type RiskLevel string
+
 // EvaluationLog contains the results of evaluating a set of Layer 2 controls.
 type EvaluationLog struct {
 	Metadata Metadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
