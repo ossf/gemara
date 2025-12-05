@@ -16,18 +16,21 @@ func ExampleGuidanceDocument() {
 ---
 **Front Matter:** {{ .FrontMatter }}
 ---
-{{ range .Categories }}
+{{- range .Categories }}
+
 ### {{ .Title }} ({{ .Id }})
 {{ .Description }}
 #### Guidelines:
-{{ range .Guidelines }}
+{{- range .Guidelines }}
+
 ##### {{ .Title }} ({{ .Id }})
 **Objective:** {{ .Objective }}
-{{ if .SeeAlso }}
-**See Also:** {{ range .SeeAlso }}{{ . }} {{ end }}
-{{ end }}
-{{ end }}
-{{ end }}
+{{- if .SeeAlso }}
+
+**See Also:** {{ range $index, $item := .SeeAlso }}{{ if $index }} {{ end }}{{ $item }}{{ end }}
+{{- end }}
+{{- end }}
+{{- end }}
 `
 
 	l1Docs, err := goodAIGFExample()
@@ -60,6 +63,23 @@ func ExampleGuidanceDocument() {
 	//**Objective:** A Human Feedback Loop is a critical detective and continuous improvement mechanism that involves systematically collecting, analyzing, and acting upon feedback provided by human users, subject matter experts (SMEs), or reviewers regarding an AI system's performance, outputs, or behavior.
 	//
 	//**See Also:** AIR-DET-015 AIR-DET-004 AIR-PREV-005
+	//
+	//
+	//##### Example Detective Control 004 (AIR-DET-004)
+	//**Objective:** Placeholder control for testing references.
+	//
+	//
+	//##### Example Detective Control 015 (AIR-DET-015)
+	//**Objective:** Placeholder control for testing references.
+	//
+	//
+	//
+	//### Preventive (PREV)
+	//Prevention and Risk Mitigation
+	//#### Guidelines:
+	//
+	//##### Example Preventive Control 005 (AIR-PREV-005)
+	//**Objective:** Placeholder control for testing references.
 }
 
 func goodAIGFExample() (GuidanceDocument, error) {

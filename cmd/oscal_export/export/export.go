@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	oscalTypes "github.com/defenseunicorns/go-oscal/src/types/oscal-1-1-3"
 
@@ -31,7 +32,22 @@ func Guidance(path string, args []string) error {
 		return err
 	}
 
-	oscalProfile, err := oscal.ProfileFromGuidanceDocument(&guidanceDocument, fmt.Sprintf("file://%s", *catalogOutputFile))
+	profileDir := filepath.Dir(*profileOutputFile)
+	catalogAbsPath, err := filepath.Abs(*catalogOutputFile)
+	if err != nil {
+		return fmt.Errorf("error resolving absolute path for catalog output: %w", err)
+	}
+	profileAbsDir, err := filepath.Abs(profileDir)
+	if err != nil {
+		return fmt.Errorf("error resolving absolute path for profile directory: %w", err)
+	}
+	relativeCatalogPath, err := filepath.Rel(profileAbsDir, catalogAbsPath)
+	if err != nil {
+		return fmt.Errorf("error calculating relative path: %w", err)
+	}
+	relativeCatalogPath = filepath.ToSlash(relativeCatalogPath)
+
+	oscalProfile, err := oscal.ProfileFromGuidanceDocument(&guidanceDocument, relativeCatalogPath)
 	if err != nil {
 		return err
 	}

@@ -119,6 +119,73 @@ func TestCatalogFromGuidanceDocument(t *testing.T) {
 								},
 							},
 						},
+						{
+							Class: "FINOS-AIR",
+							ID:    "air-det-004",
+							Title: "Example Detective Control 004",
+							Parts: &[]oscalTypes.Part{
+								{
+									Name: "statement",
+									ID:   "air-det-004_smt",
+								},
+								{
+									Name: "assessment-objective",
+									ID:   "air-det-004_obj",
+								},
+								{
+									Name:  "overview",
+									ID:    "air-det-004_ovw",
+									Prose: "Placeholder control for testing references.",
+								},
+							},
+						},
+						{
+							Class: "FINOS-AIR",
+							ID:    "air-det-015",
+							Title: "Example Detective Control 015",
+							Parts: &[]oscalTypes.Part{
+								{
+									Name: "statement",
+									ID:   "air-det-015_smt",
+								},
+								{
+									Name: "assessment-objective",
+									ID:   "air-det-015_obj",
+								},
+								{
+									Name:  "overview",
+									ID:    "air-det-015_ovw",
+									Prose: "Placeholder control for testing references.",
+								},
+							},
+						},
+					},
+				},
+				{
+					Class: "category",
+					ID:    "PREV",
+					Title: "Preventive",
+					Controls: &[]oscalTypes.Control{
+						{
+							Class: "FINOS-AIR",
+							ID:    "air-prev-005",
+							Title: "Example Preventive Control 005",
+							Parts: &[]oscalTypes.Part{
+								{
+									Name: "statement",
+									ID:   "air-prev-005_smt",
+								},
+								{
+									Name: "assessment-objective",
+									ID:   "air-prev-005_obj",
+								},
+								{
+									Name:  "overview",
+									ID:    "air-prev-005_ovw",
+									Prose: "Placeholder control for testing references.",
+								},
+							},
+						},
 					},
 				},
 			},
