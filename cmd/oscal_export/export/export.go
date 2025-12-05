@@ -64,7 +64,7 @@ func Catalog(path string, args []string) error {
 		return err
 	}
 
-	oscalCatalog, err := oscal.FromCatalog(catalog, "https://example/versions/%s#%s")
+	oscalCatalog, err := oscal.CatalogFromCatalog(catalog, oscal.WithControlHref("https://example/versions/%s#%s"))
 	if err != nil {
 		return err
 	}
