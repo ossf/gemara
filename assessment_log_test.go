@@ -2,6 +2,9 @@ package gemara
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func getAssessmentsTestData() []struct {
@@ -190,4 +193,27 @@ func TestNewAssessment(t *testing.T) {
 			}
 		})
 	}
+}
+
+// TestSetConfidenceLevel tests that SetConfidenceLevel() validates that an assessment has been run
+// before allowing confidence to be set.
+func TestSetConfidenceLevel(t *testing.T) {
+	t.Run("sets confidence level after assessment runs", func(t *testing.T) {
+		assessment, err := NewAssessment("test-id", "test description", []string{"test"}, []AssessmentStep{passingAssessmentStep})
+		require.NoError(t, err)
+		assessment.Run(nil)
+
+		err = assessment.SetConfidenceLevel(High)
+		assert.NoError(t, err)
+		assert.Equal(t, High, assessment.ConfidenceLevel)
+	})
+
+	t.Run("set confidence before assessment runs", func(t *testing.T) {
+		assessment, err := NewAssessment("test-id", "test description", []string{"test"}, []AssessmentStep{passingAssessmentStep})
+		require.NoError(t, err)
+
+		err = assessment.SetConfidenceLevel(High)
+		assert.Error(t, err)
+		assert.Equal(t, Undetermined, assessment.ConfidenceLevel)
+	})
 }

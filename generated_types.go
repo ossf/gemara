@@ -335,6 +335,9 @@ type AssessmentLog struct {
 
 	// Recommendation provides guidance on how to address a failed assessment.
 	Recommendation string `json:"recommendation,omitempty" yaml:"recommendation,omitempty"`
+
+	// ConfidenceLevel indicates the evaluator's confidence level in this specific assessment result.
+	ConfidenceLevel ConfidenceLevel `json:"confidence-level,omitempty" yaml:"confidence-level,omitempty"`
 }
 
 type GuidanceDocument struct {
