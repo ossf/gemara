@@ -41,6 +41,15 @@ func (c ConfidenceLevel) MarshalJSON() ([]byte, error) {
 	return json.Marshal(c.String())
 }
 
+const (
+	// HighConfidenceThreshold is the minimum percentage (0.75 = 75%) of steps
+	// that must have High confidence for the aggregated result to be High.
+	HighConfidenceThreshold = 0.75
+	// MediumConfidenceThreshold is the minimum percentage (0.50 = 50%) of steps
+	// that must have Medium or High confidence for the aggregated result to be Medium.
+	MediumConfidenceThreshold = 0.50
+)
+
 // ConfidenceAggregator tracks the distribution of confidence levels across steps
 // for threshold-based aggregation.
 type ConfidenceAggregator struct {
@@ -69,18 +78,14 @@ func (c *ConfidenceAggregator) Update(new ConfidenceLevel) ConfidenceLevel {
 		return new
 	}
 
-	// Calculate percentages:
-	//   - High: ≥75% of steps are High
-	//   - Medium: ≥50% of steps are Medium or High (prioritized over Low)
-	//   - Low: otherwise
 	highPercent := float64(c.highCount) / float64(c.totalSteps)
 	mediumOrHighPercent := float64(c.mediumCount+c.highCount) / float64(c.totalSteps)
 
-	if highPercent >= 0.75 {
+	if highPercent >= HighConfidenceThreshold {
 		return High
 	}
 
-	if mediumOrHighPercent >= 0.50 {
+	if mediumOrHighPercent >= MediumConfidenceThreshold {
 		return Medium
 	}
 
