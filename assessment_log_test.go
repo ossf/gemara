@@ -74,40 +74,49 @@ func TestAddStep(t *testing.T) {
 // TestRunStep ensures that runStep runs the step and updates the AssessmentLog
 func TestRunStep(t *testing.T) {
 	stepsTestData := []struct {
-		testName string
-		step     AssessmentStep
-		result   Result
+		testName        string
+		step            AssessmentStep
+		result          Result
+		confidenceLevel ConfidenceLevel
 	}{
 		{
-			testName: "Failing step",
-			step:     failingAssessmentStep,
-			result:   Failed,
+			testName:        "Failing step",
+			step:            failingAssessmentStep,
+			result:          Failed,
+			confidenceLevel: Low,
 		},
 		{
-			testName: "Passing step",
-			step:     passingAssessmentStep,
-			result:   Passed,
+			testName:        "Passing step",
+			step:            passingAssessmentStep,
+			result:          Passed,
+			confidenceLevel: High,
 		},
 		{
-			testName: "Needs review step",
-			step:     needsReviewAssessmentStep,
-			result:   NeedsReview,
+			testName:        "Needs review step",
+			step:            needsReviewAssessmentStep,
+			result:          NeedsReview,
+			confidenceLevel: Medium,
 		},
 		{
-			testName: "Unknown step",
-			step:     unknownAssessmentStep,
-			result:   Unknown,
+			testName:        "Unknown step",
+			step:            unknownAssessmentStep,
+			result:          Unknown,
+			confidenceLevel: Undetermined,
 		},
 	}
 	for _, test := range stepsTestData {
 		t.Run(test.testName, func(t *testing.T) {
 			anyOldAssessment := AssessmentLog{}
-			result := anyOldAssessment.runStep(nil, test.step)
+			aggregator := NewConfidenceAggregator()
+			result := anyOldAssessment.runStep(nil, test.step, aggregator)
 			if result != test.result {
 				t.Errorf("expected %s, got %s", test.result, result)
 			}
 			if anyOldAssessment.Result != test.result {
 				t.Errorf("expected %s, got %s", test.result, anyOldAssessment.Result)
+			}
+			if anyOldAssessment.ConfidenceLevel != test.confidenceLevel {
+				t.Errorf("expected confidence %s, got %s", test.confidenceLevel, anyOldAssessment.ConfidenceLevel)
 			}
 		})
 	}
@@ -195,25 +204,117 @@ func TestNewAssessment(t *testing.T) {
 	}
 }
 
-// TestSetConfidenceLevel tests that SetConfidenceLevel() validates that an assessment has been run
-// before allowing confidence to be set.
-func TestSetConfidenceLevel(t *testing.T) {
-	t.Run("sets confidence level after assessment runs", func(t *testing.T) {
-		assessment, err := NewAssessment("test-id", "test description", []string{"test"}, []AssessmentStep{passingAssessmentStep})
-		require.NoError(t, err)
-		assessment.Run(nil)
+func TestConfidenceLevelFromSteps(t *testing.T) {
+	tests := []struct {
+		name               string
+		steps              []AssessmentStep
+		expectedConfidence ConfidenceLevel
+	}{
+		{
+			name: "Result changed - step determines final result",
+			steps: []AssessmentStep{
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 1 passed", High
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Failed, "Step 2 failed", Low
+				},
+			},
+			expectedConfidence: Medium, // 50% High, 50% Low → 50% Medium+ threshold met
+		},
+		{
+			name: "Result changed - Passed to NeedsReview",
+			steps: []AssessmentStep{
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 1 passed", High
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return NeedsReview, "Step 2 needs review", Medium
+				},
+			},
+			expectedConfidence: Medium,
+		},
+		{
+			name: "Same result - multiple Passed steps",
+			steps: []AssessmentStep{
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 1 passed", High
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 2 passed", Medium
+				},
+			},
+			expectedConfidence: Medium, // Minimum of High and Medium
+		},
+		{
+			name: "Same result - multiple Passed steps with Low confidence",
+			steps: []AssessmentStep{
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 1 passed", Medium
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 2 passed", Low
+				},
+			},
+			expectedConfidence: Medium, // 50% Medium, 50% Low → 50% Medium+ threshold met
+		},
+		{
+			name: "Result did not change - Failed persists despite Passed step",
+			steps: []AssessmentStep{
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Failed, "Step 1 failed", Low
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 2 passed", High
+				},
+			},
+			expectedConfidence: Low, // Confidence from step1 (step2 didn't affect result)
+		},
+		{
+			name: "Result did not change - Unknown persists despite Passed step",
+			steps: []AssessmentStep{
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Unknown, "Step 1 unknown", Undetermined
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 2 passed", High
+				},
+			},
+			expectedConfidence: Undetermined, // Confidence from step1 (step2 didn't affect result)
+		},
+		{
+			name: "Result did not change - NeedsReview persists despite Passed step",
+			steps: []AssessmentStep{
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return NeedsReview, "Step 1 needs review", Medium
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 2 passed", High
+				},
+			},
+			expectedConfidence: Medium, // Confidence from step1 (step2 didn't affect result)
+		},
+		{
+			name: "Result did not change - Passed persists despite NotRun step",
+			steps: []AssessmentStep{
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 1 passed", High
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return NotRun, "Step 2 not run", Undetermined
+				},
+			},
+			expectedConfidence: High, // Confidence from step1 (step2 didn't affect result)
+		},
+	}
 
-		err = assessment.SetConfidenceLevel(High)
-		assert.NoError(t, err)
-		assert.Equal(t, High, assessment.ConfidenceLevel)
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assessment, err := NewAssessment("test-id", "test description", []string{"test"}, tt.steps)
+			require.NoError(t, err)
+			assessment.Run(nil)
 
-	t.Run("set confidence before assessment runs", func(t *testing.T) {
-		assessment, err := NewAssessment("test-id", "test description", []string{"test"}, []AssessmentStep{passingAssessmentStep})
-		require.NoError(t, err)
-
-		err = assessment.SetConfidenceLevel(High)
-		assert.Error(t, err)
-		assert.Equal(t, Undetermined, assessment.ConfidenceLevel)
-	})
+			assert.Equal(t, tt.expectedConfidence, assessment.ConfidenceLevel)
+		})
+	}
 }

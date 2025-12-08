@@ -61,7 +61,7 @@ package schemas
 #Result: "Not Run" | "Passed" | "Failed" | "Needs Review" | "Not Applicable" | "Unknown" @go(-)
 
 // ConfidenceLevel indicates the evaluator's confidence level in an assessment result.
-#ConfidenceLevel: "Undetermined" | "Low" | "Medium" | "High" @go(-)
+#ConfidenceLevel: "Not Set" | "Undetermined" | "Low" | "Medium" | "High" @go(-)
 
 // AssessmentPlan defines all testing procedures for a control id.
 #AssessmentPlan: {

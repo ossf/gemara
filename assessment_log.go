@@ -9,9 +9,9 @@ import (
 	"time"
 )
 
-// AssessmentStep is a function type that inspects the provided targetData and returns a Result with a message.
+// AssessmentStep is a function type that inspects the provided targetData and returns a Result with a message and confidence level.
 // The message may be an error string or other descriptive text.
-type AssessmentStep func(payload interface{}) (Result, string)
+type AssessmentStep func(payload interface{}) (Result, string, ConfidenceLevel)
 
 func (as AssessmentStep) String() string {
 	// Get the function pointer correctly
@@ -50,11 +50,22 @@ func (a *AssessmentLog) AddStep(step AssessmentStep) {
 	a.Steps = append(a.Steps, step)
 }
 
-func (a *AssessmentLog) runStep(targetData interface{}, step AssessmentStep) Result {
+func (a *AssessmentLog) runStep(targetData interface{}, step AssessmentStep, aggregator *ConfidenceAggregator) Result {
 	a.StepsExecuted++
-	result, message := step(targetData)
+	result, message, confidence := step(targetData)
+	previousResult := a.Result
 	a.Result = UpdateAggregateResult(a.Result, result)
+
+	// Always update message to show what steps have been run and their context.
 	a.Message = message
+
+	// Update confidence to match the result that persists to the Log when:
+	//   - The result changed, OR
+	//   - The result stayed the same AND this step's result matches the persisted result
+	if previousResult != a.Result || result == a.Result {
+		a.ConfidenceLevel = aggregator.Update(confidence)
+	}
+
 	return result
 }
 
@@ -66,29 +77,21 @@ func (a *AssessmentLog) Run(targetData interface{}) Result {
 	}
 
 	a.Start = Datetime(time.Now().Format(time.RFC3339))
+	aggregator := NewConfidenceAggregator()
 	err := a.precheck()
 	if err != nil {
 		a.Result = Unknown
+		a.ConfidenceLevel = Undetermined
+		aggregator.Update(Undetermined)
 		return a.Result
 	}
 	for _, step := range a.Steps {
-		if a.runStep(targetData, step) == Failed {
+		if a.runStep(targetData, step, aggregator) == Failed {
 			return Failed
 		}
 	}
 	a.End = Datetime(time.Now().Format(time.RFC3339))
 	return a.Result
-}
-
-// SetConfidenceLevel sets the evaluator's confidence level in this specific assessment result.
-// This method validates that an assessment has been run (Result != NotRun) before allowing
-// confidence to be set, as confidence only makes sense when there's an actual result.
-func (a *AssessmentLog) SetConfidenceLevel(confidenceLevel ConfidenceLevel) error {
-	if a.Result == NotRun {
-		return errors.New("cannot set confidence level before assessment has been run")
-	}
-	a.ConfidenceLevel = confidenceLevel
-	return nil
 }
 
 // precheck verifies that the assessment has all the required fields.
@@ -101,6 +104,7 @@ func (a *AssessmentLog) precheck() error {
 		)
 		a.Result = Unknown
 		a.Message = message
+		a.ConfidenceLevel = Undetermined
 		return errors.New(message)
 	}
 
