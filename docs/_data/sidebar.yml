@@ -5,4 +5,6 @@ quick_links:
     url: /
   - name: Lexicon
     url: /lexicon.html
+  - name: ADR
+    url: /adr.html
 
