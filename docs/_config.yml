@@ -5,8 +5,7 @@ description: >-
   GRC Engineering Model for Automated Risk Assessment - A logical model to describe
   compliance activities, their interactions, and schemas for automated interoperability.
 
-url: "https://ossf.github.io"
-baseurl: "/gemara"
+url: "https://gemara.openssf.org"
 
 titles_from_headings:
   enabled:     true
