@@ -1,5 +1,6 @@
 ---
 layout: page
+nav-title: ADR
 ---
 
 # Architecture Decision Records

@@ -78,6 +78,14 @@ social_links:
   - icon: linkedin
     url: "https://www.linkedin.com/company/openssf/"
 
+# Navigation
+# Specific pages for site navigation (used in sidebar)
+minima:
+  nav_pages:
+    - index.md
+    - lexicon.md
+    - adr.md
+
 # Markdown settings
 markdown: kramdown
 kramdown:
