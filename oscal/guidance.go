@@ -10,18 +10,63 @@ import (
 	oscalUtils "github.com/ossf/gemara/internal/oscal"
 )
 
-// ProfileFromGuidanceDocument creates an OSCAL Profile from the imported and local guidelines from
-// Layer 1 Guidance Document with a given location to the OSCAL Catalog for the guidance document.
-func ProfileFromGuidanceDocument(g *gemara.GuidanceDocument, guidanceDocHref string, opts ...GenerateOption) (oscal.Profile, error) {
+// FromGuidance creates both an OSCAL Catalog and Profile from a Guidance Document.
+// The catalog includes only the locally defined guidelines (categories), not imported ones.
+// The profile includes imports for both external guidelines and the local catalog.
+func FromGuidance(g *gemara.GuidanceDocument, guidanceDocHref string, opts ...GenerateOption) (oscal.Catalog, oscal.Profile, error) {
+	// The guidanceDocHref parameter specifies the location where the OSCAL Catalog
+	// will be saved, used to create the import reference in the Profile. This must
+	// be a relative or absolute URI that accurately reflects where the catalog
+	// file will be located relative to the profile.
+	if guidanceDocHref == "" {
+		return oscal.Catalog{}, oscal.Profile{},
+			fmt.Errorf("guidanceDocHref is required to create a valid Profile import reference")
+	}
 	options := generateOpts{}
 	for _, opt := range opts {
 		opt(&options)
 	}
 	options.completeFromGuidance(*g)
 
-	metadata, err := createMetadataFromGuidance(g, options)
+	// Create catalog
+	// Return early for empty documents
+	if len(g.Categories) == 0 {
+		return oscal.Catalog{}, oscal.Profile{}, fmt.Errorf("document %s does not have defined guidance categories", g.Metadata.Id)
+	}
+
+	catalogMetadata, err := createMetadataFromGuidance(g, options)
 	if err != nil {
-		return oscal.Profile{}, fmt.Errorf("error creating profile metadata: %w", err)
+		return oscal.Catalog{}, oscal.Profile{}, fmt.Errorf("error creating catalog metadata: %w", err)
+	}
+
+	// Create a resource map for control linking
+	resourcesMap := make(map[string]string)
+	backmatter := mappingToBackMatter(g.Metadata.MappingReferences)
+	if backmatter != nil && backmatter.Resources != nil {
+		for _, resource := range *backmatter.Resources {
+			if resource.Props != nil && len(*resource.Props) > 0 {
+				props := *resource.Props
+				id := props[0].Value
+				resourcesMap[id] = resource.UUID
+			}
+		}
+	}
+
+	var groups []oscal.Group
+	for _, category := range g.Categories {
+		groups = append(groups, createControlGroup(g, category, resourcesMap))
+	}
+
+	catalog := oscal.Catalog{
+		UUID:       uuid.NewUUID(),
+		Metadata:   catalogMetadata,
+		Groups:     oscalUtils.NilIfEmpty(groups),
+		BackMatter: backmatter,
+	}
+
+	profileMetadata, err := createMetadataFromGuidance(g, options)
+	if err != nil {
+		return oscal.Catalog{}, oscal.Profile{}, fmt.Errorf("error creating profile metadata: %w", err)
 	}
 
 	importMap := make(map[string]oscal.Import)
@@ -52,8 +97,8 @@ func ProfileFromGuidanceDocument(g *gemara.GuidanceDocument, guidanceDocHref str
 		}
 	}
 
-	// Add an import for each control defined locally in the Layer 1 Guidance Document
-	// `CatalogFromGuidanceDocument` would need to be used to create an OSCAL Catalog for the document.
+	// Add an import for each control defined locally in the Guidance Document
+	// The catalog is created by FromGuidance and referenced here.
 	localImport := oscal.Import{
 		Href:       guidanceDocHref,
 		IncludeAll: &oscal.IncludeAll{},
@@ -63,54 +108,10 @@ func ProfileFromGuidanceDocument(g *gemara.GuidanceDocument, guidanceDocHref str
 	profile := oscal.Profile{
 		UUID:     uuid.NewUUID(),
 		Imports:  imports,
-		Metadata: metadata,
-	}
-	return profile, nil
-}
-
-// CatalogFromGuidanceDocument creates an OSCAL Catalog from the locally defined guidelines in a given
-// Layer 1 Guidance Document.
-func CatalogFromGuidanceDocument(g *gemara.GuidanceDocument, opts ...GenerateOption) (oscal.Catalog, error) {
-	// Return early for empty documents
-	if len(g.Categories) == 0 {
-		return oscal.Catalog{}, fmt.Errorf("document %s does not have defined guidance categories", g.Metadata.Id)
+		Metadata: profileMetadata,
 	}
 
-	options := generateOpts{}
-	for _, opt := range opts {
-		opt(&options)
-	}
-	options.completeFromGuidance(*g)
-
-	metadata, err := createMetadataFromGuidance(g, options)
-	if err != nil {
-		return oscal.Catalog{}, fmt.Errorf("error creating catalog metadata: %w", err)
-	}
-
-	// Create a resource map for control linking
-	resourcesMap := make(map[string]string)
-	backmatter := mappingToBackMatter(g.Metadata.MappingReferences)
-	if backmatter != nil {
-		for _, resource := range *backmatter.Resources {
-			// Extract the id from the props
-			props := *resource.Props
-			id := props[0].Value
-			resourcesMap[id] = resource.UUID
-		}
-	}
-
-	var groups []oscal.Group
-	for _, category := range g.Categories {
-		groups = append(groups, createControlGroup(g, category, resourcesMap))
-	}
-
-	catalog := oscal.Catalog{
-		UUID:       uuid.NewUUID(),
-		Metadata:   metadata,
-		Groups:     oscalUtils.NilIfEmpty(groups),
-		BackMatter: backmatter,
-	}
-	return catalog, nil
+	return catalog, profile, nil
 }
 
 func createControlGroup(g *gemara.GuidanceDocument, category gemara.Category, resourcesMap map[string]string) oscal.Group {

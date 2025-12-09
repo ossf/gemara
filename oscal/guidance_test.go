@@ -15,7 +15,64 @@ import (
 	oscalUtils "github.com/ossf/gemara/internal/oscal"
 )
 
-func TestCatalogFromGuidanceDocument(t *testing.T) {
+func TestFromGuidance(t *testing.T) {
+	goodAIFG, err := goodAIGFExample()
+	require.NoError(t, err)
+
+	tests := []struct {
+		name        string
+		guidance    gemara.GuidanceDocument
+		catalogHref string
+		wantErr     bool
+	}{
+		{
+			name:        "valid guidance document",
+			guidance:    goodAIFG,
+			catalogHref: "test-catalog.json",
+			wantErr:     false,
+		},
+		{
+			name:        "error when catalogHref is empty",
+			guidance:    goodAIFG,
+			catalogHref: "",
+			wantErr:     true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			catalog, profile, err := FromGuidance(&tt.guidance, tt.catalogHref)
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+
+			// Validate catalog
+			catalogModel := oscalTypes.OscalModels{Catalog: &catalog}
+			assert.NoError(t, oscalUtils.Validate(catalogModel))
+			assert.NotEmpty(t, catalog.UUID)
+
+			// Validate profile
+			profileModel := oscalTypes.OscalModels{Profile: &profile}
+			assert.NoError(t, oscalUtils.Validate(profileModel))
+			assert.NotEmpty(t, profile.UUID)
+
+			// Verify catalogHref is in imports
+			assert.NotEmpty(t, profile.Imports)
+			hasProvidedImport := false
+			for _, imp := range profile.Imports {
+				if imp.Href == tt.catalogHref && imp.IncludeAll != nil {
+					hasProvidedImport = true
+					break
+				}
+			}
+			assert.True(t, hasProvidedImport, "profile should have provided catalogHref in imports")
+		})
+	}
+}
+
+func TestToCatalogFromGuidance(t *testing.T) {
 	goodAIFG, err := goodAIGFExample()
 	require.NoError(t, err)
 
@@ -200,14 +257,12 @@ func TestCatalogFromGuidanceDocument(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			catalog, err := CatalogFromGuidanceDocument(&tt.guidance)
+			catalog, _, err := FromGuidance(&tt.guidance, "test-catalog.json")
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
-				oscalDocument := oscalTypes.OscalModels{
-					Catalog: &catalog,
-				}
-				err = oscalUtils.Validate(oscalDocument)
+				catalogModel := oscalTypes.OscalModels{Catalog: &catalog}
+				err = oscalUtils.Validate(catalogModel)
 				assert.NoError(t, err)
 				// Sort slices to ignore order when comparing
 				sortGroups := cmpopts.SortSlices(func(a, b oscalTypes.Group) bool {
@@ -224,7 +279,7 @@ func TestCatalogFromGuidanceDocument(t *testing.T) {
 	}
 }
 
-func TestProfileFromGuidanceDocument(t *testing.T) {
+func TestToProfileFromGuidance(t *testing.T) {
 	goodAIFG, err := goodAIGFExample()
 	require.NoError(t, err)
 
@@ -325,12 +380,10 @@ func TestProfileFromGuidanceDocument(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			profile, err := ProfileFromGuidanceDocument(&tt.guidance, "testHref", tt.options...)
+			_, profile, err := FromGuidance(&tt.guidance, "testHref", tt.options...)
 			require.NoError(t, err)
-			oscalDocument := oscalTypes.OscalModels{
-				Profile: &profile,
-			}
-			assert.NoError(t, oscalUtils.Validate(oscalDocument))
+			profileModel := oscalTypes.OscalModels{Profile: &profile}
+			assert.NoError(t, oscalUtils.Validate(profileModel))
 
 			assert.Equal(t, tt.wantImports, profile.Imports)
 		})

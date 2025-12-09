@@ -9,7 +9,7 @@ import (
 	"github.com/ossf/gemara"
 )
 
-// CatalogFromCatalog converts a Layer 2 Catalog to OSCAL Catalog format.
+// FromCatalog converts a Layer 2 Catalog to OSCAL Catalog format.
 // The function automatically:
 //   - Uses the catalog's internal version from Metadata.Version (or defaultVersion if empty)
 //   - Uses the ControlFamily.Id as the OSCAL group ID
@@ -20,7 +20,7 @@ import (
 //     Example: "https://baseline.openssf.org/versions/%s#%s"
 //   - WithVersion: Override the version (defaults to catalog.Metadata.Version or defaultVersion)
 //   - WithCanonicalHrefFormat: Alternative canonical HREF format (if WithControlHref not provided)
-func CatalogFromCatalog(catalog *gemara.Catalog, opts ...GenerateOption) (oscal.Catalog, error) {
+func FromCatalog(catalog *gemara.Catalog, opts ...GenerateOption) (oscal.Catalog, error) {
 	options := generateOpts{}
 	for _, opt := range opts {
 		opt(&options)
