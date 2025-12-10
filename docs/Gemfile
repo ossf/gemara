@@ -4,7 +4,7 @@ source "https://rubygems.org"
 ruby ">= 3.0.0"
 
 # Jekyll version
-gem "jekyll", "~> 4.3.0"
+gem "jekyll", "~> 4.4.1"
 
 # Theme
 gem "minima", "~> 2.5"

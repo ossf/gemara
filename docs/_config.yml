@@ -5,8 +5,7 @@ description: >-
   GRC Engineering Model for Automated Risk Assessment - A logical model to describe
   compliance activities, their interactions, and schemas for automated interoperability.
 
-baseurl: ""
-url: ""
+url: "https://gemara.openssf.org"
 
 titles_from_headings:
   enabled:     true
@@ -14,7 +13,7 @@ titles_from_headings:
 
 # Author/Project info (displayed in footer)
 author:
-  name: Gemara Working Group
+  name: Gemara Authors
   email: gemara+subscribe@lists.openssf.org
 
 # Build settings
@@ -26,7 +25,7 @@ plugins:
 
 # Navigation
 header_pages:
-  - docs/index.md
+  - index.md
 
 # Exclude from processing
 exclude:

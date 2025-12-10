@@ -34,3 +34,6 @@ go.work.sum
 
 # artifacts
 artifacts/
+
+# docs
+docs/_site

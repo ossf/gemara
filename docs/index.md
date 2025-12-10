@@ -10,7 +10,7 @@ layout: home
 
 ## What is Gemara?
 
-Gemara (The _GRC Engineering Model for Automated Risk Assessment_) provides a logical model to describe the categories of compliance activities, how they interact, and the schemas to enable automated interoperability between them.
+Gemara _(the GRC Engineering Model for Automated Risk Assessment)_ provides a logical model to describe the categories of compliance activities, how they interact, and the schemas to enable automated interoperability between them.
 
 In order to better facilitate cross-functional communication, the Gemara Model seeks to outline the categorical layers of activities related to automated governance.
 

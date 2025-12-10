@@ -70,11 +70,36 @@ html, body {
    Custom Font Definitions
    ============================================ */
 
+/* Cairo - using static fonts to avoid variable font slant issues */
 @font-face {
   font-family: "Cairo";
-  src: url("{{ '/assets/fonts/Cairo/Cairo-VariableFont_slnt,wght.ttf' | relative_url }}") format("truetype");
-  font-weight: 200 900;
-  font-style: oblique -12deg 12deg;
+  src: url("{{ '/assets/fonts/Cairo/static/Cairo-Regular.ttf' | relative_url }}") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cairo";
+  src: url("{{ '/assets/fonts/Cairo/static/Cairo-Medium.ttf' | relative_url }}") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cairo";
+  src: url("{{ '/assets/fonts/Cairo/static/Cairo-SemiBold.ttf' | relative_url }}") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cairo";
+  src: url("{{ '/assets/fonts/Cairo/static/Cairo-Bold.ttf' | relative_url }}") format("truetype");
+  font-weight: 700;
+  font-style: normal;
   font-display: swap;
 }
 
