@@ -1,0 +1,119 @@
+metadata:
+  id: "myorg-policy-001"
+  version: "1.0.0"
+  date: "2024-01-20"
+  description: "Security policy extending tailoring the high baseline with supply chain security and OSPS controls"
+  author:
+    id: "policy-author-002"
+    name: "Security Policy Team"
+    type: "Human"
+    contact:
+      name: "Security Policy Team"
+      affiliation: "Information Security"
+      email: "advanced-security@example.com"
+  mapping-references:
+    - id: "NIST-800-161"
+      title: "NIST Special Publication 800-161"
+      version: "Rev. 1"
+      description: "Cybersecurity Supply Chain Risk Management Practices"
+      url: "https://csrc.nist.gov/publications/detail/sp/800-161/rev-1/final"
+    - id: "OSPS-B"
+      title: "Open Source Project Security Baseline"
+      version: "2024"
+      description: "Security criteria for open source projects"
+      url: "https://baseline.openssf.org/"
+
+organization-id: "org-example-001"
+title: "My Security Policy"
+purpose: |
+  This policy tailors the high baseline security policy with additional controls for
+  supply chain security (NIST 800-161) and open source project security (OSPS Baseline).
+  It is designed for systems requiring enhanced security posture including supply chain
+  risk management and open source component security.
+
+contacts:
+  responsible:
+    - name: "IT Operations Manager"
+      affiliation: "Information Technology"
+      email: "it-ops@example.com"
+    - name: "Supply Chain Security Manager"
+      affiliation: "Procurement and Security"
+      email: "supply-chain-security@example.com"
+  accountable:
+    - name: "Chief Information Security Officer"
+      affiliation: "Information Security"
+      email: "ciso@example.com"
+  consulted:
+    - name: "Legal and Compliance"
+      affiliation: "Legal Department"
+      email: "legal@example.com"
+
+scope:
+  boundaries:
+    - "United States"
+    - "European Union"
+  technologies:
+    - "Cloud Computing"
+    - "Web Applications"
+    - "Open Source Software"
+    - "Third-Party Components"
+  providers:
+    - "Amazon Web Services"
+    - "Microsoft Azure"
+    - "Open Source Communities"
+
+implementation-plan:
+  evaluation-timeline:
+    start: "2025-02-15T00:00:00Z"
+  evaluators:
+    - id: "security-team"
+      name: "Security Assessment Team"
+      type: "Human"
+    - id: "baseline-validator"
+      name: "OSPS Baseline Scanner"
+      type: "Software"
+      version: "1.0.0"
+      uri: "https://github.com/revanite-io/osps-baseline-action"
+  enforcement-timeline:
+    start: "2025-04-01T00:00:00Z"
+  enforcement-methods:
+    - "Deployment Gate"
+    - "Manual Remediation"
+
+control-references:
+  - reference-id: "OSPS-B"
+    control-modifications:
+      - target-id: "OSPS-AC-01"
+        modification-type: "clarify"
+        modification-rationale: "Adds extensions for organization context."
+        extensions:
+          severity: "High"
+          auto-remediation-allowed: true
+          deployment-gate-allowed: false
+    assessment-requirement-modifications:
+      - target-id: "OSPS-AC-01.01"
+        modification-type: "increase-strictness"
+        modification-rationale: |
+          Increase strictness by prohibiting SMS-based MFA methods due to security vulnerabilities 
+          including SIM swapping attacks, SMS interception, and social engineering risks
+        overrides:
+          id: "OSPS-AC-01.01"
+          text: |
+            When a user attempts to access a sensitive resource in the project's
+            version control system, the system MUST require the user to complete
+            a multi-factor authentication process. SMS-based MFA (including SMS text
+            messages and voice calls) MUST NOT be used.
+          applicability: ["Maturity Level 1", "Maturity Level 2", "Maturity Level 3"]
+          recommendation: |
+            Enforce multi-factor authentication for the project's version
+            control system, requiring collaborators to provide a second form of
+            authentication when accessing sensitive data or modifying repository
+            settings. Passkeys, hardware security keys (FIDO2/WebAuthn), and
+            time-based one-time password (TOTP) authenticator apps are acceptable
+            for this control. SMS-based MFA MUST NOT be used.
+        extensions:
+          required-evaluators: ["security-team", "baseline-validator"]
+          evaluation-points: ["runtime-scheduled"]
+          resolution-strategy: "MostSevere"
+
+

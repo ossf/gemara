@@ -21,7 +21,7 @@ func TestCatalogFromGuidanceDocument(t *testing.T) {
 
 	tests := []struct {
 		name       string
-		guidance   gemara.GuidanceDocument
+		guidance   gemara.Guidance
 		wantGroups []oscalTypes.Group
 		wantErr    bool
 	}{
@@ -126,7 +126,7 @@ func TestCatalogFromGuidanceDocument(t *testing.T) {
 		},
 		{
 			name:     "Failure/EmptyGuidance",
-			guidance: gemara.GuidanceDocument{},
+			guidance: gemara.Guidance{},
 			wantErr:  true,
 		},
 	}
@@ -162,29 +162,45 @@ func TestProfileFromGuidanceDocument(t *testing.T) {
 		Version:     "0.1.0",
 		Url:         "https://example.com",
 	}
-
-	importedGuidelines := gemara.MultiMapping{
-		ReferenceId: "EXP",
-		Entries: []gemara.MappingEntry{
-			{
-				ReferenceId: "EX-1",
-			},
-			{
-				// Intentionally adding a control that
-				// needs to be normalized
-				ReferenceId: "EX-1(2)",
-			},
-			{
-				ReferenceId: "EX-2",
-			},
-		},
-	}
 	guidanceWithImports.Metadata.MappingReferences = append(guidanceWithImports.Metadata.MappingReferences, mapping)
-	guidanceWithImports.ImportedGuidelines = append(guidanceWithImports.ImportedGuidelines, importedGuidelines)
+	// Add guidelines that extend from EXP to create imports with IncludeControls
+	if len(guidanceWithImports.Categories) == 0 {
+		guidanceWithImports.Categories = []gemara.Category{}
+	}
+	if len(guidanceWithImports.Categories) > 0 {
+		// Add guidelines that extend from EXP with the expected entry IDs
+		expGuidelines := []gemara.Guideline{
+			{
+				Id:    "TEST-1",
+				Title: "Test Guideline 1",
+				Extends: gemara.SingleMapping{
+					ReferenceId: "EXP",
+					EntryId:     "ex-1",
+				},
+			},
+			{
+				Id:    "TEST-2",
+				Title: "Test Guideline 2",
+				Extends: gemara.SingleMapping{
+					ReferenceId: "EXP",
+					EntryId:     "ex-1.2",
+				},
+			},
+			{
+				Id:    "TEST-3",
+				Title: "Test Guideline 3",
+				Extends: gemara.SingleMapping{
+					ReferenceId: "EXP",
+					EntryId:     "ex-2",
+				},
+			},
+		}
+		guidanceWithImports.Categories[0].Guidelines = append(guidanceWithImports.Categories[0].Guidelines, expGuidelines...)
+	}
 
 	tests := []struct {
 		name        string
-		guidance    gemara.GuidanceDocument
+		guidance    gemara.Guidance
 		options     []GenerateOption
 		wantImports []oscalTypes.Import
 	}{
@@ -263,15 +279,15 @@ func TestProfileFromGuidanceDocument(t *testing.T) {
 	}
 }
 
-func goodAIGFExample() (gemara.GuidanceDocument, error) {
+func goodAIGFExample() (gemara.Guidance, error) {
 	testdataPath := "../test-data/good-aigf.yaml"
 	data, err := os.ReadFile(testdataPath)
 	if err != nil {
-		return gemara.GuidanceDocument{}, err
+		return gemara.Guidance{}, err
 	}
-	var l1Docs gemara.GuidanceDocument
+	var l1Docs gemara.Guidance
 	if err := yaml.Unmarshal(data, &l1Docs); err != nil {
-		return gemara.GuidanceDocument{}, err
+		return gemara.Guidance{}, err
 	}
 	return l1Docs, nil
 }
