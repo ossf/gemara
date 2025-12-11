@@ -3,15 +3,9 @@ layout: default
 title: Home
 ---
 
-# Gemara: GRC Engineering Model for Automated Risk Assessment
+# Gemara _(Juh-MAH-ruh)_
 
-> Pronounced: Juh-MAH-ruh (think 💎)
-
-[![Go Reference](https://pkg.go.dev/badge/github.com/ossf/gemara.svg)](https://pkg.go.dev/github.com/ossf/gemara)
-
-## What is Gemara?
-
-Gemara _(the GRC Engineering Model for Automated Risk Assessment)_ provides a logical model to describe the categories of compliance activities, how they interact, and the schemas to enable automated interoperability between them.
+Gemara provides a logical model to describe the categories of compliance activities, how they interact, and the schemas to enable automated interoperability between them.
 
 In order to better facilitate cross-functional communication, the Gemara Model seeks to outline the categorical layers of activities related to automated governance.
 
@@ -70,20 +64,22 @@ Gemara is being used today in production environments:
 
 ## Get Started
 
-Install the Go module:
+Use the CUE schemas directly for content validation.
+
+Refer to the official CUE documentation for [installation instructions](https://cuelang.org/docs/introduction/installation/).
+
+```bash
+cue vet ./your-data.yaml ./schemas/layer-2.cue
+```
+
+If you are building automated tools, we maintain a Go module to help you manipulate Gemara data.
+
+The consolidated details and documentation can be quickly navigated on the Go registry.
+
+[![Go Reference](https://pkg.go.dev/badge/github.com/ossf/gemara.svg)](https://pkg.go.dev/github.com/ossf/gemara)
 
 ```bash
 go get github.com/ossf/gemara
-```
-
-Or use the CUE schemas directly for validation:
-
-```bash
-# Install CUE
-go install cuelang.org/go/cmd/cue@latest
-
-# Validate your data
-cue vet ./your-data.yaml ./schemas/layer-2.cue
 ```
 
 ## Community
