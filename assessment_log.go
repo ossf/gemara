@@ -50,7 +50,7 @@ func (a *AssessmentLog) AddStep(step AssessmentStep) {
 	a.Steps = append(a.Steps, step)
 }
 
-func (a *AssessmentLog) runStep(targetData interface{}, step AssessmentStep, aggregator *ConfidenceAggregator) Result {
+func (a *AssessmentLog) runStep(targetData interface{}, step AssessmentStep) Result {
 	a.StepsExecuted++
 	result, message, confidence := step(targetData)
 	previousResult := a.Result
@@ -62,8 +62,8 @@ func (a *AssessmentLog) runStep(targetData interface{}, step AssessmentStep, agg
 	// Update confidence to match the result that persists to the Log when:
 	//   - The result changed, OR
 	//   - The result stayed the same AND this step's result matches the persisted result
-	if previousResult != a.Result || result == a.Result {
-		a.ConfidenceLevel = aggregator.Update(confidence)
+	if previousResult != a.Result || result == a.Result && confidence < a.ConfidenceLevel {
+		a.ConfidenceLevel = confidence
 	}
 
 	return result
@@ -77,16 +77,14 @@ func (a *AssessmentLog) Run(targetData interface{}) Result {
 	}
 
 	a.Start = Datetime(time.Now().Format(time.RFC3339))
-	aggregator := NewConfidenceAggregator()
 	err := a.precheck()
 	if err != nil {
 		a.Result = Unknown
 		a.ConfidenceLevel = Undetermined
-		aggregator.Update(Undetermined)
 		return a.Result
 	}
 	for _, step := range a.Steps {
-		if a.runStep(targetData, step, aggregator) == Failed {
+		if a.runStep(targetData, step) == Failed {
 			return Failed
 		}
 	}
