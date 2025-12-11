@@ -2,32 +2,9 @@
   <div class="sidebar-content">
     <h3 class="sidebar-title">Quick Links</h3>
     <nav class="sidebar-nav">
-      {%- if site.minima.nav_pages -%}
-        {%- for nav_path in site.minima.nav_pages -%}
-          {%- assign nav_page = site.pages | where: "path", nav_path | first -%}
-          {%- unless nav_page -%}
-            {%- assign nav_page = site.pages | where: "name", nav_path | first -%}
-          {%- endunless -%}
-          {%- unless nav_page -%}
-            {%- for page in site.pages -%}
-              {%- if page.path contains nav_path or page.name == nav_path -%}
-                {%- assign nav_page = page -%}
-                {%- break -%}
-              {%- endif -%}
-            {%- endfor -%}
-          {%- endunless -%}
-          {%- if nav_page -%}
-            {%- assign display_title = nav_page.nav-title | default: nav_page.title -%}
-            <a href="{{ nav_page.url | relative_url }}" class="sidebar-link">{{ display_title | escape | default: nav_page.name }}</a>
-          {%- endif -%}
-        {%- endfor -%}
-      {%- else -%}
-        {%- for page in site.pages -%}
-          {%- if page.title -%}
-            <a href="{{ page.url | relative_url }}" class="sidebar-link">{{ page.title | escape }}</a>
-          {%- endif -%}
-        {%- endfor -%}
-      {%- endif -%}
+      {%- for item in site.data.navigation -%}
+        <a href="{{ item.url | relative_url }}" class="sidebar-link">{{ item.title | escape }}</a>
+      {%- endfor -%}
     </nav>
   </div>
 </aside>

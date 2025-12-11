@@ -58,10 +58,10 @@ jobs:
           echo "Verifying generated pages..."
           test -f docs/_site/index.html || { echo "Error: Missing index.html"; exit 1; }
           test -f docs/_site/lexicon.html || { echo "Error: Missing lexicon.html"; exit 1; }
-          # Verify sidebar is included in pages
-          grep -q "Quick Links" docs/_site/index.html || { echo "Error: Sidebar not found in index.html"; exit 1; }
+          # Verify sidebar is included in pages that should have it (not homepage)
           grep -q "Quick Links" docs/_site/lexicon.html || { echo "Error: Sidebar not found in lexicon.html"; exit 1; }
-          echo "Success: All expected pages generated successfully with sidebar"
+          grep -q "Quick Links" docs/_site/adr.html || { echo "Error: Sidebar not found in adr.html"; exit 1; }
+          echo "Success: All expected pages generated successfully"
 
       - name: Upload artifact for GitHub Pages
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
