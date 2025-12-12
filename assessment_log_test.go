@@ -2,6 +2,9 @@ package gemara
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func getAssessmentsTestData() []struct {
@@ -71,29 +74,34 @@ func TestAddStep(t *testing.T) {
 // TestRunStep ensures that runStep runs the step and updates the AssessmentLog
 func TestRunStep(t *testing.T) {
 	stepsTestData := []struct {
-		testName string
-		step     AssessmentStep
-		result   Result
+		testName        string
+		step            AssessmentStep
+		result          Result
+		confidenceLevel ConfidenceLevel
 	}{
 		{
-			testName: "Failing step",
-			step:     failingAssessmentStep,
-			result:   Failed,
+			testName:        "Failing step",
+			step:            failingAssessmentStep,
+			result:          Failed,
+			confidenceLevel: Low,
 		},
 		{
-			testName: "Passing step",
-			step:     passingAssessmentStep,
-			result:   Passed,
+			testName:        "Passing step",
+			step:            passingAssessmentStep,
+			result:          Passed,
+			confidenceLevel: High,
 		},
 		{
-			testName: "Needs review step",
-			step:     needsReviewAssessmentStep,
-			result:   NeedsReview,
+			testName:        "Needs review step",
+			step:            needsReviewAssessmentStep,
+			result:          NeedsReview,
+			confidenceLevel: Medium,
 		},
 		{
-			testName: "Unknown step",
-			step:     unknownAssessmentStep,
-			result:   Unknown,
+			testName:        "Unknown step",
+			step:            unknownAssessmentStep,
+			result:          Unknown,
+			confidenceLevel: Undetermined,
 		},
 	}
 	for _, test := range stepsTestData {
@@ -105,6 +113,9 @@ func TestRunStep(t *testing.T) {
 			}
 			if anyOldAssessment.Result != test.result {
 				t.Errorf("expected %s, got %s", test.result, anyOldAssessment.Result)
+			}
+			if anyOldAssessment.ConfidenceLevel != test.confidenceLevel {
+				t.Errorf("expected confidence %s, got %s", test.confidenceLevel, anyOldAssessment.ConfidenceLevel)
 			}
 		})
 	}
@@ -188,6 +199,175 @@ func TestNewAssessment(t *testing.T) {
 			if assessment == nil && !data.expectedError {
 				t.Error("expected assessment object, got nil")
 			}
+		})
+	}
+}
+
+func TestConfidenceLevelFromSteps(t *testing.T) {
+	tests := []struct {
+		name               string
+		steps              []AssessmentStep
+		expectedResult     Result
+		expectedConfidence ConfidenceLevel
+	}{
+		{
+			name: "Passed then NeedsReview",
+			steps: []AssessmentStep{
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 1 passed", High
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return NeedsReview, "Step 2 needs review", Medium
+				},
+			},
+			expectedResult:     NeedsReview,
+			expectedConfidence: Medium,
+		},
+		{
+			name: "Passed then Passed with different confidence",
+			steps: []AssessmentStep{
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 1 passed", High
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 2 passed", Low
+				},
+			},
+			expectedResult:     Passed,
+			expectedConfidence: Low, // Use last step's confidence
+		},
+		{
+			name: "NeedsReview then Passed",
+			steps: []AssessmentStep{
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return NeedsReview, "Step 1 needs review", Medium
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 2 passed", High
+				},
+			},
+			expectedResult:     NeedsReview,
+			expectedConfidence: High, // Use last step's confidence
+		},
+		{
+			name: "Multiple NeedsReview steps",
+			steps: []AssessmentStep{
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return NeedsReview, "Step 1 needs review", High
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return NeedsReview, "Step 2 needs review", Low
+				},
+			},
+			expectedResult:     NeedsReview,
+			expectedConfidence: Low,
+		},
+		{
+			name: "Unknown then Passed",
+			steps: []AssessmentStep{
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Unknown, "Step 1 unknown", Undetermined
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 2 passed", High
+				},
+			},
+			expectedResult:     Unknown,
+			expectedConfidence: High, // Use last step's confidence
+		},
+		{
+			name: "Passed then Unknown",
+			steps: []AssessmentStep{
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 1 passed", High
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Unknown, "Step 2 unknown", Undetermined
+				},
+			},
+			expectedResult:     Unknown,
+			expectedConfidence: Undetermined,
+		},
+		{
+			name: "Failed stops execution",
+			steps: []AssessmentStep{
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 1 passed", High
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Failed, "Step 2 failed", Low
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 3 passed", High
+				},
+			},
+			expectedResult:     Failed,
+			expectedConfidence: Low,
+		},
+		{
+			name: "Prereqs, then NeedsReview, then Passed",
+			steps: []AssessmentStep{
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Prereq 1", High
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Prereq 2", High
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return NeedsReview, "Check 1", Medium
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Check 2", High
+				},
+			},
+			expectedResult:     NeedsReview,
+			expectedConfidence: High, // Use last step's confidence
+		},
+		{
+			name: "Prereqs, then Passed Low, then Passed High",
+			steps: []AssessmentStep{
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Prereq 1", High
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Prereq 2", High
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Check 1", Low
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Check 2", High
+				},
+			},
+			expectedResult:     Passed,
+			expectedConfidence: High, // Use last step's confidence
+		},
+		{
+			name: "Passed High, then NeedsReview Low, then Passed High",
+			steps: []AssessmentStep{
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 1", High
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return NeedsReview, "Step 2", Low
+				},
+				func(interface{}) (Result, string, ConfidenceLevel) {
+					return Passed, "Step 3", High
+				},
+			},
+			expectedResult:     NeedsReview,
+			expectedConfidence: High, // Use last step's confidence
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assessment, err := NewAssessment("test-id", "test description", []string{"test"}, tt.steps)
+			require.NoError(t, err)
+			result := assessment.Run(nil)
+
+			assert.Equal(t, tt.expectedResult, result)
+			assert.Equal(t, tt.expectedConfidence, assessment.ConfidenceLevel)
 		})
 	}
 }

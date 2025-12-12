@@ -52,11 +52,16 @@ package schemas
 	end?: #Datetime
 	// Recommendation provides guidance on how to address a failed assessment.
 	recommendation?: string
+	// ConfidenceLevel indicates the evaluator's confidence level in this specific assessment result.
+	"confidence-level"?: #ConfidenceLevel @go(ConfidenceLevel)
 }
 
 #AssessmentStep: string @go(-)
 
 #Result: "Not Run" | "Passed" | "Failed" | "Needs Review" | "Not Applicable" | "Unknown" @go(-)
+
+// ConfidenceLevel indicates the evaluator's confidence level in an assessment result.
+#ConfidenceLevel: "Not Set" | "Undetermined" | "Low" | "Medium" | "High" @go(-)
 
 // AssessmentPlan defines all testing procedures for a control id.
 #AssessmentPlan: {

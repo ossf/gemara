@@ -9,9 +9,9 @@ import (
 	"time"
 )
 
-// AssessmentStep is a function type that inspects the provided targetData and returns a Result with a message.
+// AssessmentStep is a function type that inspects the provided targetData and returns a Result with a message and confidence level.
 // The message may be an error string or other descriptive text.
-type AssessmentStep func(payload interface{}) (Result, string)
+type AssessmentStep func(payload interface{}) (Result, string, ConfidenceLevel)
 
 func (as AssessmentStep) String() string {
 	// Get the function pointer correctly
@@ -52,9 +52,18 @@ func (a *AssessmentLog) AddStep(step AssessmentStep) {
 
 func (a *AssessmentLog) runStep(targetData interface{}, step AssessmentStep) Result {
 	a.StepsExecuted++
-	result, message := step(targetData)
+	result, message, confidence := step(targetData)
 	a.Result = UpdateAggregateResult(a.Result, result)
+
+	// Always update message to show what steps have been run and their context.
 	a.Message = message
+
+	// Always use the confidence level from the last step executed.
+	// This gives step implementers full control over how confidence builds
+	// as steps are executed, allowing them to adapt confidence based on
+	// the cumulative context of all previous steps.
+	a.ConfidenceLevel = confidence
+
 	return result
 }
 
@@ -69,6 +78,7 @@ func (a *AssessmentLog) Run(targetData interface{}) Result {
 	err := a.precheck()
 	if err != nil {
 		a.Result = Unknown
+		a.ConfidenceLevel = Undetermined
 		return a.Result
 	}
 	for _, step := range a.Steps {
@@ -90,6 +100,7 @@ func (a *AssessmentLog) precheck() error {
 		)
 		a.Result = Unknown
 		a.Message = message
+		a.ConfidenceLevel = Undetermined
 		return errors.New(message)
 	}
 

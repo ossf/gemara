@@ -119,7 +119,7 @@ func TestFromEvaluationLog(t *testing.T) {
 					Result:         gemara.Failed,
 					Message:        "Test failed",
 					Recommendation: "Fix this issue by doing X",
-					Steps:          []gemara.AssessmentStep{func(interface{}) (gemara.Result, string) { return gemara.Failed, "" }},
+					Steps:          []gemara.AssessmentStep{func(interface{}) (gemara.Result, string, gemara.ConfidenceLevel) { return gemara.Failed, "", gemara.Low }},
 					StepsExecuted:  1,
 				},
 			}),
@@ -158,7 +158,7 @@ func TestFromEvaluationLog(t *testing.T) {
 					Result:         gemara.Failed,
 					Message:        "Test failed",
 					Recommendation: "Fix this issue by doing X",
-					Steps:          []gemara.AssessmentStep{func(interface{}) (gemara.Result, string) { return gemara.Failed, "" }},
+					Steps:          []gemara.AssessmentStep{func(interface{}) (gemara.Result, string, gemara.ConfidenceLevel) { return gemara.Failed, "", gemara.Low }},
 					StepsExecuted:  1,
 				},
 			}),
@@ -192,7 +192,7 @@ func TestFromEvaluationLog(t *testing.T) {
 					Description:   "Test description",
 					Result:        gemara.Failed,
 					Message:       "Test failed",
-					Steps:         []gemara.AssessmentStep{func(interface{}) (gemara.Result, string) { return gemara.Failed, "" }},
+					Steps:         []gemara.AssessmentStep{func(interface{}) (gemara.Result, string, gemara.ConfidenceLevel) { return gemara.Failed, "", gemara.Low }},
 					StepsExecuted: 1,
 				},
 			}),
@@ -306,7 +306,7 @@ func makeEvaluationLog(author gemara.Actor, logs []*gemara.AssessmentLog) gemara
 
 func makeAssessmentLog(entryID, description string, result gemara.Result, message string, steps []gemara.AssessmentStep) *gemara.AssessmentLog {
 	if steps == nil {
-		steps = []gemara.AssessmentStep{func(interface{}) (gemara.Result, string) { return result, "" }}
+		steps = []gemara.AssessmentStep{func(interface{}) (gemara.Result, string, gemara.ConfidenceLevel) { return result, "", gemara.Medium }}
 	}
 	return &gemara.AssessmentLog{
 		Requirement:   gemara.SingleMapping{EntryId: entryID},

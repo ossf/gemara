@@ -7,17 +7,17 @@ var (
 	testingApplicability = []string{"test-applicability"}
 
 	// Assessment Results
-	passingAssessmentStep = func(interface{}) (Result, string) {
-		return Passed, ""
+	passingAssessmentStep = func(interface{}) (Result, string, ConfidenceLevel) {
+		return Passed, "", High
 	}
-	failingAssessmentStep = func(interface{}) (Result, string) {
-		return Failed, ""
+	failingAssessmentStep = func(interface{}) (Result, string, ConfidenceLevel) {
+		return Failed, "", Low
 	}
-	needsReviewAssessmentStep = func(interface{}) (Result, string) {
-		return NeedsReview, ""
+	needsReviewAssessmentStep = func(interface{}) (Result, string, ConfidenceLevel) {
+		return NeedsReview, "", Medium
 	}
-	unknownAssessmentStep = func(interface{}) (Result, string) {
-		return Unknown, ""
+	unknownAssessmentStep = func(interface{}) (Result, string, ConfidenceLevel) {
+		return Unknown, "", Undetermined
 	}
 )
 
