@@ -6,797 +6,282 @@
    https://openssf.org/brand-guidelines/
    ============================================ */
 
-/* ============================================
-   Base Reset & Box Sizing
-   ============================================ */
+// ===========================================
+// VARIABLES — Single source of truth
+// ===========================================
 
-* {
-  box-sizing: border-box;
-}
+// OpenSSF Brand Colors (from brand guidelines)
+$purple:        #45208c;
+$purple-dark:   #170D34;
+$purple-light:  #604693;
+$purple-deep:   #381885;
+$green:         #04ee5f;
 
-html, body {
-  margin: 0;
-  padding: 0;
-}
+// Derived colors (using brand purple as base)
+$purple-tint-10: rgba(114, 83, 237, 0.1);
+$purple-tint-15: rgba(114, 83, 237, 0.15);
+$purple-tint-20: rgba(114, 83, 237, 0.2);
+
+// Neutral colors
+$gray-50:       #f6f8fa;
+$gray-100:      #e7ecf0;
+$gray-200:      #d0d7de;
+$gray-500:      #6e7781;
+$gray-600:      #57606a;
+$black:         #000000;
+$white:         #ffffff;
+
+// Typography
+$font-body:     "Cairo", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+$font-heading:  "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+$font-weight-semibold: 600;
+$font-weight-bold:     700;
+
+// Spacing scale
+$space-xs:  0.2em;
+$space-sm:  0.4em;
+$space-md:  0.8rem;
+$space-lg:  1rem;
+$space-xl:  1.5rem;
+$space-2xl: 2rem;
+$space-3xl: 3rem;
+
+// Border radius
+$radius-sm: 4px;
+$radius-md: 6px;
+
+// Shadows
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.12), 0 3px 10px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 2px 8px rgba(0, 0, 0, 0.12);
+$max-width: 1200px;
+
+// ===========================================
+// IMPORTS
+// ===========================================
+
+@import
+  "minima/skins/{{ site.minima.skin | default: 'auto' }}",
+  "minima/initialize";
+
+// ===========================================
+// BASE LAYOUT
+// ===========================================
 
 .wrapper {
-  max-width: 1200px;
+  max-width: $max-width;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 $space-xl;
 }
 
-/* ============================================
-   CSS Variables for Theming
-   ============================================ */
-
-:root {
-  /* OpenSSF Brand Colors */
-  --openssf-purple: #45208c;
-  --openssf-purple-dark: #170D34;
-  --openssf-purple-light: #604693;
-  --openssf-purple-lighter: #7253ED;
-  --openssf-green: #04ee5f;
-  --openssf-green-light: #2fff7a;
-
-  /* Neutral Colors */
-  --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f6f8fa;
-  --color-bg-tertiary: #f0f2f5;
-  --color-border: #d0d7de;
-  --color-border-light: #e7ecf0;
-  --color-text-primary: #24292f;
-  --color-text-secondary: #57606a;
-  --color-text-tertiary: #6e7781;
-
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.12);
-
-  /* Spacing */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-  --spacing-xxl: 3rem;
-
-  /* Border Radius */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-}
-
-/* ============================================
-   Custom Font Definitions
-   ============================================ */
-
-@font-face {
-  font-family: "Cairo";
-  src: url("{{ '/assets/fonts/Cairo/Cairo-VariableFont_slnt,wght.ttf' | relative_url }}") format("truetype");
-  font-weight: 200 900;
-  font-style: oblique -12deg 12deg;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "IBMPlexSans";
-  src: url("{{ '/assets/fonts/IBMPlexSans/IBMPlexSans-Regular.ttf' | relative_url }}") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "IBMPlexSans";
-  src: url("{{ '/assets/fonts/IBMPlexSans/IBMPlexSans-Bold.ttf' | relative_url }}") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "IBMPlexSans";
-  src: url("{{ '/assets/fonts/IBMPlexSans/IBMPlexSans-Medium.ttf' | relative_url }}") format("truetype");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* ============================================
-   Typography
-   ============================================ */
+// ===========================================
+// TYPOGRAPHY
+// ===========================================
 
 body {
-  font-family: "Cairo", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  color: var(--color-text-primary);
-  line-height: 1.6;
-  font-size: 16px;
+  font-family: $font-body;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "IBMPlexSans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-weight: 600;
-  line-height: 1.25;
-  margin-top: var(--spacing-xl);
-  margin-bottom: var(--spacing-md);
-  color: var(--openssf-purple-dark);
+  font-family: $font-heading;
+  font-weight: $font-weight-semibold;
+  color: $purple-dark;
   break-after: avoid-page;
-}
-
-h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: var(--spacing-xl);
-}
-
-h2 {
-  font-size: 2rem;
-  margin-top: var(--spacing-xxl);
 }
 
 h3 {
-  font-size: 1.5rem;
-  color: var(--openssf-purple);
+  color: $purple;
 }
 
-h4 {
-  font-size: 1.25rem;
-}
-
-h5, h6 {
-  font-size: 1rem;
-  color: var(--color-text-secondary);
-}
-
-/* ============================================
-   Text Styling
-   ============================================ */
-
-/* Increase weight so bold/strong are easier to identify. */
 b, strong {
-  font-weight: 700;
-  color: var(--color-text-primary);
+  font-weight: $font-weight-bold;
 }
 
-/* Emphasis */
-em, i {
-  font-style: italic;
-  color: var(--color-text-secondary);
-}
-
-/* Avoid creating orphans at the bottom of the page when printing. */
-h1, h2, h3, h4, h5, h6 {
-  break-after: avoid-page;
-}
-
-/* Paragraphs */
-p {
-  margin-bottom: var(--spacing-md);
-  color: var(--color-text-primary);
-}
-
-/* Lists */
-ul, ol {
-  margin-bottom: var(--spacing-md);
-  padding-left: var(--spacing-xl);
-}
-
-li {
-  margin-bottom: var(--spacing-sm);
-}
-
-/* Blockquotes */
-blockquote {
-  border-left: 4px solid var(--openssf-purple-light);
-  padding: var(--spacing-md) var(--spacing-lg);
-  margin: var(--spacing-lg) 0;
-  background: var(--color-bg-secondary);
-  border-radius: var(--radius-sm);
-  color: var(--color-text-secondary);
-  font-style: italic;
-}
-
-blockquote p:last-child {
-  margin-bottom: 0;
-}
-
-/* Horizontal Rules */
-hr {
-  border: none;
-  border-top: 2px solid var(--color-border-light);
-  margin: var(--spacing-xxl) 0;
-}
-
-/* ============================================
-   Links
-   ============================================ */
+// ===========================================
+// LINKS
+// ===========================================
 
 a {
-  color: var(--openssf-purple);
-  text-decoration: none;
-  transition: color 0.2s ease, border-bottom 0.2s ease;
-  border-bottom: 1px solid transparent;
+  &:link    { color: $purple; }
+  &:visited { color: $purple-light; }
+  &:hover   { color: $purple-dark; }
+  &:active  { color: $green; }
+  &:focus {
+    outline: 3px solid $green;
+    outline-offset: 2px;
+  }
+
+  // External links indicator
+  &[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-list a)::after {
+    content: " ↗";
+    font-size: 0.85em;
+    color: $gray-500;
+  }
 }
 
-a:hover {
-  color: var(--openssf-purple-dark);
-  border-bottom: 1px solid var(--openssf-purple-dark);
-}
-
-a:visited {
-  color: var(--openssf-purple-light);
-}
-
-a:active {
-  color: var(--openssf-green);
-}
-
-a:focus {
-  outline: 3px solid var(--openssf-green);
-  outline-offset: 2px;
-}
-
-/* External links indicator */
-a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-list a)::after {
-  content: " ↗";
-  font-size: 0.85em;
-  color: var(--color-text-tertiary);
-}
-
-/* ============================================
-   Header Layout
-   ============================================ */
+// ===========================================
+// SITE STRUCTURE
+// ===========================================
 
 .site-header {
-  border-bottom: 2px solid var(--openssf-purple);
-  background: var(--color-bg-primary);
-  box-shadow: var(--shadow-sm);
-  padding: var(--spacing-lg) 0 var(--spacing-md) 0;
+  border-bottom: 2px solid $purple;
 }
 
-.header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-md);
-  flex-wrap: wrap;
-  gap: var(--spacing-lg);
+.site-footer {
+  border-top: 2px solid $purple;
 
-  @media screen and (max-width: 768px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-md);
+  .social-media-list svg {
+    display: none !important;
   }
 }
 
-.site-logo {
-  flex: 0 0 auto;
+// ===========================================
+// CONTENT ELEMENTS
+// ===========================================
 
-  a {
-    display: block;
-    border-bottom: none !important;
+blockquote {
+  border-left: 4px solid $purple-light;
+  padding: $space-lg $space-xl;
+  margin: $space-xl 0;
+  background: $gray-50;
+  border-radius: $radius-sm;
+  color: $gray-600;
+  font-style: italic;
 
-    &:hover {
-      opacity: 0.85;
-      border-bottom: none !important;
-    }
+  p:last-child {
+    margin-bottom: 0;
   }
-
-  img {
-    display: block;
-    height: 90px;
-    width: auto;
-    max-width: 100%;
-  }
-
-  @media screen and (max-width: 768px) {
-    img {
-      height: 70px;
-    }
-  }
-}
-
-.site-branding {
-  flex: 1 1 auto;
-  text-align: right;
-
-  @media screen and (max-width: 768px) {
-    text-align: left;
-  }
-}
-
-.site-title {
-  font-size: 3rem;
-  font-weight: 400;
-  margin: 0;
-  padding: 0;
-  line-height: 1.2;
-
-  a {
-    color: var(--openssf-purple-dark);
-    text-decoration: none;
-    border-bottom: none !important;
-    transition: color 0.2s ease;
-
-    &:hover {
-      color: var(--openssf-purple);
-      border-bottom: none !important;
-    }
-
-    &:visited {
-      color: var(--openssf-purple-dark);
-    }
-  }
-
-  @media screen and (max-width: 900px) {
-    font-size: 3.00rem;
-  }
-
-  @media screen and (max-width: 600px) {
-    font-size: 1.00rem;
-  }
-}
-
-.site-tagline {
-  font-size: 1.25rem;
-  font-weight: 400;
-  color: var(--color-text-secondary);
-  line-height: 1.4;
-  margin: var(--spacing-xs) 0 0 0;
-
-  @media screen and (max-width: 900px) {
-    font-size: 1.1rem;
-  }
-
-  @media screen and (max-width: 600px) {
-    font-size: 1rem;
-  }
-}
-
-/* ============================================
-   Navigation
-   ============================================ */
-
-.site-nav {
-  padding-top: var(--spacing-md);
-
-  .nav-trigger {
-    display: none;
-  }
-
-  .menu-icon {
-    display: none;
-  }
-
-  .nav-items {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
-    align-items: center;
-  }
-
-  .nav-item {
-    color: var(--color-text-primary);
-    font-weight: 500;
-    font-size: 1rem;
-    padding: var(--spacing-xs) var(--spacing-md);
-    border-radius: var(--radius-sm);
-    transition: all 0.2s ease;
-    text-decoration: none;
-    border-bottom: none !important;
-
-    &:hover {
-      background: var(--color-bg-secondary);
-      color: var(--openssf-purple);
-      border-bottom: none !important;
-    }
-
-    &:visited {
-      color: var(--color-text-primary);
-    }
-  }
-
-  @media screen and (max-width: 768px) {
-    position: relative;
-
-    label[for="nav-trigger"] {
-      display: block;
-      float: right;
-      width: 36px;
-      height: 36px;
-      z-index: 2;
-      cursor: pointer;
-    }
-
-    .menu-icon {
-      display: block;
-      float: right;
-      width: 36px;
-      height: 26px;
-      line-height: 0;
-      padding-top: 10px;
-      text-align: center;
-
-      > svg {
-        fill: var(--openssf-purple);
-      }
-    }
-
-    input ~ .nav-items {
-      display: none;
-    }
-
-    input:checked ~ .nav-items {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      padding: var(--spacing-md) 0;
-      width: 100%;
-    }
-
-    .nav-item {
-      display: block;
-      width: 100%;
-      padding: var(--spacing-sm) var(--spacing-md);
-    }
-  }
-}
-
-/* ============================================
-   Main Content Area
-   ============================================ */
-
-.page-content {
-  padding: var(--spacing-xl) 0;
-  flex: 1;
-}
-
-.home,
-.page {
-  max-width: 100%;
-}
-
-/* ============================================
-   Layer Grid Layout (for homepage)
-   ============================================ */
-
-.layer-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--spacing-xl);
-  margin: var(--spacing-xxl) 0;
-
-  > div,
-  > section {
-    background: var(--color-bg-primary);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-lg);
-    transition: all 0.3s ease;
-
-    &:hover {
-      box-shadow: var(--shadow-md);
-      border-color: var(--openssf-purple);
-      transform: translateY(-2px);
-    }
-  }
-
-  h3 {
-    color: var(--openssf-purple);
-    margin-top: 0;
-    font-size: 1.25rem;
-  }
-
-  h4 {
-    color: var(--openssf-purple-dark);
-    margin-top: var(--spacing-md);
-  }
-}
-
-/* ============================================
-   Code Blocks
-   ============================================ */
-
-/* Enhance code block styling */
-pre,
-code {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, "Monaco", monospace;
 }
 
 pre {
-  background: var(--color-bg-tertiary);
-  border: 1px solid var(--color-border);
-  border-left: 3px solid var(--openssf-purple);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-lg);
-  overflow-x: auto;
-  margin: var(--spacing-lg) 0;
-  box-shadow: var(--shadow-sm);
-
-  code {
-    background: transparent;
-    padding: 0;
-    border: none;
-    color: var(--color-text-primary);
-  }
+  border-left: 3px solid $purple;
 }
 
-/* Inline code */
 code {
-  background: rgba(114, 83, 237, 0.1);
-  color: var(--openssf-purple-dark);
-  padding: 0.2em 0.4em;
-  border-radius: var(--radius-sm);
-  font-size: 0.9em;
-  border: 1px solid rgba(114, 83, 237, 0.2);
+  background: $purple-tint-10;
+  color: $purple-dark;
+  border: 1px solid $purple-tint-20;
+  border-radius: $radius-sm;
+  padding: $space-xs $space-sm;
 }
 
-/* Code block with language label */
-pre[class*="language-"]::before,
-pre[class*="highlight"]::before {
-  content: attr(data-lang);
-  display: block;
-  text-align: right;
-  font-size: 0.75rem;
-  color: var(--color-text-tertiary);
-  margin-bottom: var(--spacing-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
 }
 
-/* ============================================
-   Tables - OSPS Baseline Style
-   ============================================ */
+// ===========================================
+// TABLES
+// ===========================================
 
 table {
   border-collapse: separate;
   border-spacing: 0;
   width: 100%;
-  margin: var(--spacing-xl) 0;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border: 1px solid $gray-200;
+  border-radius: $radius-md;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
-
-  th,
-  td {
-    padding: var(--spacing-md) var(--spacing-lg);
-    text-align: left;
-    border-bottom: 1px solid var(--color-border-light);
-  }
 
   th {
-    background: linear-gradient(180deg,
-                rgba(114, 83, 237, 0.15) 0%,
-                rgba(114, 83, 237, 0.1) 100%);
-    color: var(--openssf-purple-dark);
-    font-weight: 600;
-    font-size: 0.875rem;
+    background: linear-gradient(180deg, $purple-tint-15 0%, $purple-tint-10 100%);
+    color: $purple-dark;
+    font-weight: $font-weight-semibold;
     text-transform: uppercase;
+    font-size: 0.875rem;
     letter-spacing: 0.05em;
-    border-bottom: 2px solid var(--openssf-purple-light);
+    border-bottom: 2px solid $purple-light;
+  }
+
+  th, td {
+    padding: $space-lg $space-xl;
+    text-align: left;
+    border-bottom: 1px solid $gray-100;
   }
 
   tbody tr {
-    transition: background-color 0.2s ease;
-
     &:hover {
-      background: var(--color-bg-secondary);
+      background: $gray-50;
+    }
+
+    &:nth-child(even) {
+      background: rgba($black, 0.02);
     }
 
     &:last-child td {
       border-bottom: none;
     }
   }
+}
 
-  tbody tr:nth-child(even) {
-    background: rgba(0, 0, 0, 0.02);
+// ===========================================
+// COMPONENTS
+// ===========================================
+
+.warning {
+  background: $purple-tint-20;
+  border-left: 4px solid $purple-deep;
+  border-radius: $radius-sm;
+  box-shadow: $shadow-sm;
+  padding: $space-md;
+
+  &::before {
+    font-weight: bold;
+    font-size: 80%;
+    content: "WARNING ";
   }
 }
 
-/* ============================================
-   Footer
-   ============================================ */
+.layer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: $space-2xl;
+  margin: $space-3xl 0;
 
-.site-footer {
-  border-top: 2px solid var(--openssf-purple);
-  background: var(--color-bg-secondary);
-  margin-top: var(--spacing-xxl);
-  padding: var(--spacing-xxl) 0 var(--spacing-xl);
-
-  .wrapper {
-    color: var(--color-text-secondary);
-  }
-
-  .footer-col-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-xl);
-    margin-bottom: var(--spacing-lg);
-
-    @media screen and (max-width: 600px) {
-      flex-direction: column;
-    }
-  }
-
-  .footer-col {
-    flex: 1;
-    min-width: 200px;
-  }
-
-  .contact-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-
-    li {
-      margin-bottom: var(--spacing-sm);
-    }
-  }
-
-  .social-media-list {
-    list-style: none;
-    margin: var(--spacing-lg) 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    gap: var(--spacing-md);
-
-    li {
-      margin: 0;
-    }
-
-    a {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      width: 40px;
-      height: 40px;
-
-      i.fa-brands {
-        font-size: 24px;
-        color: var(--openssf-purple);
-      }
-
-      &:hover i.fa-brands {
-        color: var(--openssf-purple-dark);
-      }
-    }
-  }
-
-  .footer-copyright {
-    text-align: center;
-  }
-
-  a {
-    color: var(--openssf-purple);
+  > div,
+  > section {
+    background: $white;
+    border: 2px solid $gray-200;
+    border-radius: $radius-md;
+    padding: $space-xl;
+    transition: all 0.3s ease;
 
     &:hover {
-      color: var(--openssf-purple-dark);
+      box-shadow: $shadow-md;
+      border-color: $purple;
+      transform: translateY(-2px);
     }
-  }
-
-  p {
-    color: var(--color-text-secondary);
-    font-size: 0.9rem;
-    line-height: 1.6;
-  }
-}
-
-/* ============================================
-   Responsive Design
-   ============================================ */
-
-@media screen and (max-width: 900px) {
-  h1 {
-    font-size: 2rem;
-  }
-
-  h2 {
-    font-size: 1.75rem;
   }
 
   h3 {
-    font-size: 1.5rem;
+    margin-top: 0;
   }
 }
 
-@media screen and (max-width: 600px) {
-  :root {
-    font-size: 14px;
+// ===========================================
+// SOCIAL MEDIA (Footer)
+// ===========================================
+
+.social-media-list {
+  display: flex;
+  justify-content: center;
+  gap: $space-lg;
+  list-style: none;
+  padding: 0;
+  margin: $space-xl 0;
+
+  li a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    padding: 0;
   }
 
-  .layer-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .site-title {
-    font-size: 1.5rem;
-  }
-
-  table {
-    font-size: 0.875rem;
-
-    th, td {
-      padding: var(--spacing-sm) var(--spacing-md);
-    }
-  }
-}
-
-/* ============================================
-   Print Styles
-   ============================================ */
-
-@media print {
-  :root {
-    --color-bg-primary: #ffffff;
-    --color-bg-secondary: #ffffff;
-    --color-text-primary: #000000;
-  }
-
-  .site-nav,
-  .site-footer {
-    display: none;
-  }
-
-  .site-header {
-    border-bottom: 2px solid #000000;
-    box-shadow: none;
-  }
-
-  a {
-    color: #000000;
-    text-decoration: underline;
-  }
-
-  a[href^="#"]:after,
-  a[href^="/"]:after {
-    content: "";
-  }
-
-  pre {
-    border: 1px solid #cccccc;
-    page-break-inside: avoid;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    page-break-after: avoid;
-  }
-
-  table {
-    page-break-inside: avoid;
-  }
-}
-
-/* ============================================
-   Accessibility Enhancements
-   ============================================ */
-/* Focus indicators */
-button:focus,
-input:focus,
-textarea:focus,
-select:focus {
-  outline: 3px solid var(--openssf-green);
-  outline-offset: 2px;
-}
-
-/* Reduced motion for users who prefer it */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* High contrast mode */
-@media (prefers-contrast: high) {
-  :root {
-    --color-border: #000000;
-    --color-text-primary: #000000;
-    --color-text-secondary: #000000;
+  i.fa-brands {
+    font-size: 24px;
+    color: $purple;
   }
 }
