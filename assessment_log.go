@@ -53,18 +53,16 @@ func (a *AssessmentLog) AddStep(step AssessmentStep) {
 func (a *AssessmentLog) runStep(targetData interface{}, step AssessmentStep) Result {
 	a.StepsExecuted++
 	result, message, confidence := step(targetData)
-	previousResult := a.Result
 	a.Result = UpdateAggregateResult(a.Result, result)
 
 	// Always update message to show what steps have been run and their context.
 	a.Message = message
 
-	// Update confidence to match the result that persists to the Log when:
-	//   - The result changed, OR
-	//   - The result stayed the same AND this step's result matches the persisted result
-	if previousResult != a.Result || result == a.Result && confidence < a.ConfidenceLevel {
-		a.ConfidenceLevel = confidence
-	}
+	// Always use the confidence level from the last step executed.
+	// This gives step implementers full control over how confidence builds
+	// as steps are executed, allowing them to adapt confidence based on
+	// the cumulative context of all previous steps.
+	a.ConfidenceLevel = confidence
 
 	return result
 }

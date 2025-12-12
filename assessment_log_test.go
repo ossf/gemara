@@ -234,7 +234,7 @@ func TestConfidenceLevelFromSteps(t *testing.T) {
 				},
 			},
 			expectedResult:     Passed,
-			expectedConfidence: Low, // Both Passed, take minimum
+			expectedConfidence: Low, // Use last step's confidence
 		},
 		{
 			name: "NeedsReview then Passed",
@@ -247,7 +247,7 @@ func TestConfidenceLevelFromSteps(t *testing.T) {
 				},
 			},
 			expectedResult:     NeedsReview,
-			expectedConfidence: Medium,
+			expectedConfidence: High, // Use last step's confidence
 		},
 		{
 			name: "Multiple NeedsReview steps",
@@ -273,7 +273,7 @@ func TestConfidenceLevelFromSteps(t *testing.T) {
 				},
 			},
 			expectedResult:     Unknown,
-			expectedConfidence: Undetermined,
+			expectedConfidence: High, // Use last step's confidence
 		},
 		{
 			name: "Passed then Unknown",
@@ -321,7 +321,7 @@ func TestConfidenceLevelFromSteps(t *testing.T) {
 				},
 			},
 			expectedResult:     NeedsReview,
-			expectedConfidence: Medium,
+			expectedConfidence: High, // Use last step's confidence
 		},
 		{
 			name: "Prereqs, then Passed Low, then Passed High",
@@ -340,7 +340,7 @@ func TestConfidenceLevelFromSteps(t *testing.T) {
 				},
 			},
 			expectedResult:     Passed,
-			expectedConfidence: Low,
+			expectedConfidence: High, // Use last step's confidence
 		},
 		{
 			name: "Passed High, then NeedsReview Low, then Passed High",
@@ -356,7 +356,7 @@ func TestConfidenceLevelFromSteps(t *testing.T) {
 				},
 			},
 			expectedResult:     NeedsReview,
-			expectedConfidence: Low,
+			expectedConfidence: High, // Use last step's confidence
 		},
 	}
 
