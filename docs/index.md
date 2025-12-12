@@ -3,7 +3,11 @@ layout: home
 title: Home
 ---
 
-# Gemara _(Juh-MAH-ruh)_
+# Gemara <span class="pronunciation">(Juh-MAH-ruh)</span>
+
+<img src="{{ '/assets/gemara-logo.png' | relative_url }}" alt="Gemara Logo" class="gemara-logo" />
+
+**GRC Engineering Model for Automated Risk Assessment**
 
 Gemara provides a logical model to describe the categories of compliance activities, how they interact, and the schemas to enable automated interoperability between them.
 

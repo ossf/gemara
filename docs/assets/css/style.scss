@@ -545,6 +545,31 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
 }
 
 /* ============================================
+   Logo and Title (Homepage)
+   ============================================ */
+
+.gemara-logo {
+  float: right;
+  max-width: 120px;
+  height: auto;
+  margin: 0 0 var(--spacing-md) var(--spacing-lg);
+  
+  @media screen and (max-width: 600px) {
+    float: none;
+    display: block;
+    margin: var(--spacing-md) auto;
+    max-width: 80px;
+  }
+}
+
+.pronunciation {
+  font-size: 0.5em;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+/* ============================================
    Layer Grid Layout (for homepage)
    ============================================ */
 
