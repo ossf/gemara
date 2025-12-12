@@ -35,8 +35,6 @@ The Gemara lexicon establishes stable definitions for compliance activities, des
 | **Risk Appetite** | The level of risk an organization is willing to accept in pursuit of its objectives. | Maps to Gemara Layer 3 |
 | **Evaluation** | The inspection and assessment of code, configurations, and deployments to verify compliance with established policies. | Layer 4 |
 | **Assessment** | The manual or automated process of evaluating control compliance following a specific assessment requirement. Multiple assessments may be required for a single control. | Layer 4 |
-| **Evaluation Plan** | A set of assessment plans that can be executed together to evaluate a specific scenario, such as for a particular technology, deployment region, and purpose. | Layer 4 |
-| **Assessment Plan** | An outline of assessment details for a specific control, based on the assessment requirements that are applicable for the given scenario. This includes information such as the procedure for executing each assessment. | Layer 4 |
 | **Evaluation Log** | A group of assessment logs corresponding to an evaluation plan. Provides the details necessary for enforcement actions. | Layer 4 |
 | **Assessment Log** | The documented result of an assessment, containing details about when and how a specific set of steps was taken in accordance with an assessment requirement. | Layer 4 |
 | **Enforcement** | The preventive or remedial actions taken based on evaluation findings, such as blocking a non-compliant deployment or automatically fixing a misconfiguration. | Layer 5 |
