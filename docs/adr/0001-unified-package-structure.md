@@ -1,3 +1,7 @@
+---
+layout: page
+---
+
 # ADR-0001: Unified Package Structure
 
 ## Status

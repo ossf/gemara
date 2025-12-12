@@ -23,19 +23,16 @@ plugins:
   - jekyll-feed
   - jekyll-seo-tag
 
-# Navigation
-header_pages:
-  - index.md
-
 # Exclude from processing
+# Note: Paths are relative to the source directory (./docs)
 exclude:
-  - docs/Gemfile
-  - docs/Gemfile.lock
-  - docs/node_modules
-  - docs/vendor/bundle/
-  - docs/vendor/cache/
-  - docs/vendor/gems/
-  - docs/vendor/ruby/
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
 
 # Collections for better organization
 collections:
@@ -79,6 +76,8 @@ social_links:
     url: "https://bsky.app/profile/openssf.org"
   - icon: linkedin
     url: "https://www.linkedin.com/company/openssf/"
+
+# Navigation is defined in _data/navigation.yml
 
 # Markdown settings
 markdown: kramdown

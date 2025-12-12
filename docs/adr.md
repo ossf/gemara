@@ -1,3 +1,8 @@
+---
+layout: page
+nav-title: ADR
+---
+
 # Architecture Decision Records
 
 This directory contains Architecture Decision Records (ADRs) for the Gemara project.
@@ -12,7 +17,7 @@ Architecture Decision Records document important architectural decisions made in
 
 ## ADR Index
 
-- [ADR-0001: Unified Package Structure](./0001-unified-package-structure.md) - Decision to consolidate layer-based packages into a single unified `gemara` package
+- [ADR-0001: Unified Package Structure](./adr/0001-unified-package-structure.html) - Decision to consolidate layer-based packages into a single unified `gemara` package
 
 ## Format
 
@@ -36,3 +41,4 @@ Don't create an ADR for:
 - Routine implementation details
 - Temporary workarounds
 - Decisions that are clearly the only viable option
+

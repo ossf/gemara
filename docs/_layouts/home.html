@@ -18,16 +18,14 @@
 
     {%- include header.html -%}
 
-    <div class="main-wrapper">
-      {%- include sidebar.html -%}
-      <main class="page-content" aria-label="Content">
-        <div class="wrapper">
-          {{ content }}
-        </div>
-        {%- include footer.html -%}
-      </main>
-    </div>
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        {{ content }}
+      </div>
+      {%- include footer.html -%}
+    </main>
 
   </body>
 
 </html>
+

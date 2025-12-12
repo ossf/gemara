@@ -6,6 +6,11 @@ ruby ">= 3.0.0"
 # Jekyll version
 gem "jekyll", "~> 4.4.1"
 
+# Required for Ruby 3.4+ (removed from standard library)
+gem "csv"
+gem "logger"
+gem "base64"
+
 # Theme
 gem "minima", "~> 2.5"
 
