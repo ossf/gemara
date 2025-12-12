@@ -17,11 +17,15 @@ author:
   email: gemara+subscribe@lists.openssf.org
 
 # Build settings
-theme: minima
+remote_theme: jekyll/minima
 plugins:
   - jekyll-remote-theme
   - jekyll-feed
   - jekyll-seo-tag
+
+# Minima theme configuration
+minima:
+  skin: classic  # Options: classic, dark, auto, solarized, solarized-light, solarized-dark
 
 # Navigation
 header_pages:
