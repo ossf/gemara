@@ -69,3 +69,25 @@ categories:
           - AIR-DET-015
           - AIR-DET-004
           - AIR-PREV-005
+      - id: AIR-DET-004
+        title: Example Detective Control 004
+        objective: Placeholder control for testing references.
+        rationale:
+          risks: []
+          outcomes: []
+      - id: AIR-DET-015
+        title: Example Detective Control 015
+        objective: Placeholder control for testing references.
+        rationale:
+          risks: []
+          outcomes: []
+  - id: PREV
+    title: Preventive
+    description: Prevention and Risk Mitigation
+    guidelines:
+      - id: AIR-PREV-005
+        title: Example Preventive Control 005
+        objective: Placeholder control for testing references.
+        rationale:
+          risks: []
+          outcomes: []
