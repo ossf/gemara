@@ -1,6 +1,5 @@
 ---
 layout: page
-nav-title: Lexicon
 ---
 
 # Gemara Lexicon
