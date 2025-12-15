@@ -13,6 +13,10 @@ import (
 // createMetadata creates OSCAL metadata with common fields and optional author information
 func createMetadata(title string, version string, published *time.Time, canonicalHref string, authorName string) oscal.Metadata {
 	now := time.Now()
+	// Ensure version is never empty by using default if not provided
+	if version == "" {
+		version = oscalUtils.DefaultOSCALVersion
+	}
 	metadata := oscal.Metadata{
 		Title:        title,
 		OscalVersion: oscal.Version,

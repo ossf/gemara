@@ -31,14 +31,14 @@ jobs:
           distribution: adopt
           java-version: 11
       - name: Validate OSCAL catalog
-        uses: oscal-club/oscal-cli-action@1a210b84bc1fd6adf15c9cf0d46a51d15a3d8301 # v2.0.1
+        uses: oscal-club/oscal-cli-action@b5b0c80a1a158797bea4475d13d12c494b56019b # v2.0.2
         with:
           args: validate ./artifacts/catalog.json
       - name: Validate OSCAL profile
-        uses: oscal-club/oscal-cli-action@1a210b84bc1fd6adf15c9cf0d46a51d15a3d8301 # v2.0.1
+        uses: oscal-club/oscal-cli-action@b5b0c80a1a158797bea4475d13d12c494b56019b # v2.0.2
         with:
           args: validate ./artifacts/profile.json
       - name: Validate OSCAL guidance catalog
-        uses: oscal-club/oscal-cli-action@1a210b84bc1fd6adf15c9cf0d46a51d15a3d8301 # v2.0.1
+        uses: oscal-club/oscal-cli-action@b5b0c80a1a158797bea4475d13d12c494b56019b # v2.0.2
         with:
           args: validate ./artifacts/guidance.json
