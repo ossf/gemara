@@ -29,7 +29,6 @@ Gemara delivers three core components that work together to support automated GR
 <div class="component-grid">
   <a href="./model/" class="component-card">
       <h2>The Model</h2>
-      <span class="status-emoji">✅</span>
       <p class="component-description">
         The foundational layer model that describes the six categorical layers of GRC activities. 
         This model is <strong>stable and rarely changes</strong>, as it reflects the longstanding 
@@ -44,7 +43,6 @@ Gemara delivers three core components that work together to support automated GR
 
   <a href="./lexicon/" class="component-card">
       <h2>The Lexicon</h2>
-      <span class="status-emoji">🚧</span>
       <p class="component-description">
         A comprehensive set of definitions that extend the model, helping teams agree on 
         terminology across different activities and organizations.
@@ -58,7 +56,6 @@ Gemara delivers three core components that work together to support automated GR
 
   <a href="./implementation/" class="component-card">
      <h2>The Implementation</h2>
-     <span class="status-emoji">🚧</span>
      <p class="component-description">
         Schemas and SDK libraries that extend the lexicon into machine-readable formats and 
         programming libraries to accelerate automated tool development.
