@@ -5,50 +5,66 @@ title: Gemara Implementation
 
 **Status**: <span class="badge badge-active">Active Development</span>
 
-## Overview
+## Layer Schemas
 
-The Implementation provides the practical tools for working with Gemara:
-- **Schemas**: Machine-readable formats (CUE) for validation and standardization
-- **Go Library**: Go library for working with Gemara documents programmatically
+Machine-readable schemas (CUE format) standardize the expression of elements in the model. Click on a layer to view its schema:
 
-## Components
+<div class="layer-grid">
+  <a href="https://github.com/ossf/gemara/blob/main/schemas/layer-1.cue" class="layer-card">
+    <h3>Layer 1: Guidance</h3>
+    <p>High-level guidance on cybersecurity measures from industry groups and standards bodies.</p>
+  </a>
 
-### Schemas
+  <a href="https://github.com/ossf/gemara/blob/main/schemas/layer-2.cue" class="layer-card">
+    <h3>Layer 2: Controls</h3>
+    <p>Technology-specific, threat-informed security controls for protecting information systems.</p>
+  </a>
 
-Machine-readable schemas (CUE format) that standardize the expression of different elements 
-in the implemented model.
+  <a href="https://github.com/ossf/gemara/blob/main/schemas/layer-3.cue" class="layer-card">
+    <h3>Layer 3: Policy</h3>
+    <p>Risk-informed guidance tailored to your organization's specific needs and risk appetite.</p>
+  </a>
 
-**Available Schemas:**
-- Layer 1 Schema (`schemas/layer-1.cue`) - Guidance documents
-- Layer 2 Schema (`schemas/layer-2.cue`) - Control catalogs
-- Layer 3 Schema (`schemas/layer-3.cue`) - Policy documents
-- Layer 4 Schema (`schemas/layer-4.cue`) - Evaluation results
+  <a href="https://github.com/ossf/gemara/blob/main/schemas/layer-4.cue" class="layer-card">
+    <h3>Layer 4: Evaluation</h3>
+    <p>Inspection of code, configurations, and deployments against policies and controls.</p>
+  </a>
 
-**[Browse Schemas on GitHub →](https://github.com/ossf/gemara/tree/main/schemas)**
+  <div class="layer-card">
+    <h3>Layer 5: Enforcement</h3>
+    <p>Prevention or remediation based on assessment findings. (Coming Soon)</p>
+  </div>
 
-Validate your data against Gemara schemas using CUE:
+  <div class="layer-card">
+    <h3>Layer 6: Audit</h3>
+    <p>Review of organizational policy and conformance. (Coming Soon)</p>
+  </div>
+</div>
+
+**[Browse all schemas on GitHub →](https://github.com/ossf/gemara/tree/main/schemas)**
+
+### Validation
+
+Validate data against Gemara schemas using CUE:
 
 ```bash
-# Install CUE
 go install cuelang.org/go/cmd/cue@latest
-
-# Validate a Layer 2 control catalog
 cue vet ./your-controls.yaml ./schemas/layer-2.cue
 ```
 
-### Go Library
+## Go Library
 
-Programming libraries that provide APIs for working with Gemara documents with support for reading, writing, and manipulating Gemara documents.
+Go libraries provide APIs for reading, writing, and manipulating Gemara documents.
 
 **[Go Package Reference →](https://pkg.go.dev/github.com/ossf/gemara)**
 
-Install the Go module:
+### Installation
 
 ```bash
 go get github.com/ossf/gemara
 ```
 
-Load and work with documents:
+### Usage Example
 
 ```go
 package main
@@ -59,31 +75,36 @@ import (
 )
 
 func main() {
-    // Load a control catalog 
     catalog := &Catalog{}
     catalog, err := catalog.LoadFile("file://controls.yaml")
     if err != nil {
         panic(err)
     }
-    
-    // Work with the catalog 
-    fmt.Printf("Catalog: %s\n", catalog.Metadata.ID)   
+    fmt.Printf("Catalog: %s\n", catalog.Metadata.ID)
 }
 ```
 
-For more examples, see the [repository examples](https://github.com/ossf/gemara/tree/main/test-data).
+See [repository examples](https://github.com/ossf/gemara/tree/main/test-data) for more.
+
+## Contributing
+
+The Implementation evolves based on community needs:
+
+- **Schema improvements?** Open an issue or submit a PR
+- **New features or APIs?** Propose changes via PR
+- **Found a bug?** Report it
+- **Significant architectural changes?** Document in an [ADR](../adr.html)
+
+See the [Contributing Guide](https://github.com/ossf/gemara/blob/main/CONTRIBUTING.md) for details.
+
+## Architecture Decisions
+
+Significant implementation changes are documented in [Architecture Decision Records (ADRs)](../adr.html).
 
 ## Relationship to Other Components
 
-As one of Gemara's three core components, the Implementation works alongside:
+### [The Model](../model)
+Provides the conceptual foundation. Each schema corresponds to a layer in the model.
 
-### [The Model Component](../model)
-The Model component provides the conceptual foundation. Each schema 
-corresponds to a layer in the model, and the SDK reflects the model's structure.
-
-### [The Lexicon Component](../lexicon)
-The Lexicon component informs the Implementation's design. Schema field 
-names and SDK documentation use Lexicon definitions to ensure consistency and shared 
-understanding.
-
-Together, these three components support the entire Gemara ecosystem.
+### [The Lexicon](../lexicon)
+Informs Implementation design. Schema field names and SDK documentation use Lexicon definitions for consistency.

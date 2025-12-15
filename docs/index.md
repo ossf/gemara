@@ -49,8 +49,7 @@ Gemara delivers three core components that work together to support automated GR
       </p>
       <p class="component-content">
         Establishes stable definitions for compliance activities, describes their interactions, 
-        and provides standards for term usage. Evolves based on community feedback to ensure 
-        clarity and agreement.
+        and provides standards for term usage.
       </p>
   </a>
 
@@ -61,15 +60,13 @@ Gemara delivers three core components that work together to support automated GR
         programming libraries to accelerate automated tool development.
       </p>
       <p class="component-content">
-        Provides CUE schemas for validation, Go SDK libraries for programmatic access, and tools 
-        for working with Gemara documents. This is where active development happens to support 
-        real-world usage.
+        Provides CUE schemas for validation and Go libraries for programmatic access. Active development area.
       </p>
   </a>
 </div>
 
 
-## Quick Start Guides
+## Quick Start
 
 Choose your starting point based on your needs:
 

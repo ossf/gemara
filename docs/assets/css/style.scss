@@ -594,91 +594,92 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
 }
 
 /* ============================================
-   Layer Grid Layout (for homepage)
+   Gemara Diagram Image (for model page)
    ============================================ */
 
-.layer-grid {
+.gemara-diagram {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  display: block;
+  margin: var(--spacing-xxl) auto;
+}
+
+/* ============================================
+   Shared Card Base Styles
+   ============================================ */
+
+@mixin card-base {
+  background: linear-gradient(180deg, 
+    var(--color-bg-primary) 0%, 
+    var(--color-bg-secondary) 100%);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-xl);
+  transition: all 0.3s ease;
+  position: relative;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--openssf-purple-light);
+    transform: translateY(-2px);
+    background: linear-gradient(180deg, 
+      var(--color-bg-primary) 0%, 
+      rgba(114, 83, 237, 0.05) 100%);
+  }
+
+  &:visited {
+    color: inherit;
+  }
+
+  // Remove link styling from nested elements
+  a {
+    border-bottom: none !important;
+    text-decoration: none;
+  }
+
+  // Ensure text colors are preserved
+  p, h2, h3, h4 {
+    color: inherit;
+  }
+}
+
+.component-card,
+.layer-card {
+  @include card-base;
+}
+
+/* ============================================
+   Grid Layouts (shared base)
+   ============================================ */
+
+.layer-grid,
+.component-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--spacing-xl);
   margin: var(--spacing-xxl) 0;
 
-  > div,
-  > section {
-    background: var(--color-bg-primary);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-lg);
-    transition: all 0.3s ease;
-
-    &:hover {
-      box-shadow: var(--shadow-md);
-      border-color: var(--openssf-purple);
-      transform: translateY(-2px);
-    }
-  }
-
-  h3 {
-    color: var(--openssf-purple);
-    margin-top: 0;
-    font-size: 1.25rem;
-  }
-
-  h4 {
-    color: var(--openssf-purple-dark);
-    margin-top: var(--spacing-md);
+  // Apply card styles to direct children
+  > div.component-card,
+  > div.layer-card,
+  > section,
+  > a.component-card,
+  > a.layer-card {
+    @include card-base;
   }
 }
 
 /* ============================================
-   Component Grid Layout (for homepage components)
+   Component Grid Specific Styles
    ============================================ */
 
 .component-grid {
-  display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-xl);
-  margin: var(--spacing-xxl) 0;
-
-  > div,
-  > section,
-  > a.component-card {
-    background: linear-gradient(180deg, 
-      var(--color-bg-primary) 0%, 
-      var(--color-bg-secondary) 100%);
-    border: 2px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-xl);
-    transition: all 0.3s ease;
-    position: relative;
-    display: block;
-    text-decoration: none;
-    color: inherit;
-
-    &:hover {
-      box-shadow: var(--shadow-md);
-      border-color: var(--openssf-purple-light);
-      transform: translateY(-2px);
-      background: linear-gradient(180deg, 
-        var(--color-bg-primary) 0%, 
-        rgba(114, 83, 237, 0.05) 100%);
-    }
-
-    &:visited {
-      color: inherit;
-    }
-
-    // Remove link styling from nested elements
-    a {
-      border-bottom: none !important;
-      text-decoration: none;
-    }
-
-    // Ensure text colors are preserved
-    p, h2, h3, h4 {
-      color: inherit;
-    }
-  }
 
   h2 {
     color: var(--openssf-purple-dark);
@@ -697,6 +698,23 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
       font-size: 1.5em;
       margin-left: var(--spacing-sm);
     }
+  }
+}
+
+/* ============================================
+   Layer Grid Specific Styles
+   ============================================ */
+
+.layer-grid {
+  h3 {
+    color: var(--openssf-purple);
+    margin-top: 0;
+    font-size: 1.25rem;
+  }
+
+  h4 {
+    color: var(--openssf-purple-dark);
+    margin-top: var(--spacing-md);
   }
 }
 
