@@ -190,15 +190,6 @@ p {
   }
 }
 
-/* Status emoji styling - for use in component cards on main page */
-.status-emoji {
-  font-size: 1.5em;
-  vertical-align: middle;
-  line-height: 1;
-  display: inline-block;
-  margin-left: var(--spacing-sm);
-}
-
 /* Lists */
 ul, ol {
   margin-bottom: var(--spacing-md);
@@ -690,12 +681,6 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
     flex-wrap: wrap;
     gap: var(--spacing-sm);
     border-bottom: none !important;
-    
-    /* Ensure emojis in component card headers are properly sized */
-    .status-emoji {
-      font-size: 1.5em;
-      margin-left: var(--spacing-sm);
-    }
   }
 }
 
