@@ -175,6 +175,21 @@ p {
   color: var(--color-text-primary);
 }
 
+/* Status line styling - make entire status line larger */
+.page-content h1 + p,
+.page-content > p:first-of-type {
+  font-size: 1.25em;
+  line-height: 1.6;
+  margin-bottom: var(--spacing-lg);
+  
+  /* Ensure badges in status lines are appropriately sized */
+  .badge {
+    font-size: 0.875rem;
+    vertical-align: middle;
+    margin-left: var(--spacing-sm);
+  }
+}
+
 /* Lists */
 ul, ol {
   margin-bottom: var(--spacing-md);
@@ -570,30 +585,110 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
 }
 
 /* ============================================
-   Layer Grid Layout (for homepage)
+   Gemara Diagram Image (for model page)
    ============================================ */
 
-.layer-grid {
+.gemara-diagram {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: var(--spacing-xxl) auto;
+}
+
+/* ============================================
+   Shared Card Base Styles
+   ============================================ */
+
+@mixin card-base {
+  background: linear-gradient(180deg, 
+    var(--color-bg-primary) 0%, 
+    var(--color-bg-secondary) 100%);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-xl);
+  transition: all 0.3s ease;
+  position: relative;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--openssf-purple-light);
+    transform: translateY(-2px);
+    background: linear-gradient(180deg, 
+      var(--color-bg-primary) 0%, 
+      rgba(114, 83, 237, 0.05) 100%);
+  }
+
+  &:visited {
+    color: inherit;
+  }
+
+  // Remove link styling from nested elements
+  a {
+    border-bottom: none !important;
+    text-decoration: none;
+  }
+
+  // Ensure text colors are preserved
+  p, h2, h3, h4 {
+    color: inherit;
+  }
+}
+
+.component-card,
+.layer-card {
+  @include card-base;
+}
+
+/* ============================================
+   Grid Layouts (shared base)
+   ============================================ */
+
+.layer-grid,
+.component-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--spacing-xl);
   margin: var(--spacing-xxl) 0;
 
-  > div,
-  > section {
-    background: var(--color-bg-primary);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-lg);
-    transition: all 0.3s ease;
-
-    &:hover {
-      box-shadow: var(--shadow-md);
-      border-color: var(--openssf-purple);
-      transform: translateY(-2px);
-    }
+  // Apply card styles to direct children
+  > div.component-card,
+  > div.layer-card,
+  > section,
+  > a.component-card,
+  > a.layer-card {
+    @include card-base;
   }
+}
 
+/* ============================================
+   Component Grid Specific Styles
+   ============================================ */
+
+.component-grid {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+
+  h2 {
+    color: var(--openssf-purple-dark);
+    margin-top: 0;
+    margin-bottom: var(--spacing-md);
+    font-size: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    border-bottom: none !important;
+  }
+}
+
+/* ============================================
+   Layer Grid Specific Styles
+   ============================================ */
+
+.layer-grid {
   h3 {
     color: var(--openssf-purple);
     margin-top: 0;
@@ -604,6 +699,60 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
     color: var(--openssf-purple-dark);
     margin-top: var(--spacing-md);
   }
+}
+
+/* ============================================
+   Badge Styling (for components)
+   ============================================ */
+
+.badge {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+
+.badge-stable {
+  background: rgba(4, 238, 95, 0.15);
+  color: #006b3c;
+  border: 1px solid rgba(4, 238, 95, 0.3);
+}
+
+.badge-evolving {
+  background: rgba(114, 83, 237, 0.15);
+  color: var(--openssf-purple-dark);
+  border: 1px solid rgba(114, 83, 237, 0.3);
+}
+
+.badge-active {
+  background: rgba(69, 32, 140, 0.15);
+  color: var(--openssf-purple-dark);
+  border: 1px solid rgba(69, 32, 140, 0.3);
+}
+
+/* ============================================
+   Component Content Styling
+   ============================================ */
+
+.component-description {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+  font-weight: 500;
+}
+
+.component-content {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin-bottom: 0;
 }
 
 /* ============================================
@@ -820,7 +969,8 @@ table {
     font-size: 14px;
   }
 
-  .layer-grid {
+  .layer-grid,
+  .component-grid {
     grid-template-columns: 1fr;
   }
 
