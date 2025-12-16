@@ -64,6 +64,7 @@ html, body {
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
+  --radius-super: 50px;
 }
 
 /* ============================================
@@ -585,14 +586,125 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
 }
 
 /* ============================================
-   Gemara Diagram Image (for model page)
+   Gemara Layer Diagram (for model page)
    ============================================ */
 
-.gemara-diagram {
-  max-width: 100%;
-  height: auto;
-  display: block;
-  margin: var(--spacing-xxl) auto;
+.gemara-layer-diagram {
+  background: transparent;
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-md);
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.layer-banner {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-xl);
+  border-radius: var(--radius-super);
+  color: #ffffff;
+  font-family: "IBMPlexSans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  position: relative;
+  
+  .layer-number {
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-right: var(--spacing-lg);
+    flex-shrink: 0;
+  }
+  
+  .layer-content {
+    flex: 1;
+    text-align: center;
+    
+    .layer-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-xs);
+      line-height: 1.2;
+    }
+    
+    .layer-description {
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.4;
+      opacity: 0.95;
+    }
+  }
+}
+
+.layer-1 {
+  background: #9b59b6; /* Purple - bottom */
+}
+
+.layer-2 {
+  background: #6c5ce7; /* Indigo */
+}
+
+.layer-3 {
+  background: #3498db; /* Blue */
+}
+
+.layer-sensitive {
+  background: #2ecc71; /* Green */
+  width: 75%;
+  margin: 0 auto;
+  border-radius: 0;
+  
+  .layer-content {
+    text-align: center;
+    width: 100%;
+    
+    .layer-title,
+    .layer-description {
+      text-align: center;
+    }
+  }
+}
+
+.layer-4 {
+  background: #f1c40f; /* Yellow */
+}
+
+.layer-5 {
+  background: #f39c12; /* Orange */
+}
+
+.layer-6 {
+  background: #e74c3c; /* Red - top */
+}
+
+@media screen and (max-width: 768px) {
+  .gemara-layer-diagram {
+    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+  
+  .layer-banner {
+    padding: var(--spacing-md) var(--spacing-lg);
+    
+    .layer-number {
+      font-size: 2rem;
+      margin-right: var(--spacing-md);
+    }
+    
+    .layer-content {
+      .layer-title {
+        font-size: 1.25rem;
+      }
+      
+      .layer-description {
+        font-size: 0.9rem;
+      }
+    }
+  }
+  
+  .layer-sensitive {
+    width: 85%;
+  }
 }
 
 /* ============================================
