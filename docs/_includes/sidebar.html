@@ -1,0 +1,11 @@
+<aside class="site-sidebar" role="complementary">
+  <div class="sidebar-content">
+    <h3 class="sidebar-title">Quick Links</h3>
+    <nav class="sidebar-nav">
+      {%- for item in site.data.navigation -%}
+        <a href="{{ item.url | relative_url }}" class="sidebar-link">{{ item.title | escape }}</a>
+      {%- endfor -%}
+    </nav>
+  </div>
+</aside>
+

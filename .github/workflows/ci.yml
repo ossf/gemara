@@ -2,8 +2,6 @@ on:
   pull_request:
     branches:
       - main
-    paths-ignore:
-      - "**/*.md"
 
 jobs:
   CI:
@@ -14,7 +12,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v6.0.0
+      - uses: actions/checkout@v6.0.1
         with:
           persist-credentials: false
       - uses: actions/setup-go@v6
@@ -23,7 +21,7 @@ jobs:
       - name: Setup Cue
         uses: cue-lang/setup-cue@a93fa358375740cd8b0078f76355512b9208acb1 # v1.0.1
         with:
-          version: "v0.13.2"
+          version: "v0.15.1"
       - name: Validate the formatting of cue schema files
         run: make cuefmtcheck
       - name: Validate the syntax of cue schema files

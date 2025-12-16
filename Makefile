@@ -3,6 +3,8 @@ all: tidy test testcov cuefmtcheck lintcue cuegen dirtycheck lintinsights
 tidy:
 	@echo "  >  Tidying go.mod ..."
 	@go mod tidy
+	@echo "  >  Tidying cue.mod ..."
+	@cd schemas && cue mod tidy
 
 test:
 	@echo "  >  Running tests ..."
@@ -25,28 +27,16 @@ lint:
 	@golangci-lint run
 
 lintcue:
-	@echo "  >  Linting CUE files ..."
-	@cue eval ./schemas/layer-1.cue --all-errors --verbose
-	@cue eval ./schemas/layer-2.cue --all-errors --verbose
-	@cue eval ./schemas/layer-3.cue --all-errors --verbose
-	@cue eval ./schemas/layer-4.cue --all-errors --verbose
+	@echo "  >  Linting CUE files (with module support) ..."
+	@cd schemas && cue eval . --all-errors --verbose
 
 cuegen:
 	@echo "  >  Generating types from cue schema ..."
-	@cue exp gengotypes ./schemas/layer-1.cue
-	@mv cue_types_gen.go layer1/generated_types.go
-	@cue exp gengotypes ./schemas/layer-2.cue
-	@mv cue_types_gen.go layer2/generated_types.go
-	@cue exp gengotypes ./schemas/layer-3.cue
-	@mv cue_types_gen.go layer3/generated_types.go
-	@cue exp gengotypes ./schemas/layer-4.cue
-	@mv cue_types_gen.go layer4/generated_types.go
-	@go build -o utils/types_tagger utils/types_tagger.go
-	@utils/types_tagger layer1/generated_types.go
-	@utils/types_tagger layer2/generated_types.go
-	@utils/types_tagger layer3/generated_types.go
-	@utils/types_tagger layer4/generated_types.go
-	@rm utils/types_tagger
+	@cd schemas && cue exp gengotypes .
+	@mv schemas/cue_types_gen.go generated_types.go
+	@go build -o cmd/types_tagger/types_tagger cmd/types_tagger/main.go
+	@cmd/types_tagger/types_tagger generated_types.go
+	@rm cmd/types_tagger/types_tagger
 
 dirtycheck:
 	@echo "  >  Checking for uncommitted changes ..."
@@ -61,8 +51,8 @@ dirtycheck:
 oscalgenerate:
 	@echo "  >  Generating OSCAL testdata from Gemara artifacts..."
 	@mkdir -p artifacts
-	@go run ./utils/oscal catalog ./layer2/test-data/good-osps.yml --output ./artifacts/catalog.json
-	@go run ./utils/oscal  guidance ./layer1/test-data/good-aigf.yaml --catalog-output ./artifacts/guidance.json --profile-output ./artifacts/profile.json
+	@go run ./cmd/oscal_export catalog ./test-data/good-osps.yml --output ./artifacts/catalog.json
+	@go run ./cmd/oscal_export guidance ./test-data/good-aigf.yaml --catalog-output ./artifacts/guidance.json --profile-output ./artifacts/profile.json
 
 lintinsights:
 	@echo "  >  Linting security-insights.yml ..."
@@ -72,51 +62,31 @@ lintinsights:
 	@echo "  >  Linting security-insights.yml complete."
 
 # Documentation site targets
-CONTAINER_CMD := $(shell command -v podman 2> /dev/null || command -v docker 2> /dev/null)
-VOLUME_FLAGS := $(shell [ "$$(uname -s)" = "Linux" ] && echo ":Z" || echo "")
-
-check-container:
-	@if [ -z "$(CONTAINER_CMD)" ]; then \
-		echo "ERROR: Neither podman nor docker found."; \
+check-jekyll:
+	@if ! command -v jekyll >/dev/null 2>&1; then \
+		echo "ERROR: Jekyll not found."; \
+		echo "  >  Install Jekyll: gem install jekyll bundler && cd docs && bundle install"; \
 		exit 1; \
 	fi
 
-serve: check-container
+serve: check-jekyll
 	@echo "  >  Starting Jekyll documentation site..."
-	@echo "  >  Using container runtime: $(CONTAINER_CMD)"
-	@$(CONTAINER_CMD) stop gemara-docs 2>/dev/null || true
-	@$(CONTAINER_CMD) rm gemara-docs 2>/dev/null || true
-	@echo "  >  Site will be available at: http://localhost:4000"
+	@echo "  >  Site will be available at: http://localhost:4000/gemara"
 	@echo ""
-	@$(CONTAINER_CMD) run --rm \
-		--name gemara-docs \
-		--volume="$$PWD/docs:/srv/jekyll$(VOLUME_FLAGS)" \
-		--publish 4000:4000 \
-		--publish 35729:35729 \
-		docker.io/jekyll/jekyll:latest \
-		jekyll serve --host 0.0.0.0 --livereload --force_polling
+	@cd docs && bundle exec jekyll serve --host 0.0.0.0 --livereload
 
-build: check-container
+build: check-jekyll
 	@echo "  >  Building Jekyll documentation site..."
-	@$(CONTAINER_CMD) run --rm \
-		--volume="$$PWD/docs:/srv/jekyll$(VOLUME_FLAGS)" \
-		docker.io/jekyll/jekyll:latest \
-		jekyll build
+	@cd docs && bundle exec jekyll build
 
-clean: check-container
+clean:
 	@echo "  >  Cleaning generated files..."
 	@rm -rf docs/_site docs/.jekyll-cache docs/.jekyll-metadata
-	@echo "  >  Stopping and removing any running containers..."
-	@$(CONTAINER_CMD) stop gemara-docs 2>/dev/null || true
-	@$(CONTAINER_CMD) rm gemara-docs 2>/dev/null || true
 	@echo "  >  Clean complete!"
 
-stop: check-container
-	@echo "  >  Stopping documentation server..."
-	@$(CONTAINER_CMD) stop gemara-docs 2>/dev/null || true
-	@$(CONTAINER_CMD) rm gemara-docs 2>/dev/null || true
-	@echo "  >  Server stopped!"
+stop:
+	@echo "  >  Use Ctrl+C to stop the Jekyll server if it's running."
 
 restart: stop serve
 
-.PHONY: tidy test testcov lintcue cuegen dirtycheck lintinsights serve build clean stop restart check-container
+.PHONY: tidy test testcov lintcue cuegen dirtycheck lintinsights serve build clean stop restart check-jekyll

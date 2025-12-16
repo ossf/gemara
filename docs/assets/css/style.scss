@@ -64,6 +64,7 @@ html, body {
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
+  --radius-super: 50px;
 }
 
 /* ============================================
@@ -173,6 +174,21 @@ h1, h2, h3, h4, h5, h6 {
 p {
   margin-bottom: var(--spacing-md);
   color: var(--color-text-primary);
+}
+
+/* Status line styling - make entire status line larger */
+.page-content h1 + p,
+.page-content > p:first-of-type {
+  font-size: 1.25em;
+  line-height: 1.6;
+  margin-bottom: var(--spacing-lg);
+  
+  /* Ensure badges in status lines are appropriately sized */
+  .badge {
+    font-size: 0.875rem;
+    vertical-align: middle;
+    margin-left: var(--spacing-sm);
+  }
 }
 
 /* Lists */
@@ -368,14 +384,14 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
     display: none;
   }
 
-  .nav-items {
+  .trigger {
     display: flex;
     flex-wrap: wrap;
     gap: var(--spacing-sm);
     align-items: center;
   }
 
-  .nav-item {
+  .page-link {
     color: var(--color-text-primary);
     font-weight: 500;
     font-size: 1rem;
@@ -422,11 +438,11 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
       }
     }
 
-    input ~ .nav-items {
+    input ~ .trigger {
       display: none;
     }
 
-    input:checked ~ .nav-items {
+    input:checked ~ .trigger {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -434,7 +450,7 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
       width: 100%;
     }
 
-    .nav-item {
+    .page-link {
       display: block;
       width: 100%;
       padding: var(--spacing-sm) var(--spacing-md);
@@ -446,9 +462,23 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
    Main Content Area
    ============================================ */
 
+.main-wrapper {
+  display: flex;
+  gap: var(--spacing-xl);
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+
+  @media screen and (max-width: 900px) {
+    flex-direction: column;
+    padding: 0 var(--spacing-md);
+  }
+}
+
 .page-content {
   padding: var(--spacing-xl) 0;
   flex: 1;
+  min-width: 0; /* Allows flex item to shrink below content size */
 }
 
 .home,
@@ -457,30 +487,320 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
 }
 
 /* ============================================
-   Layer Grid Layout (for homepage)
+   Sidebar
    ============================================ */
 
-.layer-grid {
+.site-sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  padding: var(--spacing-xl) 0;
+  position: sticky;
+  top: var(--spacing-lg);
+  align-self: flex-start;
+  max-height: calc(100vh - var(--spacing-xxl));
+  overflow-y: auto;
+
+  @media screen and (max-width: 900px) {
+    width: 100%;
+    position: relative;
+    top: 0;
+    max-height: none;
+    padding: var(--spacing-lg) 0;
+    border-bottom: 2px solid var(--color-border);
+    margin-bottom: var(--spacing-lg);
+  }
+}
+
+.sidebar-content {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.sidebar-title {
+  font-family: "IBMPlexSans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--openssf-purple-dark);
+  margin: 0 0 var(--spacing-md) 0;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--openssf-purple-light);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.sidebar-link {
+  display: block;
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-text-primary);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  border-bottom: none !important;
+
+  &:hover {
+    background: var(--color-bg-tertiary);
+    color: var(--openssf-purple);
+    border-bottom: none !important;
+  }
+
+  &:visited {
+    color: var(--color-text-primary);
+  }
+
+  &:active {
+    color: var(--openssf-purple) !important;
+    background: var(--color-bg-tertiary) !important;
+  }
+}
+
+/* ============================================
+   Logo and Title (Homepage)
+   ============================================ */
+
+.gemara-logo {
+  float: right;
+  max-width: 120px;
+  height: auto;
+  margin: 0 0 var(--spacing-md) var(--spacing-lg);
+  
+  @media screen and (max-width: 600px) {
+    float: none;
+    display: block;
+    margin: var(--spacing-md) auto;
+    max-width: 80px;
+  }
+}
+
+.pronunciation {
+  font-size: 0.5em;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+/* ============================================
+   Gemara Layer Diagram (for model page)
+   ============================================ */
+
+.gemara-layer-diagram {
+  background: transparent;
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-md);
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.layer-banner {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-xl);
+  border-radius: var(--radius-super);
+  color: #ffffff;
+  font-family: "IBMPlexSans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  position: relative;
+  
+  .layer-number {
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-right: var(--spacing-lg);
+    flex-shrink: 0;
+  }
+  
+  .layer-content {
+    flex: 1;
+    text-align: center;
+    
+    .layer-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-xs);
+      line-height: 1.2;
+    }
+    
+    .layer-description {
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.4;
+      opacity: 0.95;
+    }
+  }
+}
+
+.layer-1 {
+  background: #9b59b6; /* Purple - bottom */
+}
+
+.layer-2 {
+  background: #6c5ce7; /* Indigo */
+}
+
+.layer-3 {
+  background: #3498db; /* Blue */
+}
+
+.layer-sensitive {
+  background: #2ecc71; /* Green */
+  width: 75%;
+  margin: 0 auto;
+  border-radius: 0;
+  
+  .layer-content {
+    text-align: center;
+    width: 100%;
+    
+    .layer-title,
+    .layer-description {
+      text-align: center;
+    }
+  }
+}
+
+.layer-4 {
+  background: #f1c40f; /* Yellow */
+}
+
+.layer-5 {
+  background: #f39c12; /* Orange */
+}
+
+.layer-6 {
+  background: #e74c3c; /* Red - top */
+}
+
+@media screen and (max-width: 768px) {
+  .gemara-layer-diagram {
+    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+  
+  .layer-banner {
+    padding: var(--spacing-md) var(--spacing-lg);
+    
+    .layer-number {
+      font-size: 2rem;
+      margin-right: var(--spacing-md);
+    }
+    
+    .layer-content {
+      .layer-title {
+        font-size: 1.25rem;
+      }
+      
+      .layer-description {
+        font-size: 0.9rem;
+      }
+    }
+  }
+  
+  .layer-sensitive {
+    width: 85%;
+  }
+}
+
+/* ============================================
+   Shared Card Base Styles
+   ============================================ */
+
+@mixin card-base {
+  background: linear-gradient(180deg, 
+    var(--color-bg-primary) 0%, 
+    var(--color-bg-secondary) 100%);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-xl);
+  transition: all 0.3s ease;
+  position: relative;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--openssf-purple-light);
+    transform: translateY(-2px);
+    background: linear-gradient(180deg, 
+      var(--color-bg-primary) 0%, 
+      rgba(114, 83, 237, 0.05) 100%);
+  }
+
+  &:visited {
+    color: inherit;
+  }
+
+  // Remove link styling from nested elements
+  a {
+    border-bottom: none !important;
+    text-decoration: none;
+  }
+
+  // Ensure text colors are preserved
+  p, h2, h3, h4 {
+    color: inherit;
+  }
+}
+
+.component-card,
+.layer-card {
+  @include card-base;
+}
+
+/* ============================================
+   Grid Layouts (shared base)
+   ============================================ */
+
+.layer-grid,
+.component-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--spacing-xl);
   margin: var(--spacing-xxl) 0;
 
-  > div,
-  > section {
-    background: var(--color-bg-primary);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-lg);
-    transition: all 0.3s ease;
-
-    &:hover {
-      box-shadow: var(--shadow-md);
-      border-color: var(--openssf-purple);
-      transform: translateY(-2px);
-    }
+  // Apply card styles to direct children
+  > div.component-card,
+  > div.layer-card,
+  > section,
+  > a.component-card,
+  > a.layer-card {
+    @include card-base;
   }
+}
 
+/* ============================================
+   Component Grid Specific Styles
+   ============================================ */
+
+.component-grid {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+
+  h2 {
+    color: var(--openssf-purple-dark);
+    margin-top: 0;
+    margin-bottom: var(--spacing-md);
+    font-size: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    border-bottom: none !important;
+  }
+}
+
+/* ============================================
+   Layer Grid Specific Styles
+   ============================================ */
+
+.layer-grid {
   h3 {
     color: var(--openssf-purple);
     margin-top: 0;
@@ -491,6 +811,60 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
     color: var(--openssf-purple-dark);
     margin-top: var(--spacing-md);
   }
+}
+
+/* ============================================
+   Badge Styling (for components)
+   ============================================ */
+
+.badge {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+
+.badge-stable {
+  background: rgba(4, 238, 95, 0.15);
+  color: #006b3c;
+  border: 1px solid rgba(4, 238, 95, 0.3);
+}
+
+.badge-evolving {
+  background: rgba(114, 83, 237, 0.15);
+  color: var(--openssf-purple-dark);
+  border: 1px solid rgba(114, 83, 237, 0.3);
+}
+
+.badge-active {
+  background: rgba(69, 32, 140, 0.15);
+  color: var(--openssf-purple-dark);
+  border: 1px solid rgba(69, 32, 140, 0.3);
+}
+
+/* ============================================
+   Component Content Styling
+   ============================================ */
+
+.component-description {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+  font-weight: 500;
+}
+
+.component-content {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin-bottom: 0;
 }
 
 /* ============================================
@@ -707,7 +1081,8 @@ table {
     font-size: 14px;
   }
 
-  .layer-grid {
+  .layer-grid,
+  .component-grid {
     grid-template-columns: 1fr;
   }
 
