@@ -6,9 +6,9 @@ package schemas
 	"metadata"?: #Metadata @go(Metadata)
 	title:       string
 
-	families?:   [...#Family] @go(Families)
-	controls?:   [...#Control] @go(Controls)
-	threats?:    [...#Threat] @go(Threats)
+	families?: [...#Family] @go(Families)
+	controls?: [...#Control] @go(Controls)
+	threats?: [...#Threat] @go(Threats)
 	capabilities?: [...#Capability] @go(Capabilities)
 
 	"imported-controls"?: [...#MultiMapping] @go(ImportedControls)

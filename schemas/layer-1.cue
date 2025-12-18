@@ -10,8 +10,8 @@ package schemas
 
 	// Introductory text for the document to be used during rendering
 	"front-matter"?: string @go(FrontMatter) @yaml("front-matter,omitempty")
-	families?:       [...#Family] @go(Families)
-	guidelines?:     [...#Guideline] @go(Guidelines)
+	families?: [...#Family] @go(Families)
+	guidelines?: [...#Guideline] @go(Guidelines)
 
 	// For inheriting from other guidance documents to create tailored documents/baselines
 	"imported-guidelines"?: [...#MultiMapping] @go(ImportedGuidelines) @yaml("imported-guidelines,omitempty")
