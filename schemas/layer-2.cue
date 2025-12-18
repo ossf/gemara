@@ -6,8 +6,9 @@ package schemas
 	"metadata"?: #Metadata @go(Metadata)
 	title:       string
 
-	"control-families"?: [...#ControlFamily] @go(ControlFamilies)
-	threats?: [...#Threat] @go(Threats)
+	families?:   [...#Family] @go(Families)
+	controls?:   [...#Control] @go(Controls)
+	threats?:    [...#Threat] @go(Threats)
 	capabilities?: [...#Capability] @go(Capabilities)
 
 	"imported-controls"?: [...#MultiMapping] @go(ImportedControls)
@@ -15,17 +16,14 @@ package schemas
 	"imported-capabilities"?: [...#MultiMapping] @go(ImportedCapabilities)
 }
 
-#ControlFamily: {
-	id:          string
-	title:       string
-	description: string
-	controls: [...#Control]
-}
-
 #Control: {
 	id:        string
 	title:     string
 	objective: string
+
+	// Family id that this control belongs to
+	family: string @go(Family)
+
 	"assessment-requirements": [...#AssessmentRequirement] @go(AssessmentRequirements)
 	"guideline-mappings"?: [...#MultiMapping] @go(GuidelineMappings)
 	"threat-mappings"?: [...#MultiMapping] @go(ThreatMappings)
