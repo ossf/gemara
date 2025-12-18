@@ -16,14 +16,11 @@ nav-title: Community
 - {{ maintainer.name }}, {{ maintainer.organization }} (@{{ maintainer.github }})
 {% endfor %}
 
-### Projects and Initiatives on our Radar
+### Projects and Working Groups 
 
-We're glad you're here! We are always looking for additional perspective on the Gemara project and how the scope can be extended. Community members and maintainers are involved in several projects, working groups, and initiatives.
+We are always looking for additional perspective on the Gemara project. Community members and maintainers are involved in several projects, working groups, and initiatives.
 
-
-* [**Initiative for Controls Catalog Refresh**](https://github.com/cncf/toc/issues/1910) led by Gemara maintainer Jenn Power, an effort to review and update the _existing_ controls within the Cloud Native Security Controls Catalog. The initiative supports automated assessment of the security controls.   
-  * Find the Slack Channel [here](https://cloud-native.slack.com/archives/C09TLL22PK9)
-* Explore the [FINOS Common Cloud Controls Catalog](https://github.com/finos/common-cloud-controls/tree/main/catalogs/core/ccc) expressed in Gemara
-* [OpenSSF ORBIT Working Group](https://github.com/ossf/wg-orbit): development and maintenance of interoperable resource for identification and presentation of security-relevant data. 
+* [FINOS Common Cloud Controls Catalog](https://github.com/finos/common-cloud-controls/tree/main/catalogs/core/ccc): FINOS CCC is a collaborative project aiming to develop a unified set of cybersecurity, resiliency, and compliance controls for common services across the major cloud service providers.
+* [OpenSSF ORBIT Working Group](https://github.com/ossf/wg-orbit): The development and maintenance of interoperable resource for identification and presentation of security-relevant data. Gemara falls under the ORBIT WG.
 * [Open Source Project Security Baseline](https://baseline.openssf.org/): OSPS Baseline is an effort to establish controls that help project maintainers understand security best practices and expectations. 
 
