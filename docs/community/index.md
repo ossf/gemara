@@ -12,20 +12,9 @@ nav-title: Community
 
 ### Meet the Maintainers
 
-* **[Jenn Power](https://www.linkedin.com/in/jennifer-power-3ab2b499/)**, Red Hat 
-    * **GitHub:** `@jpower432` 
-    * **Positions held:** TAG Security and Compliance leadership position.
-    * **Involvement:** Jenn is active throughout the open-source community and is currently leading the Cloud Native Security Controls Catalog Refresh. 
-* **[Eddie Knight](https://www.linkedin.com/in/knight1776/)**, Sonatype 
-  * **GitHub:** `@eddie-knight`
-  * **Positions held:** TAG Security and Compliance leadership position, ORBIT Working Group Lead, Open Source Project Security Baseline Maintainer
-  * **Involvement:** Eddie is active throughout the open-source community and is currently involved in the Cloud Native Security Controls Catalog Refresh.
-* **[Travis Truman](https://www.linkedin.com/in/travistruman/)**, CVS Health
-  * **GitHub:** `@trumant`
-  * **Positions held:**
-  * **Involvement:** Travis is active throughout the open-source community and is currently involved in the Gemara project.
-
-
+{% for maintainer in site.data.maintainers.maintainers %}
+- {{ maintainer.name }}, {{ maintainer.organization }} (@{{ maintainer.github }})
+{% endfor %}
 
 ### Projects and Initiatives on our Radar
 
