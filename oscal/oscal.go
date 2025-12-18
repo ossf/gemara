@@ -121,8 +121,8 @@ func ProfileFromGuidanceDocument(g *gemara.GuidanceDocument, guidanceDocHref str
 // Layer 1 Guidance Document.
 func CatalogFromGuidanceDocument(g *gemara.GuidanceDocument, opts ...GenerateOption) (oscal.Catalog, error) {
 	// Return early for empty documents
-	if len(g.Categories) == 0 {
-		return oscal.Catalog{}, fmt.Errorf("document %s does not have defined guidance categories", g.Metadata.Id)
+	if len(g.Families) == 0 {
+		return oscal.Catalog{}, fmt.Errorf("document %s does not have defined families", g.Metadata.Id)
 	}
 
 	options := generateOpts{}
@@ -148,9 +148,22 @@ func CatalogFromGuidanceDocument(g *gemara.GuidanceDocument, opts ...GenerateOpt
 		}
 	}
 
+	familyMap := make(map[string]gemara.Family)
+	for _, family := range g.Families {
+		familyMap[family.Id] = family
+	}
+
+	guidelinesByFamily := make(map[string][]gemara.Guideline)
+	for _, guideline := range g.Guidelines {
+		guidelinesByFamily[guideline.Family] = append(guidelinesByFamily[guideline.Family], guideline)
+	}
+
 	var groups []oscal.Group
-	for _, category := range g.Categories {
-		groups = append(groups, createControlGroup(g, category, resourcesMap))
+	for _, family := range g.Families {
+		guidelines := guidelinesByFamily[family.Id]
+		if len(guidelines) > 0 {
+			groups = append(groups, createControlGroupFromFamily(g, family, guidelines, resourcesMap))
+		}
 	}
 
 	catalog := oscal.Catalog{
@@ -204,15 +217,15 @@ func createMetadata(guidance *gemara.GuidanceDocument, opts generateOpts) (oscal
 	return metadata, nil
 }
 
-func createControlGroup(g *gemara.GuidanceDocument, category gemara.Category, resourcesMap map[string]string) oscal.Group {
+func createControlGroupFromFamily(g *gemara.GuidanceDocument, family gemara.Family, guidelines []gemara.Guideline, resourcesMap map[string]string) oscal.Group {
 	group := oscal.Group{
-		Class: "category",
-		ID:    category.Id,
-		Title: category.Title,
+		Class: "family",
+		ID:    family.Id,
+		Title: family.Title,
 	}
 
 	controlMap := make(map[string]oscal.Control)
-	for _, guideline := range category.Guidelines {
+	for _, guideline := range guidelines {
 		control, parent := guidelineToControl(g, guideline, resourcesMap)
 
 		if parent == "" {
@@ -393,7 +406,7 @@ const defaultVersion = "0.0.1"
 //
 // The function automatically:
 //   - Uses the catalog's internal version from Metadata.Version
-//   - Uses the ControlFamily.Id as the OSCAL group ID
+//   - Uses the Family.Id as the OSCAL group ID
 //   - Generates a unique UUID for the catalog
 func FromCatalog(catalog *gemara.Catalog, controlHREF string) (oscal.Catalog, error) {
 	now := time.Now()
@@ -421,9 +434,24 @@ func FromCatalog(catalog *gemara.Catalog, controlHREF string) (oscal.Catalog, er
 		},
 	}
 
+	familyMap := make(map[string]gemara.Family)
+	for _, family := range catalog.Families {
+		familyMap[family.Id] = family
+	}
+
+	controlsByFamily := make(map[string][]gemara.Control)
+	for _, control := range catalog.Controls {
+		controlsByFamily[control.Family] = append(controlsByFamily[control.Family], control)
+	}
+
 	catalogGroups := []oscal.Group{}
 
-	for _, family := range catalog.ControlFamilies {
+	for _, family := range catalog.Families {
+		controls := controlsByFamily[family.Id]
+		if len(controls) == 0 {
+			continue
+		}
+
 		group := oscal.Group{
 			Class:    "family",
 			Controls: nil,
@@ -431,8 +459,8 @@ func FromCatalog(catalog *gemara.Catalog, controlHREF string) (oscal.Catalog, er
 			Title:    strings.ReplaceAll(family.Description, "\n", "\\n"),
 		}
 
-		controls := []oscal.Control{}
-		for _, control := range family.Controls {
+		oscalControls := []oscal.Control{}
+		for _, control := range controls {
 			controlTitle := strings.TrimSpace(control.Title)
 
 			newCtl := oscal.Control{
@@ -493,10 +521,10 @@ func FromCatalog(catalog *gemara.Catalog, controlHREF string) (oscal.Catalog, er
 			if len(subControls) > 0 {
 				newCtl.Controls = &subControls
 			}
-			controls = append(controls, newCtl)
+			oscalControls = append(oscalControls, newCtl)
 		}
 
-		group.Controls = &controls
+		group.Controls = &oscalControls
 		catalogGroups = append(catalogGroups, group)
 	}
 	oscalCatalog.Groups = &catalogGroups

@@ -11,24 +11,22 @@ import (
 // Adapted from: https://github.com/finos/ai-governance-framework/blob/main/docs/_mitigations/mi-11_human-feedback-loop-for-ai-systems.md
 
 func ExampleGuidanceDocument() {
-	tmpl := `
-# {{ .Title }} ({{ .Metadata.Id }})
+	tmpl := `# {{ .Title }} ({{ .Metadata.Id }})
 ---
 **Front Matter:** {{ .FrontMatter }}
 ---
-{{ range .Categories }}
+{{ $doc := . }}{{ range .Families }}
 ### {{ .Title }} ({{ .Id }})
 {{ .Description }}
 #### Guidelines:
-{{ range .Guidelines }}
+{{ $familyId := .Id }}{{ range $doc.Guidelines }}{{ if eq .Family $familyId }}
 ##### {{ .Title }} ({{ .Id }})
 **Objective:** {{ .Objective }}
 {{ if .SeeAlso }}
 **See Also:** {{ range .SeeAlso }}{{ . }} {{ end }}
 {{ end }}
-{{ end }}
-{{ end }}
-`
+{{ end }}{{ end }}
+{{ end }}`
 
 	l1Docs, err := goodAIGFExample()
 	if err != nil {

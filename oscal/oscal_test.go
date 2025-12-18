@@ -30,7 +30,7 @@ func TestCatalogFromGuidanceDocument(t *testing.T) {
 			guidance: goodAIFG,
 			wantGroups: []oscalTypes.Group{
 				{
-					Class: "category",
+					Class: "family",
 					ID:    "DET",
 					Title: "Detective",
 					Controls: &[]oscalTypes.Control{
@@ -291,21 +291,22 @@ var testCases = []struct {
 				Version: "devel",
 			},
 			Title: "Test Catalog",
-			ControlFamilies: []gemara.ControlFamily{
+			Families: []gemara.Family{
 				{
 					Id:          "AC",
 					Title:       "access-control",
 					Description: "Controls for access management",
-					Controls: []gemara.Control{
+				},
+			},
+			Controls: []gemara.Control{
+				{
+					Id:    "AC-01",
+					Family: "AC",
+					Title: "Access Control Policy",
+					AssessmentRequirements: []gemara.AssessmentRequirement{
 						{
-							Id:    "AC-01",
-							Title: "Access Control Policy",
-							AssessmentRequirements: []gemara.AssessmentRequirement{
-								{
-									Id:   "AC-01.1",
-									Text: "Develop and document access control policy",
-								},
-							},
+							Id:   "AC-01.1",
+							Text: "Develop and document access control policy",
 						},
 					},
 				},
@@ -323,38 +324,38 @@ var testCases = []struct {
 				Version: "devel",
 			},
 			Title: "Test Catalog Multiple",
-			ControlFamilies: []gemara.ControlFamily{
+			Families: []gemara.Family{
 				{
 					Id:          "AC",
 					Title:       "access-control",
 					Description: "Controls for access management",
-					Controls: []gemara.Control{
-						{
-							Id:    "AC-01",
-							Title: "Access Control Policy",
-							AssessmentRequirements: []gemara.AssessmentRequirement{
-								{
-									Id:   "AC-01.1",
-									Text: "Develop and document access control policy",
-								},
-							},
-						},
-					},
 				},
 				{
 					Id:          "BR",
 					Title:       "business-requirements",
 					Description: "Controls for business requirements",
-					Controls: []gemara.Control{
+				},
+			},
+			Controls: []gemara.Control{
+				{
+					Id:    "AC-01",
+					Family: "AC",
+					Title: "Access Control Policy",
+					AssessmentRequirements: []gemara.AssessmentRequirement{
 						{
-							Id:    "BR-01",
-							Title: "Business Requirements Policy",
-							AssessmentRequirements: []gemara.AssessmentRequirement{
-								{
-									Id:   "BR-01.1",
-									Text: "Define business requirements",
-								},
-							},
+							Id:   "AC-01.1",
+							Text: "Develop and document access control policy",
+						},
+					},
+				},
+				{
+					Id:    "BR-01",
+					Family: "BR",
+					Title: "Business Requirements Policy",
+					AssessmentRequirements: []gemara.AssessmentRequirement{
+						{
+							Id:   "BR-01.1",
+							Text: "Define business requirements",
 						},
 					},
 				},
@@ -393,10 +394,10 @@ func TestFromCatalog(t *testing.T) {
 			assert.NotEmpty(t, oscalCatalog.UUID)
 			assert.Equal(t, tt.expectedTitle, oscalCatalog.Metadata.Title)
 			assert.Equal(t, tt.catalog.Metadata.Version, oscalCatalog.Metadata.Version)
-			assert.Equal(t, len(tt.catalog.ControlFamilies), len(*oscalCatalog.Groups))
+			assert.Equal(t, len(tt.catalog.Families), len(*oscalCatalog.Groups))
 
-			// Compare each control family
-			for i, family := range tt.catalog.ControlFamilies {
+			// Compare each family
+			for i, family := range tt.catalog.Families {
 				groups := (*oscalCatalog.Groups)
 				group := groups[i]
 				assert.Equal(t, family.Id, group.ID)
