@@ -75,7 +75,7 @@ import (
 )
 
 func main() {
-    catalog := &Catalog{}
+    catalog := &gemara.Catalog{}
     catalog, err := catalog.LoadFile("file://controls.yaml")
     if err != nil {
         panic(err)
@@ -100,6 +100,10 @@ See the [Contributing Guide](https://github.com/ossf/gemara/blob/main/CONTRIBUTI
 ## Architecture Decisions
 
 Significant implementation changes are documented in [Architecture Decision Records (ADRs)](../adr.html).
+
+## Versioning and Maintenance
+
+See the [Implementation Maintenance](maintenance.html) document for versioning and releases procedures.
 
 ## Relationship to Other Components
 
