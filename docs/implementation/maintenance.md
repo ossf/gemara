@@ -16,6 +16,15 @@ Version increments follow SemVer:
 * **Minor version** increments for additive changes (new features, schema status promotions, or new fields/types in Stable schemas)
 * **Patch version** increments for bug fixes
 
+### Backward Compatible Changes to Stable Schemas
+
+Backward compatible changes to Stable schemas trigger **minor version increments**.
+
+Like:
+* Adding new optional fields to existing types
+* Adding new types
+* Adding new optional properties
+
 ## Release Process
 
 Changes are reviewed and tested before release. Git tags follow SemVer format (`v1.2.3`), and release notes document changes and migration paths.
@@ -36,8 +45,26 @@ Schemas follow this lifecycle: **Experimental** → **Stable** → **Deprecated*
 * Promoting a schema from Experimental to Stable triggers a **minor version increment** and involves a stabilization announcement in release notes, documentation updates, and tracking schema maturity.
 * Individual layers can be promoted independently (e.g., Layer 2 can be stable while Layer 1 remains in Experimental).
 * Once Stable, schemas **can still evolve** but maintain backward compatibility within major versions. Stable schemas allow **additive changes** such as new optional fields or new types.
+<<<<<<< Updated upstream
 * Breaking changes to Stable schemas require a major version increment. This should be avoided in all normal circumstances.
 * Stable schemas represent a long-term commitment and will continue to be supported.
+=======
+* Breaking changes to Stable schemas require a major version increment.
+
+#### Stable Schema Support
+
+Stable schemas represent a long-term commitment and will continue to be supported until explicitly deprecated.
+
+**Support includes:**
+
+| Support Type           | Description                                   |
+|:-----------------------|:----------------------------------------------|
+| Backward compatibility | Maintain compatibility within major version.  |
+| Bug fixes              | Fix bugs and issues without breaking changes. |
+| Documentation          | Keep documentation current and accurate.      |
+| Migration guidance     | Provide migration paths when deprecating.     |
+
+Deprecation follows a clear process with migration paths.
 
 ### Deprecated Status
 
