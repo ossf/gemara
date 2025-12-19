@@ -36,7 +36,7 @@ Schemas follow this lifecycle: **Experimental** → **Stable** → **Deprecated*
 * Promoting a schema from Experimental to Stable triggers a **minor version increment** and involves a stabilization announcement in release notes, documentation updates, and tracking schema maturity.
 * Individual layers can be promoted independently (e.g., Layer 2 can be stable while Layer 1 remains in Experimental).
 * Once Stable, schemas **can still evolve** but maintain backward compatibility within major versions. Stable schemas allow **additive changes** such as new optional fields or new types.
-* Breaking changes to Stable schemas require a major version increment.
+* Breaking changes to Stable schemas require a major version increment. This should be avoided in all normal circumstances.
 * Stable schemas represent a long-term commitment and will continue to be supported.
 
 ### Deprecated Status
