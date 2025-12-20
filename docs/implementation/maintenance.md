@@ -3,82 +3,74 @@ layout: page
 title: Maintenance
 ---
 
-This document outlines the versioning and maintenance strategy for Gemara's implementation components.
-
 ## Versioning Strategy
 
-Gemara follows [Semantic Versioning](https://semver.org/) (SemVer) with a **single release cycle** for both the Go module and CUE schemas. A single version tag (`v1.2.3`) applies to both the Go module (`github.com/ossf/gemara`) and the CUE schemas (`github.com/ossf/gemara/schemas`).
+Gemara follows [Semantic Versioning](https://semver.org/) (SemVer) with a **single release cycle** for both the Go module and CUE schemas.
+A single version tag (`v1.2.3`) applies to both the Go module (`github.com/ossf/gemara`) and the CUE schemas (`github.com/ossf/gemara/schemas`).
 
-Schema changes almost always affect the Go library because Go types are generated from the CUE schemas. While Go library changes don't always require schema changes, using a unified release cycle simplifies versioning and ensures consistency.
+Schema changes almost always affect the Go library because Go types are generated from the CUE schemas.
+The unified release cycle ensures consistency across both components.
+All schemas are versioned together as a single bundle (schema set).
 
-Version increments follow SemVer:
-* **Major version** increments for breaking changes (schema or API)
-* **Minor version** increments for additive changes (new features, schema status promotions, or new fields/types in Stable schemas)
-* **Patch version** increments for bug fixes
+| Change Type | Version Bump | Examples                                                                                          |
+|:------------|:-------------|:--------------------------------------------------------------------------------------------------|
+| Major       | v2.0.0       | Breaking changes violating backward/forward compatibility                                         |
+| Minor       | v1.x+1.0     | Additive changes, schema promotions, schema deprecations, field deprecations, new optional fields |
+| Patch       | v1.x.y+1     | Bug fixes                                                                                         |
 
-### Backward Compatible Changes to Stable Schemas
+## Schema Lifecycle
 
-Backward compatible changes to Stable schemas trigger **minor version increments**.
-
-Like:
-* Adding new optional fields to existing types
-* Adding new types
-* Adding new optional properties
-
-## Release Process
-
-Changes are reviewed and tested before release. Git tags follow SemVer format (`v1.2.3`), and release notes document changes and migration paths.
-
-## Schema Promotion
-
-Schemas follow this lifecycle: **Experimental** → **Stable** → **Deprecated**. Status promotions trigger a **minor version increment**, as they are additive and do not break backward compatibility.
+Possible schema states include: **Experimental** → **Stable** → **Deprecated**.
 
 ### Experimental Status
 
-* Schemas start in **Experimental** status.
-* Adding a new Experimental schema triggers a **minor version increment**.
-* Breaking changes and performance issues MAY occur.
-* Components **SHOULD NOT** be expected to be feature-complete.
+* Schemas start Experimental.
+* Adding Experimental schemas triggers minor increments.
+* Breaking changes and performance issues may occur.
+* These schemas may not be feature-complete.
 
 ### Stable Status
 
-* Promoting a schema from Experimental to Stable triggers a **minor version increment** and involves a stabilization announcement in release notes, documentation updates, and tracking schema maturity.
-* Individual layers can be promoted independently (e.g., Layer 2 can be stable while Layer 1 remains in Experimental).
-* Once Stable, schemas **can still evolve** but maintain backward compatibility within major versions. Stable schemas allow **additive changes** such as new optional fields or new types.
-<<<<<<< Updated upstream
-* Breaking changes to Stable schemas require a major version increment. This should be avoided in all normal circumstances.
-* Stable schemas represent a long-term commitment and will continue to be supported.
-=======
-* Breaking changes to Stable schemas require a major version increment.
-
-#### Stable Schema Support
-
-Stable schemas represent a long-term commitment and will continue to be supported until explicitly deprecated.
-
-**Support includes:**
-
-| Support Type           | Description                                   |
-|:-----------------------|:----------------------------------------------|
-| Backward compatibility | Maintain compatibility within major version.  |
-| Bug fixes              | Fix bugs and issues without breaking changes. |
-| Documentation          | Keep documentation current and accurate.      |
-| Migration guidance     | Provide migration paths when deprecating.     |
-
-Deprecation follows a clear process with migration paths.
+* Promoting to Stable triggers minor increments and requires release notes and documentation updates.
+* Layers promote independently. Each layer only requires its direct dependencies to be Stable (e.g., Layer 2 requires Layer 1, but not Layer 6).
+* Layers can be promoted to Stable at different times. Layer 2 can be Stable while Layer 6 remains Experimental.
+* For v2.0.0 release, at least some schemas must be Stable, respecting dependency order.
+* Stable schemas may only reference other Stable schemas.
+* Stable schemas maintain backward and forward compatibility within major versions, allowing additive changes.
+* Forward compatibility means new required fields are not added, ensuring older tooling continues to work with new data.
+* Breaking changes require major version increments and should be avoided in all normal circumstances.
 
 ### Deprecated Status
 
-* When a Stable schema needs to be replaced, the deprecation process follows these steps:
-  1. Add the replacing schema in **Experimental** status (triggers a **minor version increment**).
-  2. Promote the replacing schema from Experimental to **Stable** (triggers a **minor version increment**).
-  3. Remove the old deprecated schema (triggers a **major version increment**).
-* Deprecated schemas are marked for removal and users are notified through release notes and documentation.
-* The deprecation period provides time for users to migrate to the replacement schema before removal.
+* Schemas or fields within schemas may be deprecated when replaced.
+* Schemas or fields MUST NOT be marked as deprecated unless the replacement is Stable.
+* The replacement schema or field must be added in Experimental status and promoted to Stable before deprecation.
+* Deprecating a schema or field triggers a minor version increment.
+* Deprecated schemas and fields maintain the same support guarantees as Stable schemas and remain functional.
+* Go types generated from deprecated schemas remain available in the same major version's Go module.
+* Deprecated fields remain available in the same major version's Go types.
+* When v2.0.0 is released, deprecated v1 schemas and fields are excluded from v2 but remain available in v1.x releases.
 
-## Compatibility
+## Versioning for Go
 
-* The Go library maintains backward compatibility within major versions.
-* Schemas maintain backward compatibility within major versions (additive changes only).
+* Release Branching used for major version changes (v2.0.0+). 
+* Go supports multiple major versions via `/v2` subdirectories or branches.
+
+**Breaking changes trigger this workflow**:
+
+| Step | Action                               | Branch State              |
+|:-----|:-------------------------------------|:--------------------------|
+| 1    | Identify schemas to be replaced in v2 | Main branch               |
+| 2a   | Create v1 maintenance branch         | Isolated                  |
+| 2b   | Continue development on main         | v2 Experimental           |
+| 3    | Promote v2 schemas to Stable         | Respect dependency order  |
+| 4    | Deprecate corresponding v1 schemas   | When v2 replacements Stable |
+| 5    | Tag v2.0.0 release                   | At least some v2 Stable   |
+
+* v1 remains on the maintenance branch for bug fixes.
+* New features occur only in v2.
+* As v2 schemas stabilize, corresponding v1 schemas are deprecated.
+* Deprecated v1 schemas and their Go types remain available in v1.x releases but are excluded from v2.0.0+.
 
 ## Questions or Feedback
 
