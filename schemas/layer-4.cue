@@ -2,12 +2,6 @@ package schemas
 
 @go(gemara)
 
-// EvaluationPlan defines how a set of Layer 2 controls are to be evaluated.
-#EvaluationPlan: {
-	"metadata"?: #Metadata @go(Metadata)
-	plans: [...#AssessmentPlan]
-}
-
 // EvaluationLog contains the results of evaluating a set of Layer 2 controls.
 #EvaluationLog: {
 	"evaluations": [#ControlEvaluation, ...#ControlEvaluation] @go(Evaluations,type=[]*ControlEvaluation)
@@ -62,36 +56,3 @@ package schemas
 
 // ConfidenceLevel indicates the evaluator's confidence level in an assessment result.
 #ConfidenceLevel: "Not Set" | "Undetermined" | "Low" | "Medium" | "High" @go(-)
-
-// AssessmentPlan defines all testing procedures for a control id.
-#AssessmentPlan: {
-	// Control points to the Layer 2 control being evaluated.
-	control: #SingleMapping
-	// Assessments defines possible testing procedures to evaluate the control.
-	assessments: [...#Assessment] @go(Assessments,type=[]Assessment)
-	// Enforce that control reference and the assessments' references match
-	// This formulation uses the control's reference if the assessment doesn't include a reference
-	assessments: [...{
-		requirement: "reference-id": (control."reference-id")
-	}] @go(Assessments,type=[]Assessment)
-}
-
-// Assessment defines all testing procedures for a requirement.
-#Assessment: {
-	// RequirementId points to the requirement being tested.
-	requirement: #SingleMapping
-	// Procedures defines possible testing procedures to evaluate the requirement.
-	procedures: [...#AssessmentProcedure] @go(Procedures)
-}
-
-// AssessmentProcedure describes a testing procedure for evaluating a Layer 2 control requirement.
-#AssessmentProcedure: {
-	// Id uniquely identifies the assessment procedure being executed
-	id: string
-	// Name provides a summary of the procedure
-	name: string
-	// Description provides a detailed explanation of the procedure
-	description: string
-	// Documentation provides a URL to documentation that describes how the assessment procedure evaluates the control requirement
-	documentation?: =~"^https?://[^\\s]+$"
-}

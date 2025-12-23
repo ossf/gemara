@@ -250,69 +250,6 @@ type Email string
 // Datetime represents an ISO 8601 formatted datetime string
 type Datetime string
 
-// EvaluationPlan defines how a set of Layer 2 controls are to be evaluated.
-type EvaluationPlan struct {
-	Metadata Metadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
-
-	Plans []AssessmentPlan `json:"plans" yaml:"plans"`
-}
-
-// AssessmentPlan defines how a specific assessment requirement is evaluated.
-//
-// AssessmentPlan defines all testing procedures for a control id.
-type AssessmentPlan struct {
-	// Control points to the Layer 2 control being evaluated.
-	Control SingleMapping `json:"control" yaml:"control"`
-
-	// Assessments defines possible testing procedures to evaluate the control.
-	//
-	// Enforce that control reference and the assessments' references match
-	// This formulation uses the control's reference if the assessment doesn't include a reference
-	Assessments []Assessment `json:"assessments" yaml:"assessments"`
-
-	Id string `json:"id" yaml:"id"`
-
-	RequirementId string `json:"requirement-id" yaml:"requirement-id"`
-
-	Frequency string `json:"frequency" yaml:"frequency"`
-
-	EvaluationMethods []AcceptedMethod `json:"evaluation-methods" yaml:"evaluation-methods"`
-
-	EvidenceRequirements string `json:"evidence-requirements,omitempty" yaml:"evidence-requirements,omitempty"`
-
-	Parameters []Parameter `json:"parameters,omitempty" yaml:"parameters,omitempty"`
-}
-
-// SingleMapping represents how a specific entry (control/requirement/procedure) maps to a MappingReference.
-type SingleMapping struct {
-	// ReferenceId should reference the corresponding MappingReference id from metadata
-	ReferenceId string `json:"reference-id,omitempty" yaml:"reference-id,omitempty"`
-
-	EntryId string `json:"entry-id" yaml:"entry-id"`
-
-	Remarks string `json:"remarks,omitempty" yaml:"remarks,omitempty"`
-}
-
-// AcceptedMethod defines a method for evaluation or enforcement.
-type AcceptedMethod struct {
-	Type string `json:"type" yaml:"type"`
-
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-
-	Actor Actor `json:"actor,omitempty" yaml:"actor,omitempty"`
-}
-
-// Parameter defines a configurable parameter for assessment or enforcement activities.
-type Parameter struct {
-	Id string `json:"id" yaml:"id"`
-
-	Label string `json:"label" yaml:"label"`
-
-	Description string `json:"description" yaml:"description"`
-
-	AcceptedValues []string `json:"accepted-values,omitempty" yaml:"accepted-values,omitempty"`
-}
-
 // EvaluationLog contains the results of evaluating a set of Layer 2 controls.
 type EvaluationLog struct {
 	Evaluations []*ControlEvaluation `json:"evaluations" yaml:"evaluations"`
@@ -333,6 +270,16 @@ type ControlEvaluation struct {
 	// Enforce that control reference and the assessments' references match
 	// This formulation uses the control's reference if the assessment doesn't include a reference
 	AssessmentLogs []*AssessmentLog `json:"assessment-logs" yaml:"assessment-logs"`
+}
+
+// SingleMapping represents how a specific entry (control/requirement/procedure) maps to a MappingReference.
+type SingleMapping struct {
+	// ReferenceId should reference the corresponding MappingReference id from metadata
+	ReferenceId string `json:"reference-id,omitempty" yaml:"reference-id,omitempty"`
+
+	EntryId string `json:"entry-id" yaml:"entry-id"`
+
+	Remarks string `json:"remarks,omitempty" yaml:"remarks,omitempty"`
 }
 
 // AssessmentLog contains the results of executing a single assessment procedure for a control requirement.
@@ -574,28 +521,39 @@ type Adherence struct {
 	NonCompliance string `json:"non-compliance,omitempty" yaml:"non-compliance,omitempty"`
 }
 
-// Assessment defines all testing procedures for a requirement.
-type Assessment struct {
-	// RequirementId points to the requirement being tested.
-	Requirement SingleMapping `json:"requirement" yaml:"requirement"`
+// AcceptedMethod defines a method for evaluation or enforcement.
+type AcceptedMethod struct {
+	Type string `json:"type" yaml:"type"`
 
-	// Procedures defines possible testing procedures to evaluate the requirement.
-	Procedures []AssessmentProcedure `json:"procedures" yaml:"procedures"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+
+	Actor Actor `json:"actor,omitempty" yaml:"actor,omitempty"`
 }
 
-// AssessmentProcedure describes a testing procedure for evaluating a Layer 2 control requirement.
-type AssessmentProcedure struct {
-	// Id uniquely identifies the assessment procedure being executed
+// AssessmentPlan defines how a specific assessment requirement is evaluated.
+type AssessmentPlan struct {
 	Id string `json:"id" yaml:"id"`
 
-	// Name provides a summary of the procedure
-	Name string `json:"name" yaml:"name"`
+	RequirementId string `json:"requirement-id" yaml:"requirement-id"`
 
-	// Description provides a detailed explanation of the procedure
+	Frequency string `json:"frequency" yaml:"frequency"`
+
+	EvaluationMethods []AcceptedMethod `json:"evaluation-methods" yaml:"evaluation-methods"`
+
+	EvidenceRequirements string `json:"evidence-requirements,omitempty" yaml:"evidence-requirements,omitempty"`
+
+	Parameters []Parameter `json:"parameters,omitempty" yaml:"parameters,omitempty"`
+}
+
+// Parameter defines a configurable parameter for assessment or enforcement activities.
+type Parameter struct {
+	Id string `json:"id" yaml:"id"`
+
+	Label string `json:"label" yaml:"label"`
+
 	Description string `json:"description" yaml:"description"`
 
-	// Documentation provides a URL to documentation that describes how the assessment procedure evaluates the control requirement
-	Documentation string `json:"documentation,omitempty" yaml:"documentation,omitempty"`
+	AcceptedValues []string `json:"accepted-values,omitempty" yaml:"accepted-values,omitempty"`
 }
 
 type MethodType string
