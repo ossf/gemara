@@ -4,30 +4,30 @@ package schemas
 
 // Policy represents a policy document with metadata, contacts, scope, imports, implementation plan, risks, and adherence requirements.
 #Policy: {
-	metadata: #Metadata
-	contacts: #Contacts
-	scope: #Scope
-	imports: #Imports
+	metadata:               #Metadata
+	contacts:               #Contacts
+	scope:                  #Scope
+	imports:                #Imports
 	"implementation-plan"?: #ImplementationPlan
-	risks?: #Risks
-	adherence: #Adherence
+	risks?:                 #Risks
+	adherence:              #Adherence
 }
 
 // Contacts defines RACI roles for policy compliance and notification.
 #Contacts: {
 	// responsible is the person or group responsible for implementing controls for technical requirements
-	responsible: [...#Contact] 
+	responsible: [...#Contact]
 	// accountable is the person or group accountable for evaluating and enforcing the efficacy of technical controls
 	accountable: [...#Contact]
 	// consulted is an optional person or group who may be consulted for more information about the technical requirements 
 	consulted?: [...#Contact]
 	// informed is an optional person or group who must receive updates about compliance with this policy 
-	informed?: [...#Contact] 
+	informed?: [...#Contact]
 }
 
 // Scope defines what is included and excluded from policy applicability.
 #Scope: {
-	in: #Dimensions
+	in:   #Dimensions
 	out?: #Dimensions
 }
 
@@ -54,8 +54,8 @@ package schemas
 // ImplementationPlan defines when and how the policy becomes active.
 #ImplementationPlan: {
 	"notification-process"?: string
-	"evaluation-timeline": #ImplementationDetails
-	"enforcement-timeline": #ImplementationDetails
+	"evaluation-timeline":   #ImplementationDetails
+	"enforcement-timeline":  #ImplementationDetails
 }
 
 // ImplementationDetails specifies the timeline for policy implementation.
@@ -77,9 +77,9 @@ package schemas
 // RiskMapping maps a risk to a reference and optionally includes scope and justification.
 #RiskMapping: {
 	"reference-id": string
-	"risk-id": string
+	"risk-id":      string
 	// Scope and justification are only required for accepted risks (e.g., risk is accepted for TLP:Green and TLP:Clear because they contain non-sensitive data)
-	scope?: #Scope
+	scope?:         #Scope
 	justification?: string
 }
 
@@ -93,9 +93,9 @@ package schemas
 
 // AssessmentPlan defines how a specific control or assessment requirement is evaluated.
 #AssessmentPlan: {
-	id: string
+	id:               string
 	"requirement-id": string
-	frequency: string
+	frequency:        string
 	"accepted-methods": [...#AcceptedMethod]
 	"evidence-requirements"?: string
 	parameters?: [...#Parameter]
@@ -103,17 +103,17 @@ package schemas
 
 // AcceptedMethod defines a method for evaluation or enforcement.
 #AcceptedMethod: {
-	type: #MethodType | string
+	type:         #MethodType | string
 	description?: string
-	actor?: #Actor
+	actor?:       #Actor
 }
 
 #MethodType: "manual" | "behavioral" | "automated" | "autoremediation" | "gate"
 
 // Parameter defines a configurable parameter for assessment or enforcement activities.
 #Parameter: {
-	id: string
-	label: string
+	id:          string
+	label:       string
 	description: string
 	"accepted-values"?: [...string]
 }
@@ -146,9 +146,9 @@ package schemas
 
 // AssessmentRequirementModifier allows organizations to customize assessment requirements based on how an organization wants to gather evidence for the objective.
 #AssessmentRequirementModifier: {
-	id: string
-	"target-id": string
-	"modification-type": #ModType
+	id:                       string
+	"target-id":              string
+	"modification-type":      #ModType
 	"modification-rationale": string
 	// The updated text of the assessment requirement
 	text?: string
