@@ -9,7 +9,7 @@ package schemas
 	contacts:               #Contacts
 	scope:                  #Scope
 	imports:                #Imports
-	"implementation-plan"?: #ImplementationPlan
+	"implementation-plan"?: #ImplementationPlan @go(ImplementationPlan)
 	risks?:                 #Risks
 	adherence:              #Adherence
 }
@@ -54,9 +54,9 @@ package schemas
 
 // ImplementationPlan defines when and how the policy becomes active.
 #ImplementationPlan: {
-	"notification-process"?: string
-	"evaluation-timeline":   #ImplementationDetails
-	"enforcement-timeline":  #ImplementationDetails
+	"notification-process"?: string @go(NotificationProcess)
+	"evaluation-timeline":   #ImplementationDetails @go(EvaluationTimeline)
+	"enforcement-timeline":  #ImplementationDetails @go(EnforcementTimeline)
 }
 
 // ImplementationDetails specifies the timeline for policy implementation.
@@ -84,19 +84,19 @@ package schemas
 
 // Adherence defines evaluation methods, assessment plans, enforcement methods, and non-compliance notifications.
 #Adherence: {
-	"evaluation-methods"?: [...#AcceptedMethod]
-	"assessment-plans"?: [...#AssessmentPlan]
-	"enforcement-methods"?: [...#AcceptedMethod]
-	"non-compliance"?: string
+	"evaluation-methods"?: [...#AcceptedMethod] @go(EvaluationMethods)
+	"assessment-plans"?: [...#AssessmentPlan] @go(AssessmentPlans)
+	"enforcement-methods"?: [...#AcceptedMethod] @go(EnforcementMethods)
+	"non-compliance"?: string @go(NonCompliance)
 }
 
 // AssessmentPlan defines how a specific assessment requirement is evaluated.
 #AssessmentPlan: {
 	id:               string
-	"requirement-id": string
+	"requirement-id": string @go(RequirementId)
 	frequency:        string
-	"evaluation-methods": [...#AcceptedMethod]
-	"evidence-requirements"?: string
+	"evaluation-methods": [...#AcceptedMethod] @go(EvaluationMethods)
+	"evidence-requirements"?: string @go(EvidenceRequirements)
 	parameters?: [...#Parameter]
 }
 
@@ -114,12 +114,12 @@ package schemas
 	id:          string
 	label:       string
 	description: string
-	"accepted-values"?: [...string]
+	"accepted-values"?: [...string] @go(AcceptedValues)
 }
 
 // GuidanceImport defines how to import guidance documents with optional exclusions and constraints.
 #GuidanceImport: {
-	"reference-id"?: string
+	"reference-id"?: string @go(ReferenceId)
 	exclusions?: [...string]
 	// Constraints allow policy authors to define ad hoc minimum requirements (e.g., "review at least annually").
 	constraints?: [...#Constraint]
@@ -127,10 +127,10 @@ package schemas
 
 // CatalogImport defines how to import control catalogs with optional exclusions, constraints, and assessment requirement modifications.
 #CatalogImport: {
-	"reference-id"?: string
+	"reference-id"?: string @go(ReferenceId)
 	exclusions?: [...string]
 	constraints?: [...#Constraint]
-	"assessment-requirement-modifications"?: [...#AssessmentRequirementModifier]
+	"assessment-requirement-modifications"?: [...#AssessmentRequirementModifier] @go(AssessmentRequirementModifications)
 }
 
 // Constraint defines a prescriptive requirement that applies to a specific guidance or control.
@@ -138,7 +138,7 @@ package schemas
 	// Unique ID for this constraint to enable Layer 4/5 tracking
 	id: string
 	// Links to the specific Guidance or Control being constrained
-	"target-id": string
+	"target-id": string @go(TargetId)
 	// The prescriptive requirement/constraint text
 	"text": string
 }
@@ -146,9 +146,9 @@ package schemas
 // AssessmentRequirementModifier allows organizations to customize assessment requirements based on how an organization wants to gather evidence for the objective.
 #AssessmentRequirementModifier: {
 	id:                       string
-	"target-id":              string
-	"modification-type":      #ModType
-	"modification-rationale": string
+	"target-id":              string  @go(TargetId)
+	"modification-type":      #ModType @go(ModificationType)
+	"modification-rationale": string @go(ModificationRationale)
 	// The updated text of the assessment requirement
 	text?: string
 	// The updated applicability of the assessment requirement

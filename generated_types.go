@@ -257,6 +257,8 @@ type EvaluationPlan struct {
 	Plans []AssessmentPlan `json:"plans" yaml:"plans"`
 }
 
+// AssessmentPlan defines how a specific control or assessment requirement is evaluated.
+//
 // AssessmentPlan defines all testing procedures for a control id.
 type AssessmentPlan struct {
 	// Control points to the Layer 2 control being evaluated.
@@ -267,6 +269,18 @@ type AssessmentPlan struct {
 	// Enforce that control reference and the assessments' references match
 	// This formulation uses the control's reference if the assessment doesn't include a reference
 	Assessments []Assessment `json:"assessments" yaml:"assessments"`
+
+	Id string `json:"id" yaml:"id"`
+
+	RequirementId string `json:"requirement-id" yaml:"requirement-id"`
+
+	Frequency string `json:"frequency" yaml:"frequency"`
+
+	AcceptedMethods []AcceptedMethod `json:"accepted-methods" yaml:"accepted-methods"`
+
+	EvidenceRequirements string `json:"evidence-requirements,omitempty" yaml:"evidence-requirements,omitempty"`
+
+	Parameters []Parameter `json:"parameters,omitempty" yaml:"parameters,omitempty"`
 }
 
 // SingleMapping represents how a specific entry (control/requirement/procedure) maps to a MappingReference.
@@ -277,6 +291,26 @@ type SingleMapping struct {
 	EntryId string `json:"entry-id" yaml:"entry-id"`
 
 	Remarks string `json:"remarks,omitempty" yaml:"remarks,omitempty"`
+}
+
+// AcceptedMethod defines a method for evaluation or enforcement.
+type AcceptedMethod struct {
+	Type string `json:"type" yaml:"type"`
+
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+
+	Actor Actor `json:"actor,omitempty" yaml:"actor,omitempty"`
+}
+
+// Parameter defines a configurable parameter for assessment or enforcement activities.
+type Parameter struct {
+	Id string `json:"id" yaml:"id"`
+
+	Label string `json:"label" yaml:"label"`
+
+	Description string `json:"description" yaml:"description"`
+
+	AcceptedValues []string `json:"accepted-values,omitempty" yaml:"accepted-values,omitempty"`
 }
 
 // EvaluationLog contains the results of evaluating a set of Layer 2 controls.
@@ -369,68 +403,137 @@ type Exemption struct {
 	Redirect MultiMapping `json:"redirect,omitempty" yaml:"redirect,omitempty"`
 }
 
-// Core Document Structure
-type PolicyDocument struct {
+// Policy represents a policy document with metadata, contacts, scope, imports, implementation plan, risks, and adherence requirements.
+type Policy struct {
 	Metadata Metadata `json:"metadata" yaml:"metadata"`
-
-	OrganizationID string `json:"organization-id" yaml:"organization-id"`
-
-	Title string `json:"title" yaml:"title"`
-
-	Purpose string `json:"purpose" yaml:"purpose"`
 
 	Contacts Contacts `json:"contacts" yaml:"contacts"`
 
 	Scope Scope `json:"scope" yaml:"scope"`
 
+	Imports Imports `json:"imports" yaml:"imports"`
+
 	ImplementationPlan ImplementationPlan `json:"implementation-plan,omitempty" yaml:"implementation-plan,omitempty"`
 
-	GuidanceReferences []PolicyMapping `json:"guidance-references" yaml:"guidance-references"`
+	Risks Risks `json:"risks,omitempty" yaml:"risks,omitempty"`
 
-	ControlReferences []PolicyMapping `json:"control-references" yaml:"control-references"`
+	Adherence Adherence `json:"adherence" yaml:"adherence"`
 }
 
+// Contacts defines RACI roles for policy compliance and notification.
 type Contacts struct {
+	// responsible is the person or group responsible for implementing controls for technical requirements
 	Responsible []Contact `json:"responsible" yaml:"responsible"`
 
+	// accountable is the person or group accountable for evaluating and enforcing the efficacy of technical controls
 	Accountable []Contact `json:"accountable" yaml:"accountable"`
 
+	// consulted is an optional person or group who may be consulted for more information about the technical requirements
 	Consulted []Contact `json:"consulted,omitempty" yaml:"consulted,omitempty"`
 
+	// informed is an optional person or group who must receive updates about compliance with this policy
 	Informed []Contact `json:"informed,omitempty" yaml:"informed,omitempty"`
 }
 
+// Scope defines what is included and excluded from policy applicability.
 type Scope struct {
-	// geopolitical boundaries such as region names or jurisdictions
-	Boundaries []string `json:"boundaries,omitempty" yaml:"boundaries,omitempty"`
+	In Dimensions `json:"in" yaml:"in"`
 
-	// names of technology categories or services
+	Out Dimensions `json:"out,omitempty" yaml:"out,omitempty"`
+}
+
+// Dimensions specify the applicability criteria for a policy
+type Dimensions struct {
+	// technologies is an optional list of technology categories or services
 	Technologies []string `json:"technologies,omitempty" yaml:"technologies,omitempty"`
 
-	// names of organizations who make the listed technologies available
-	Providers []string `json:"providers,omitempty" yaml:"providers,omitempty"`
+	// geopolitical is an optional list of geopolitical regions
+	Geopolitical []string `json:"geopolitical,omitempty" yaml:"geopolitical,omitempty"`
+
+	// sensitivity is an optional list of data classification levels
+	Sensitivity []string `json:"sensitivity,omitempty" yaml:"sensitivity,omitempty"`
+
+	// user is an optional list of user roles
+	User []string `json:"user,omitempty" yaml:"user,omitempty"`
+
+	Groups []string `json:"groups,omitempty" yaml:"groups,omitempty"`
 }
 
+// Imports defines external policies, controls, and guidelines required by this policy.
+type Imports struct {
+	Policies []string `json:"policies,omitempty" yaml:"policies,omitempty"`
+
+	Catalogs []CatalogImport `json:"catalogs,omitempty" yaml:"catalogs,omitempty"`
+
+	Guidance []GuidanceImport `json:"guidance,omitempty" yaml:"guidance,omitempty"`
+}
+
+// CatalogImport defines how to import control catalogs with optional exclusions, constraints, and assessment requirement modifications.
+type CatalogImport struct {
+	ReferenceId string `json:"reference-id,omitempty" yaml:"reference-id,omitempty"`
+
+	Exclusions []string `json:"exclusions,omitempty" yaml:"exclusions,omitempty"`
+
+	Constraints []Constraint `json:"constraints,omitempty" yaml:"constraints,omitempty"`
+
+	AssessmentRequirementModifications []AssessmentRequirementModifier `json:"assessment-requirement-modifications,omitempty" yaml:"assessment-requirement-modifications,omitempty"`
+}
+
+// Constraint defines a prescriptive requirement that applies to a specific guidance or control.
+type Constraint struct {
+	// Unique ID for this constraint to enable Layer 4/5 tracking
+	Id string `json:"id" yaml:"id"`
+
+	// Links to the specific Guidance or Control being constrained
+	TargetId string `json:"target-id" yaml:"target-id"`
+
+	// The prescriptive requirement/constraint text
+	Text string `json:"text" yaml:"text"`
+}
+
+// AssessmentRequirementModifier allows organizations to customize assessment requirements based on how an organization wants to gather evidence for the objective.
+type AssessmentRequirementModifier struct {
+	Id string `json:"id" yaml:"id"`
+
+	TargetId string `json:"target-id" yaml:"target-id"`
+
+	ModificationType ModType `json:"modification-type" yaml:"modification-type"`
+
+	ModificationRationale string `json:"modification-rationale" yaml:"modification-rationale"`
+
+	// The updated text of the assessment requirement
+	Text string `json:"text,omitempty" yaml:"text,omitempty"`
+
+	// The updated applicability of the assessment requirement
+	Applicability []string `json:"applicability,omitempty" yaml:"applicability,omitempty"`
+
+	// The updated recommendation for the assessment requirement
+	Recommendation string `json:"recommendation,omitempty" yaml:"recommendation,omitempty"`
+}
+
+// ModType defines the type of modification to the assessment requirement.
+type ModType string
+
+// GuidanceImport defines how to import guidance documents with optional exclusions and constraints.
+type GuidanceImport struct {
+	ReferenceId string `json:"reference-id,omitempty" yaml:"reference-id,omitempty"`
+
+	Exclusions []string `json:"exclusions,omitempty" yaml:"exclusions,omitempty"`
+
+	// Constraints allow policy authors to define ad hoc minimum requirements (e.g., "review at least annually").
+	Constraints []Constraint `json:"constraints,omitempty" yaml:"constraints,omitempty"`
+}
+
+// ImplementationPlan defines when and how the policy becomes active.
 type ImplementationPlan struct {
-	// The process through which notified parties should be made aware of this policy
 	NotificationProcess string `json:"notification-process,omitempty" yaml:"notification-process,omitempty"`
 
-	NotifiedParties []NotificationGroup `json:"notified-parties,omitempty" yaml:"notified-parties,omitempty"`
+	EvaluationTimeline ImplementationDetails `json:"evaluation-timeline" yaml:"evaluation-timeline"`
 
-	Evaluation ImplementationDetails `json:"evaluation" yaml:"evaluation"`
-
-	EvaluationPoints []EvaluationPoint `json:"evaluation-points,omitempty" yaml:"evaluation-points,omitempty"`
-
-	Enforcement ImplementationDetails `json:"enforcement" yaml:"enforcement"`
-
-	EnforcementMethods []EnforcementMethod `json:"enforcement-methods,omitempty" yaml:"enforcement-methods,omitempty"`
-
-	// The process that will be followed in the event that noncompliance is detected in an applicable resource
-	NoncompliancePlan string `json:"noncompliance-plan,omitempty" yaml:"noncompliance-plan,omitempty"`
+	EnforcementTimeline ImplementationDetails `json:"enforcement-timeline" yaml:"enforcement-timeline"`
 }
 
-type NotificationGroup string
-
+// ImplementationDetails specifies the timeline for policy implementation.
 type ImplementationDetails struct {
 	Start Datetime `json:"start" yaml:"start"`
 
@@ -439,77 +542,46 @@ type ImplementationDetails struct {
 	Notes string `json:"notes" yaml:"notes"`
 }
 
-type EvaluationPoint string
+// Risks defines mitigated and accepted risks addressed by this policy.
+type Risks struct {
+	// Mitigated risks only need reference-id and risk-id (no justification required)
+	Mitigated []RiskMapping `json:"mitigated,omitempty" yaml:"mitigated,omitempty"`
 
-type EnforcementMethod string
+	// Accepted risks require rationale (justification) and may include scope.
+	// Controls addressing these risks are implicitly identified through threat mappings.
+	Accepted []struct {
+		ReferenceId string `json:"reference-id"`
 
-type PolicyMapping struct {
+		RiskId string `json:"risk-id"`
+
+		// Scope and justification are only required for accepted risks (e.g., risk is accepted for TLP:Green and TLP:Clear because they contain non-sensitive data)
+		Scope Scope `json:"scope,omitempty"`
+
+		Justification string `json:"justification"`
+	} `json:"accepted,omitempty" yaml:"accepted,omitempty"`
+}
+
+// RiskMapping maps a risk to a reference and optionally includes scope and justification.
+type RiskMapping struct {
 	ReferenceId string `json:"reference-id" yaml:"reference-id"`
 
-	InScope Scope `json:"in-scope" yaml:"in-scope"`
+	RiskId string `json:"risk-id" yaml:"risk-id"`
 
-	OutOfScope Scope `json:"out-of-scope" yaml:"out-of-scope"`
+	// Scope and justification are only required for accepted risks (e.g., risk is accepted for TLP:Green and TLP:Clear because they contain non-sensitive data)
+	Scope Scope `json:"scope,omitempty" yaml:"scope,omitempty"`
 
-	ControlModifications []ControlModifier `json:"control-modifications" yaml:"control-modifications"`
-
-	AssessmentRequirementModifications []AssessmentRequirementModifier `json:"assessment-requirement-modifications" yaml:"assessment-requirement-modifications"`
-
-	GuidelineModifications []GuidelineModifier `json:"guideline-modifications" yaml:"guideline-modifications"`
+	Justification string `json:"justification,omitempty" yaml:"justification,omitempty"`
 }
 
-// Modifier Types
-type ControlModifier struct {
-	TargetId string `json:"target-id" yaml:"target-id"`
+// Adherence defines evaluation methods, assessment plans, enforcement methods, and non-compliance notifications.
+type Adherence struct {
+	EvaluationMethods []AcceptedMethod `json:"evaluation-methods,omitempty" yaml:"evaluation-methods,omitempty"`
 
-	ModType ModType `json:"modification-type" yaml:"modification-type"`
+	AssessmentPlans []AssessmentPlan `json:"assessment-plans,omitempty" yaml:"assessment-plans,omitempty"`
 
-	ModificationRationale string `json:"modification-rationale" yaml:"modification-rationale"`
+	EnforcementMethods []AcceptedMethod `json:"enforcement-methods,omitempty" yaml:"enforcement-methods,omitempty"`
 
-	Title string `json:"title,omitempty" yaml:"title,omitempty"`
-
-	Objective string `json:"objective,omitempty" yaml:"objective,omitempty"`
-}
-
-type ModType string
-
-type AssessmentRequirementModifier struct {
-	TargetId string `json:"target-id" yaml:"target-id"`
-
-	ModType ModType `json:"modification-type" yaml:"modification-type"`
-
-	ModificationRationale string `json:"modification-rationale" yaml:"modification-rationale"`
-
-	Text string `json:"text" yaml:"text"`
-
-	Applicability []string `json:"applicability" yaml:"applicability"`
-
-	Recommendation string `json:"recommendation,omitempty" yaml:"recommendation,omitempty"`
-}
-
-type GuidelineModifier struct {
-	TargetId string `json:"target-id" yaml:"target-id"`
-
-	ModType ModType `json:"modification-type" yaml:"modification-type"`
-
-	ModificationRationale string `json:"modification-rationale" yaml:"modification-rationale"`
-
-	Title string `json:"title" yaml:"title"`
-
-	Objective string `json:"objective,omitempty" yaml:"objective,omitempty"`
-
-	Recommendations []string `json:"recommendations,omitempty" yaml:"recommendations,omitempty"`
-
-	BaseGuidelineID string `json:"base-guideline-id,omitempty" yaml:"base-guideline-id,omitempty"`
-
-	Rationale *string `json:"rationale,omitempty" yaml:"rationale,omitempty"`
-
-	GuidelineMappings []MultiMapping `json:"guideline-mappings,omitempty" yaml:"guideline-mappings,omitempty"`
-
-	PrincipleMappings []MultiMapping `json:"principle-mappings,omitempty" yaml:"principle-mappings,omitempty"`
-
-	SeeAlso []string `json:"see-also,omitempty" yaml:"see-also,omitempty"`
-
-	ExternalReferences []string `json:"external-references,omitempty" yaml:"external-references,omitempty"`
+	NonCompliance string `json:"non-compliance,omitempty" yaml:"non-compliance,omitempty"`
 }
 
 // Assessment defines all testing procedures for a requirement.
@@ -536,16 +608,4 @@ type AssessmentProcedure struct {
 	Documentation string `json:"documentation,omitempty" yaml:"documentation,omitempty"`
 }
 
-type PartModifier struct {
-	TargetId string `json:"target-id" yaml:"target-id"`
-
-	ModType ModType `json:"modification-type" yaml:"modification-type"`
-
-	ModificationRationale string `json:"modification-rationale" yaml:"modification-rationale"`
-
-	Title string `json:"title,omitempty" yaml:"title,omitempty"`
-
-	Prose string `json:"prose" yaml:"prose"`
-
-	Recommendations []string `json:"recommendations,omitempty" yaml:"recommendations,omitempty"`
-}
+type MethodType string
