@@ -257,7 +257,7 @@ type EvaluationPlan struct {
 	Plans []AssessmentPlan `json:"plans" yaml:"plans"`
 }
 
-// AssessmentPlan defines how a specific control or assessment requirement is evaluated.
+// AssessmentPlan defines how a specific assessment requirement is evaluated.
 //
 // AssessmentPlan defines all testing procedures for a control id.
 type AssessmentPlan struct {
@@ -276,7 +276,7 @@ type AssessmentPlan struct {
 
 	Frequency string `json:"frequency" yaml:"frequency"`
 
-	AcceptedMethods []AcceptedMethod `json:"accepted-methods" yaml:"accepted-methods"`
+	EvaluationMethods []AcceptedMethod `json:"evaluation-methods" yaml:"evaluation-methods"`
 
 	EvidenceRequirements string `json:"evidence-requirements,omitempty" yaml:"evidence-requirements,omitempty"`
 
@@ -405,6 +405,8 @@ type Exemption struct {
 
 // Policy represents a policy document with metadata, contacts, scope, imports, implementation plan, risks, and adherence requirements.
 type Policy struct {
+	Title string `json:"title" yaml:"title"`
+
 	Metadata Metadata `json:"metadata" yaml:"metadata"`
 
 	Contacts Contacts `json:"contacts" yaml:"contacts"`
@@ -453,8 +455,8 @@ type Dimensions struct {
 	// sensitivity is an optional list of data classification levels
 	Sensitivity []string `json:"sensitivity,omitempty" yaml:"sensitivity,omitempty"`
 
-	// user is an optional list of user roles
-	User []string `json:"user,omitempty" yaml:"user,omitempty"`
+	// users is an optional list of user roles
+	Users []string `json:"users,omitempty" yaml:"users,omitempty"`
 
 	Groups []string `json:"groups,omitempty" yaml:"groups,omitempty"`
 }
@@ -545,27 +547,15 @@ type ImplementationDetails struct {
 // Risks defines mitigated and accepted risks addressed by this policy.
 type Risks struct {
 	// Mitigated risks only need reference-id and risk-id (no justification required)
-	Mitigated []RiskMapping `json:"mitigated,omitempty" yaml:"mitigated,omitempty"`
+	Mitigated []MultiMapping `json:"mitigated,omitempty" yaml:"mitigated,omitempty"`
 
-	// Accepted risks require rationale (justification) and may include scope.
-	// Controls addressing these risks are implicitly identified through threat mappings.
-	Accepted []struct {
-		ReferenceId string `json:"reference-id"`
-
-		RiskId string `json:"risk-id"`
-
-		// Scope and justification are only required for accepted risks (e.g., risk is accepted for TLP:Green and TLP:Clear because they contain non-sensitive data)
-		Scope Scope `json:"scope,omitempty"`
-
-		Justification string `json:"justification"`
-	} `json:"accepted,omitempty" yaml:"accepted,omitempty"`
+	// Accepted risks require rationale (justification) and may include scope. Controls addressing these risks are implicitly identified through threat mappings.
+	Accepted []AcceptedRisk `json:"accepted,omitempty" yaml:"accepted,omitempty"`
 }
 
 // RiskMapping maps a risk to a reference and optionally includes scope and justification.
-type RiskMapping struct {
-	ReferenceId string `json:"reference-id" yaml:"reference-id"`
-
-	RiskId string `json:"risk-id" yaml:"risk-id"`
+type AcceptedRisk struct {
+	Risk SingleMapping `json:"risk" yaml:"risk"`
 
 	// Scope and justification are only required for accepted risks (e.g., risk is accepted for TLP:Green and TLP:Clear because they contain non-sensitive data)
 	Scope Scope `json:"scope,omitempty" yaml:"scope,omitempty"`
