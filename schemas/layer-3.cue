@@ -4,7 +4,7 @@ package schemas
 
 // Policy represents a policy document with metadata, contacts, scope, imports, implementation plan, risks, and adherence requirements.
 #Policy: {
-	title:					string
+	title:                  string
 	metadata:               #Metadata
 	contacts:               #Contacts
 	scope:                  #Scope
@@ -76,7 +76,7 @@ package schemas
 
 // RiskMapping maps a risk to a reference and optionally includes scope and justification.
 #AcceptedRisk: {
-	risk:          #SingleMapping
+	risk: #SingleMapping
 	// Scope and justification are only required for accepted risks (e.g., risk is accepted for TLP:Green and TLP:Clear because they contain non-sensitive data)
 	scope?:         #Scope
 	justification?: string
