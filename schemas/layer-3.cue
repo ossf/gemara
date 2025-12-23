@@ -54,7 +54,7 @@ package schemas
 
 // ImplementationPlan defines when and how the policy becomes active.
 #ImplementationPlan: {
-	"notification-process"?: string @go(NotificationProcess)
+	"notification-process"?: string                 @go(NotificationProcess)
 	"evaluation-timeline":   #ImplementationDetails @go(EvaluationTimeline)
 	"enforcement-timeline":  #ImplementationDetails @go(EnforcementTimeline)
 }
@@ -146,9 +146,9 @@ package schemas
 // AssessmentRequirementModifier allows organizations to customize assessment requirements based on how an organization wants to gather evidence for the objective.
 #AssessmentRequirementModifier: {
 	id:                       string
-	"target-id":              string  @go(TargetId)
+	"target-id":              string   @go(TargetId)
 	"modification-type":      #ModType @go(ModificationType)
-	"modification-rationale": string @go(ModificationRationale)
+	"modification-rationale": string   @go(ModificationRationale)
 	// The updated text of the assessment requirement
 	text?: string
 	// The updated applicability of the assessment requirement
