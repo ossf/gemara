@@ -4,6 +4,7 @@ package schemas
 
 // Policy represents a policy document with metadata, contacts, scope, imports, implementation plan, risks, and adherence requirements.
 #Policy: {
+	title:					string
 	metadata:               #Metadata
 	contacts:               #Contacts
 	scope:                  #Scope
@@ -39,8 +40,8 @@ package schemas
 	geopolitical?: [...string]
 	// sensitivity is an optional list of data classification levels
 	sensitivity?: [...string]
-	// user is an optional list of user roles
-	user?: [...string]
+	// users is an optional list of user roles
+	users?: [...string]
 	groups?: [...string]
 }
 
@@ -68,16 +69,14 @@ package schemas
 // Risks defines mitigated and accepted risks addressed by this policy.
 #Risks: {
 	// Mitigated risks only need reference-id and risk-id (no justification required)
-	mitigated?: [...#RiskMapping]
-	// Accepted risks require rationale (justification) and may include scope.
-	// Controls addressing these risks are implicitly identified through threat mappings.
-	accepted?: [...#RiskMapping & {justification!: string}]
+	mitigated?: [...#MultiMapping]
+	// Accepted risks require rationale (justification) and may include scope. Controls addressing these risks are implicitly identified through threat mappings.
+	accepted?: [...#AcceptedRisk]
 }
 
 // RiskMapping maps a risk to a reference and optionally includes scope and justification.
-#RiskMapping: {
-	"reference-id": string
-	"risk-id":      string
+#AcceptedRisk: {
+	risk:          #SingleMapping
 	// Scope and justification are only required for accepted risks (e.g., risk is accepted for TLP:Green and TLP:Clear because they contain non-sensitive data)
 	scope?:         #Scope
 	justification?: string
@@ -91,12 +90,12 @@ package schemas
 	"non-compliance"?: string
 }
 
-// AssessmentPlan defines how a specific control or assessment requirement is evaluated.
+// AssessmentPlan defines how a specific assessment requirement is evaluated.
 #AssessmentPlan: {
 	id:               string
 	"requirement-id": string
 	frequency:        string
-	"accepted-methods": [...#AcceptedMethod]
+	"evaluation-methods": [...#AcceptedMethod]
 	"evidence-requirements"?: string
 	parameters?: [...#Parameter]
 }
