@@ -27,7 +27,7 @@ package schemas
 	// Requirement should map to the assessment requirement for this assessment.
 	requirement: #SingleMapping
 	// Procedure should map to the assessment procedure being executed.
-	procedure: #SingleMapping
+	plan?: #SingleMapping @go(Plan,optional=nillable)
 	// Description provides a summary of the assessment procedure.
 	description: string
 	// Result is the overall outcome of the assessment procedure, matching the result of the last step that was run.
