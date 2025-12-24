@@ -26,7 +26,7 @@ package schemas
 #AssessmentLog: {
 	// Requirement should map to the assessment requirement for this assessment.
 	requirement: #SingleMapping
-	// Procedure should map to the assessment procedure being executed.
+	// Plan maps to the policy assessment plan being executed.
 	plan?: #SingleMapping @go(Plan,optional=nillable)
 	// Description provides a summary of the assessment procedure.
 	description: string

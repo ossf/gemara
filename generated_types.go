@@ -287,7 +287,7 @@ type AssessmentLog struct {
 	// Requirement should map to the assessment requirement for this assessment.
 	Requirement SingleMapping `json:"requirement" yaml:"requirement"`
 
-	// Procedure should map to the assessment procedure being executed.
+	// Plan maps to the policy assessment plan being executed.
 	Plan *SingleMapping `json:"plan,omitempty" yaml:"plan,omitempty"`
 
 	// Description provides a summary of the assessment procedure.
