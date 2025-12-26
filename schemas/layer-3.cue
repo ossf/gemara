@@ -2,6 +2,9 @@ package schemas
 
 @go(gemara)
 
+// @status tracks schema lifecycle: experimental | stable | deprecated
+@status("experimental")
+
 // Core Document Structure
 #PolicyDocument: {
 	metadata:          #Metadata

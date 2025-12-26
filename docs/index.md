@@ -56,11 +56,11 @@ Gemara delivers three core components that work together to support automated GR
   <a href="./implementation/" class="component-card">
      <h2>The Implementation</h2>
      <p class="component-description">
-        Schemas and SDK libraries that extend the lexicon into machine-readable formats and 
-        programming libraries to accelerate automated tool development.
+        Schemas and SDKs that extend the lexicon into machine-readable formats and 
+        tooling to accelerate automated tool development.
       </p>
       <p class="component-content">
-        Provides CUE schemas for validation and Go libraries for programmatic access. Active development area.
+        Provides CUE schemas for validation and Go SDK for programmatic access. Active development area.
       </p>
   </a>
 </div>

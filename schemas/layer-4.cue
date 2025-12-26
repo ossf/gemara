@@ -2,6 +2,9 @@ package schemas
 
 @go(gemara)
 
+// @status tracks schema lifecycle: experimental | stable | deprecated
+@status("experimental")
+
 // EvaluationPlan defines how a set of Layer 2 controls are to be evaluated.
 #EvaluationPlan: {
 	"metadata"?: #Metadata @go(Metadata)

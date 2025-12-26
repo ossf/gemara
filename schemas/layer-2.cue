@@ -2,6 +2,9 @@ package schemas
 
 @go(gemara)
 
+// @status tracks schema lifecycle: experimental | stable | deprecated
+@status("experimental")
+
 #Catalog: {
 	"metadata"?: #Metadata @go(Metadata)
 	title:       string
