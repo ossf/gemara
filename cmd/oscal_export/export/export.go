@@ -5,11 +5,18 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	oscalTypes "github.com/defenseunicorns/go-oscal/src/types/oscal-1-1-3"
 
 	"github.com/ossf/gemara"
 	"github.com/ossf/gemara/oscal"
+)
+
+const (
+	// defaultControlHrefFormat is the default URL template for linking to controls
+	// in Catalog conversion. Format: controlHREF(version, controlID)
+	defaultControlHrefFormat = "https://example/versions/%s#%s"
 )
 
 func Guidance(path string, args []string) error {
@@ -26,29 +33,37 @@ func Guidance(path string, args []string) error {
 		return err
 	}
 
-	oscalCatalog, err := oscal.CatalogFromGuidanceDocument(&guidanceDocument)
+	profileDir := filepath.Dir(*profileOutputFile)
+	catalogAbsPath, err := filepath.Abs(*catalogOutputFile)
+	if err != nil {
+		return fmt.Errorf("error resolving absolute path for catalog output: %w", err)
+	}
+	profileAbsDir, err := filepath.Abs(profileDir)
+	if err != nil {
+		return fmt.Errorf("error resolving absolute path for profile directory: %w", err)
+	}
+	relativeCatalogPath, err := filepath.Rel(profileAbsDir, catalogAbsPath)
+	if err != nil {
+		return fmt.Errorf("error calculating relative path: %w", err)
+	}
+	relativeCatalogPath = filepath.ToSlash(relativeCatalogPath)
+
+	catalog, profile, err := oscal.FromGuidance(&guidanceDocument, relativeCatalogPath)
 	if err != nil {
 		return err
 	}
 
-	oscalProfile, err := oscal.ProfileFromGuidanceDocument(&guidanceDocument, fmt.Sprintf("file://%s", *catalogOutputFile))
-	if err != nil {
+	catalogModel := oscalTypes.OscalModels{
+		Catalog: &catalog,
+	}
+	if err := WriteOSCALFile(catalogModel, *catalogOutputFile); err != nil {
 		return err
 	}
 
-	catalogOscalModel := oscalTypes.OscalModels{
-		Catalog: &oscalCatalog,
+	profileModel := oscalTypes.OscalModels{
+		Profile: &profile,
 	}
-
-	if err := WriteOSCALFile(catalogOscalModel, *catalogOutputFile); err != nil {
-		return err
-	}
-
-	profileOscalModel := oscalTypes.OscalModels{
-		Profile: &oscalProfile,
-	}
-
-	return WriteOSCALFile(profileOscalModel, *profileOutputFile)
+	return WriteOSCALFile(profileModel, *profileOutputFile)
 }
 
 func Catalog(path string, args []string) error {
@@ -64,7 +79,7 @@ func Catalog(path string, args []string) error {
 		return err
 	}
 
-	oscalCatalog, err := oscal.FromCatalog(catalog, "https://example/versions/%s#%s")
+	oscalCatalog, err := oscal.FromCatalog(catalog, oscal.WithControlHref(defaultControlHrefFormat))
 	if err != nil {
 		return err
 	}
@@ -77,7 +92,7 @@ func Catalog(path string, args []string) error {
 }
 
 func WriteOSCALFile(model oscalTypes.OscalModels, outputFile string) error {
-	oscalJSON, err := json.MarshalIndent(model, "", "  ") // Using " " for indent
+	oscalJSON, err := json.MarshalIndent(model, "", "  ")
 	if err != nil {
 		return err
 	}
