@@ -1,76 +1,71 @@
 ---
 layout: page
-title: Maintenance
+title: Release & Maintenance
 ---
 
-## Versioning Strategy
+Project release deliverables are divided into the **Core Specification** and language-specific **SDKs**.
 
-Gemara follows [Semantic Versioning](https://semver.org/) (SemVer) with a **single release cycle** for both the Go module and CUE schemas.
-A single version tag (`v1.2.3`) applies to both the Go module (`github.com/ossf/gemara`) and the CUE schemas (`github.com/ossf/gemara/schemas`).
+* **Core Specification Release:** Bundles the Model, Lexicon, and CUE Schemas together. These are versioned and released as a single unit because they are tightly coupled.
+* **SDK Releases:** Language-specific implementations that provide tooling, types, and helpers to work with Gemara documents. SDK types are generated from the CUE schemas.
 
-Schema changes almost always affect the Go library because Go types are generated from the CUE schemas.
-The unified release cycle ensures consistency across both components.
-All schemas are versioned together as a single bundle (schema set).
+Each **maintains its own** independent [SemVer](https://semver.org/) lifecycle.
 
-| Change Type | Version Bump | Examples                                                                                          |
-|:------------|:-------------|:--------------------------------------------------------------------------------------------------|
-| Major       | v2.0.0       | Breaking changes violating backward/forward compatibility                                         |
-| Minor       | v1.x+1.0     | Additive changes, schema promotions, schema deprecations, field deprecations, new optional fields |
-| Patch       | v1.x.y+1     | Bug fixes                                                                                         |
+## Specification Release Versioning
 
-## Schema Lifecycle
+The core specification release bundles the Model, Lexicon, and CUE Schemas together and versions them as a single unit.
 
-Possible schema states include: **Experimental** → **Stable** → **Deprecated**.
+| Change Type | Version Bump | Examples                                                     |
+|:------------|:-------------|:-------------------------------------------------------------|
+| Major       | v2.0.0       | Breaking changes to the Model, Lexicon, or Stable schemas.   |
+| Minor       | v1.(x+1).0   | Additive changes, schema promotions, or new optional fields. |
+| Patch       | v1.x.(y+1)   | Bug fixes in schema logic or documentation.                  |
+
+## Schema Lifecycle and Major Version Example
+
+Possible schema states include: **Experimental** → **Stable** → **Deprecated**. These are denoted on each layer schema with a `@status(experimental|stable|deprecated)` attribute.
+
+The following table illustrates how schemas progress through their lifecycle and how major version changes are handled:
+
+| Version | Status              | Change Type | Example Scenario                        |
+|:--------|:--------------------|:------------|:----------------------------------------|
+| v1.0.0  | Experimental        | Initial     | Schema first published                  |
+| v1.1.0  | Experimental        | Minor       | Optional fields added                   |
+| v1.2.0  | Stable              | Minor       | Promoted to Stable                      |
+| v1.3.0  | Stable              | Minor       | Additive changes                        |
+| v1.3.1  | Stable              | Patch       | Bug fix                                 |
+| v1.4.0  | Stable              | Minor       | Field deprecated, replacement added     |
+| v1.5.0  | Stable → Deprecated | Minor       | Original deprecated, replacement Stable |
+| v2.0.0  | Stable              | Major       | Deprecated schema removed               |
+| v2.1.0  | Stable              | Minor       | Additive changes                        |
 
 ### Experimental Status
-
-* Schemas start Experimental.
-* Adding Experimental schemas triggers minor increments.
-* Breaking changes and performance issues may occur.
+* All new schemas start as Experimental.
+* Adding Experimental schemas or making breaking changes triggers minor version increments.
+* Breaking changes and performance issues may occur during this phase.
 * These schemas may not be feature-complete.
 
 ### Stable Status
 
-* Promoting to Stable triggers minor increments and requires release notes and documentation updates.
 * Layers promote independently. Each layer only requires its direct dependencies to be Stable (e.g., Layer 2 requires Layer 1, but not Layer 6).
 * Layers can be promoted to Stable at different times. Layer 2 can be Stable while Layer 6 remains Experimental.
-* For v2.0.0 release, at least some schemas must be Stable, respecting dependency order.
 * Stable schemas may only reference other Stable schemas.
-* Stable schemas maintain backward and forward compatibility within major versions, allowing additive changes.
-* Forward compatibility means new required fields are not added, ensuring older tooling continues to work with new data.
+* Stable schemas maintain backward and forward compatibility within major versions, allowing **additive optional changes** only.
 * Breaking changes require major version increments and should be avoided in all normal circumstances.
 
 ### Deprecated Status
 
 * Schemas or fields within schemas may be deprecated when replaced.
-* Schemas or fields MUST NOT be marked as deprecated unless the replacement is Stable.
-* The replacement schema or field must be added in Experimental status and promoted to Stable before deprecation.
-* Deprecating a schema or field triggers a minor version increment.
+* Replacement schema or field must be added in Experimental status and promoted to Stable before deprecation.
 * Deprecated schemas and fields maintain the same support guarantees as Stable schemas and remain functional.
-* Go types generated from deprecated schemas remain available in the same major version's Go module.
-* Deprecated fields remain available in the same major version's Go types.
-* When v2.0.0 is released, deprecated v1 schemas and fields are excluded from v2 but remain available in v1.x releases.
+* Deprecated schemas are removed in the next major version release.
 
-## Versioning for Go
+## SDK Release Versioning
 
-* Release Branching used for major version changes (v2.0.0+). 
-* Go supports multiple major versions via `/v2` subdirectories or branches.
+SDK releases are versioned independently to allow for rapid iteration on tooling, bug fixes, and utilities without requiring core specification version bumps.
 
-**Breaking changes trigger this workflow**:
-
-| Step | Action                               | Branch State              |
-|:-----|:-------------------------------------|:--------------------------|
-| 1    | Identify schemas to be replaced in v2 | Main branch               |
-| 2a   | Create v1 maintenance branch         | Isolated                  |
-| 2b   | Continue development on main         | v2 Experimental           |
-| 3    | Promote v2 schemas to Stable         | Respect dependency order  |
-| 4    | Deprecate corresponding v1 schemas   | When v2 replacements Stable |
-| 5    | Tag v2.0.0 release                   | At least some v2 Stable   |
-
-* v1 remains on the maintenance branch for bug fixes.
-* New features occur only in v2.
-* As v2 schemas stabilize, corresponding v1 schemas are deprecated.
-* Deprecated v1 schemas and their Go types remain available in v1.x releases but are excluded from v2.0.0+.
+* The CUE schemas in the core specification release are the source of truth for validation.
+* SDKs must explicitly document which core specification release version they support.
+* When a new core specification release is published, SDKs regenerate their types from the updated schemas and release new versions that support the updated specification.
 
 ## Questions or Feedback
 

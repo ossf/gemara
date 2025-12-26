@@ -28,5 +28,5 @@ This model is intentionally stable. Changes are rare and require significant com
 Provides definitions for terms used within each layer. The Model describes structure; the Lexicon provides shared vocabulary.
 
 ### [The Implementation](../implementation)
-Provides schemas and SDK libraries based on the Model. The Model describes conceptual layers; the Implementation provides machine-readable formats and APIs.
+Provides schemas and SDKs based on the Model. The Model describes conceptual layers; the Implementation provides machine-readable formats and APIs.
 

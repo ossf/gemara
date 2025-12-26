@@ -52,9 +52,9 @@ go install cuelang.org/go/cmd/cue@latest
 cue vet ./your-controls.yaml ./schemas/layer-2.cue
 ```
 
-## Go Library
+## Go SDK
 
-Go libraries provide APIs for reading, writing, and manipulating Gemara documents.
+The Go SDK provides APIs for reading, writing, and manipulating Gemara documents.
 
 **[Go Package Reference →](https://pkg.go.dev/github.com/ossf/gemara)**
 
