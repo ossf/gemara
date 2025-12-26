@@ -18,10 +18,14 @@ metadata:
   id: Test
   title: Test
   description: ""
-categories:
+families:
   - id: TEST
     title: Test
     description: Test
+guidelines:
+  - id: TEST-01
+    family: TEST
+    title: Test Guideline
 `
 	inputFilePath := filepath.Join(tempDir, "guidance.yaml")
 	require.NoError(t, os.WriteFile(inputFilePath, []byte(mockYAML), 0600))
@@ -75,9 +79,19 @@ metadata:
   id: Test
   title: Test
   description: ""
-control-families:
+families:
   - id: TEST
     title: Test
+    description: Test
+controls:
+  - id: TEST-01
+    family: TEST
+    title: Test Control
+    objective: Test objective
+    assessment-requirements:
+      - id: TEST-01.1
+        text: Test requirement
+        applicability: []
 `
 	inputFilePath := filepath.Join(tempDir, "catalog.yaml")
 	require.NoError(t, os.WriteFile(inputFilePath, []byte(mockYAML), 0600))

@@ -40,7 +40,8 @@ func (g *GuidanceDocument) LoadFiles(sourcePaths []string) error {
 		if g.Metadata.Id == "" {
 			g.Metadata = doc.Metadata
 		}
-		g.Categories = append(g.Categories, doc.Categories...)
+		g.Families = append(g.Families, doc.Families...)
+		g.Guidelines = append(g.Guidelines, doc.Guidelines...)
 		g.ImportedGuidelines = append(g.ImportedGuidelines, doc.ImportedGuidelines...)
 		g.ImportedPrinciples = append(g.ImportedPrinciples, doc.ImportedPrinciples...)
 	}
@@ -82,7 +83,8 @@ func (c *Catalog) LoadFiles(sourcePaths []string) error {
 		if c.Metadata.Id == "" {
 			c.Metadata = catalog.Metadata
 		}
-		c.ControlFamilies = append(c.ControlFamilies, catalog.ControlFamilies...)
+		c.Families = append(c.Families, catalog.Families...)
+		c.Controls = append(c.Controls, catalog.Controls...)
 		c.Capabilities = append(c.Capabilities, catalog.Capabilities...)
 		c.Threats = append(c.Threats, catalog.Threats...)
 		c.ImportedControls = append(c.ImportedControls, catalog.ImportedControls...)
