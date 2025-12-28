@@ -1,3 +1,5 @@
+// Schema lifecycle: experimental | stable | deprecated
+@status("stable")
 package schemas
 
 import "time"

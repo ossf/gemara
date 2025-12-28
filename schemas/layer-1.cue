@@ -1,9 +1,9 @@
+// Schema lifecycle: experimental | stable | deprecated
+@status("experimental")
+@if(!stable)
 package schemas
 
 @go(gemara)
-
-// @status tracks schema lifecycle: experimental | stable | deprecated
-@status("experimental")
 
 #GuidanceDocument: {
 	metadata?:       #Metadata @go(Metadata)
