@@ -15,10 +15,10 @@ import (
 )
 
 // ============================================================================
-// PolicyDocument Tests
+// Policy Tests
 // ============================================================================
 
-func TestPolicyDocument_LoadFile(t *testing.T) {
+func TestPolicy_LoadFile(t *testing.T) {
 	tests := []struct {
 		name       string
 		sourcePath string
@@ -48,7 +48,7 @@ func TestPolicyDocument_LoadFile(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := &PolicyDocument{}
+			p := &Policy{}
 			err := p.LoadFile(tt.sourcePath)
 
 			if tt.wantErr {
@@ -57,8 +57,6 @@ func TestPolicyDocument_LoadFile(t *testing.T) {
 				require.NoError(t, err, "unexpected error loading file")
 				// Validate that the policy document was loaded successfully
 				assert.NotEmpty(t, p.Metadata.Id, "Policy document ID should not be empty")
-				assert.NotEmpty(t, p.Title, "Policy document title should not be empty")
-				assert.NotEmpty(t, p.Purpose, "Policy document purpose should not be empty")
 				assert.NotEmpty(t, p.Metadata.Version, "Policy document version should not be empty")
 			}
 		})
@@ -80,7 +78,7 @@ func TestPolicyDocument_LoadFile_UnsupportedFileType(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := &PolicyDocument{}
+			p := &Policy{}
 			err := p.LoadFile(tt.sourcePath)
 
 			if tt.wantErr {
@@ -119,7 +117,7 @@ func TestPolicyDocument_LoadFile_URI(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := &PolicyDocument{}
+			p := &Policy{}
 			err := p.LoadFile(tt.sourcePath)
 
 			if tt.wantErr {

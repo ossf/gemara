@@ -9,7 +9,7 @@ import (
 
 // LoadFile loads data from a YAML or JSON file at the provided path.
 // If run multiple times for the same data type, this method will override previous data.
-func (p *PolicyDocument) LoadFile(sourcePath string) error {
+func (p *Policy) LoadFile(sourcePath string) error {
 	ext := path.Ext(sourcePath)
 	switch ext {
 	case ".yaml", ".yml":
