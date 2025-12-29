@@ -42,8 +42,6 @@ func (g *GuidanceDocument) LoadFiles(sourcePaths []string) error {
 		}
 		g.Families = append(g.Families, doc.Families...)
 		g.Guidelines = append(g.Guidelines, doc.Guidelines...)
-		g.ImportedGuidelines = append(g.ImportedGuidelines, doc.ImportedGuidelines...)
-		g.ImportedPrinciples = append(g.ImportedPrinciples, doc.ImportedPrinciples...)
 	}
 	return nil
 }
