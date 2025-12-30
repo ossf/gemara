@@ -103,7 +103,7 @@ Significant implementation changes are documented in [Architecture Decision Reco
 
 ## Versioning and Maintenance
 
-See the [Implementation Maintenance](maintenance.html) document for versioning and releases procedures.
+See the [Implementation Maintenance](maintenance) document for versioning and releases procedures.
 
 ## Relationship to Other Components
 
