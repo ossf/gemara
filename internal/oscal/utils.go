@@ -11,7 +11,11 @@ import (
 	oscal "github.com/defenseunicorns/go-oscal/src/types/oscal-1-1-3"
 )
 
-const GemaraNamespace = "https://github.com/ossf/gemara/ns/oscal"
+const (
+	GemaraNamespace = "https://github.com/ossf/gemara/ns/oscal"
+	// DefaultOSCALVersion is the default version used for OSCAL metadata when no version is provided.
+	DefaultOSCALVersion = "0.0.0"
+)
 
 // NilIfEmpty returns a pointer to the slice, or nil if empty.
 func NilIfEmpty[T any](slice []T) *[]T {

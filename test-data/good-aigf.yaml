@@ -21,6 +21,9 @@ families:
   - id: DET
     title: Detective
     description: Detection and Continuous Improvement
+  - id: PREV
+    title: Preventive
+    description: Prevention and Risk Mitigation
 guidelines:
   - id: AIR-DET-011
     family: DET
@@ -70,3 +73,24 @@ guidelines:
       - AIR-DET-015
       - AIR-DET-004
       - AIR-PREV-005
+  - id: AIR-DET-004
+    family: DET
+    title: Example Detective Control 004
+    objective: Placeholder control for testing references.
+    rationale:
+      risks: []
+      outcomes: []
+  - id: AIR-DET-015
+    family: DET
+    title: Example Detective Control 015
+    objective: Placeholder control for testing references.
+    rationale:
+      risks: []
+      outcomes: []
+  - id: AIR-PREV-005
+    family: PREV
+    title: Example Preventive Control 005
+    objective: Placeholder control for testing references.
+    rationale:
+      risks: []
+      outcomes: []
