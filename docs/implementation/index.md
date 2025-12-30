@@ -52,9 +52,9 @@ go install cuelang.org/go/cmd/cue@latest
 cue vet ./your-controls.yaml ./schemas/layer-2.cue
 ```
 
-## Go Library
+## Go SDK
 
-Go libraries provide APIs for reading, writing, and manipulating Gemara documents.
+The Go SDK provides APIs for reading, writing, and manipulating Gemara documents.
 
 **[Go Package Reference →](https://pkg.go.dev/github.com/ossf/gemara)**
 
@@ -75,7 +75,7 @@ import (
 )
 
 func main() {
-    catalog := &Catalog{}
+    catalog := &gemara.Catalog{}
     catalog, err := catalog.LoadFile("file://controls.yaml")
     if err != nil {
         panic(err)
@@ -100,6 +100,10 @@ See the [Contributing Guide](https://github.com/ossf/gemara/blob/main/CONTRIBUTI
 ## Architecture Decisions
 
 Significant implementation changes are documented in [Architecture Decision Records (ADRs)](../adr.html).
+
+## Versioning and Maintenance
+
+See the [Implementation Maintenance](maintenance) document for versioning and releases procedures.
 
 ## Relationship to Other Components
 

@@ -1,3 +1,6 @@
+// Schema lifecycle: experimental | stable | deprecated
+@status("experimental")
+@if(!stable)
 package schemas
 
 @go(gemara)
