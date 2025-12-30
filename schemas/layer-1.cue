@@ -13,7 +13,8 @@ package schemas
 
 	// Introductory text for the document to be used during rendering
 	"front-matter"?: string @go(FrontMatter) @yaml("front-matter,omitempty")
-	"categories"?: [...#Category] @go(Categories)
+	families?: [...#Family] @go(Families)
+	guidelines?: [...#Guideline] @go(Guidelines)
 
 	// For inheriting from other guidance documents to create tailored documents/baselines
 	"imported-guidelines"?: [...#MultiMapping] @go(ImportedGuidelines) @yaml("imported-guidelines,omitempty")
@@ -21,14 +22,6 @@ package schemas
 }
 
 #DocumentType: "Standard" | "Regulation" | "Best Practice" | "Framework"
-
-// Category represents a logical group of guidelines (i.e. control family)
-#Category: {
-	id:          string
-	title:       string
-	description: string
-	guidelines?: [...#Guideline]
-}
 
 // Exemption represents an exemption with a reason and optional redirect
 #Exemption: {
@@ -59,6 +52,9 @@ package schemas
 	id:         string
 	title:      string
 	objective?: string
+
+	// Family id that this guideline belongs to
+	family: string @go(Family)
 
 	// Maps to fields commonly seen in controls with implementation guidance
 	recommendations?: [...string]

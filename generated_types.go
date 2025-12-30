@@ -7,7 +7,9 @@ type Catalog struct {
 
 	Title string `json:"title" yaml:"title"`
 
-	ControlFamilies []ControlFamily `json:"control-families,omitempty" yaml:"control-families,omitempty"`
+	Families []Family `json:"families,omitempty" yaml:"families,omitempty"`
+
+	Controls []Control `json:"controls,omitempty" yaml:"controls,omitempty"`
 
 	Threats []Threat `json:"threats,omitempty" yaml:"threats,omitempty"`
 
@@ -97,78 +99,48 @@ type MappingReference struct {
 }
 
 // Category represents a category used for applicability or classification
-//
-// Category represents a logical group of guidelines (i.e. control family)
 type Category struct {
 	Id string `json:"id" yaml:"id"`
 
 	Title string `json:"title" yaml:"title"`
 
 	Description string `json:"description" yaml:"description"`
-
-	Guidelines []Guideline `json:"guidelines,omitempty" yaml:"guidelines,omitempty"`
 }
 
-type Guideline struct {
+// Family represents a logical grouping of guidelines or controls which share a common purpose or function
+type Family struct {
 	Id string `json:"id" yaml:"id"`
 
 	Title string `json:"title" yaml:"title"`
 
-	Objective string `json:"objective,omitempty" yaml:"objective,omitempty"`
+	Description string `json:"description" yaml:"description"`
+}
 
-	// Maps to fields commonly seen in controls with implementation guidance
-	Recommendations []string `json:"recommendations,omitempty" yaml:"recommendations,omitempty"`
+type Control struct {
+	Id string `json:"id" yaml:"id"`
 
-	// For control enhancements (ex. AC-2(1) in 800-53)
-	// The base-guideline-id is needed to achieve full context for the enhancement
-	BaseGuidelineID string `json:"base-guideline-id,omitempty" yaml:"base-guideline-id,omitempty"`
+	Title string `json:"title" yaml:"title"`
 
-	Rationale *Rationale `json:"rationale,omitempty" yaml:"rationale,omitempty"`
+	Objective string `json:"objective" yaml:"objective"`
 
-	// Represents individual guideline parts/statements
-	GuidelineParts []Part `json:"guideline-parts,omitempty" yaml:"guideline-parts,omitempty"`
+	// Family id that this control belongs to
+	Family string `json:"family" yaml:"family"`
 
-	// Crosswalking this guideline to other guidelines in other documents
+	AssessmentRequirements []AssessmentRequirement `json:"assessment-requirements" yaml:"assessment-requirements"`
+
 	GuidelineMappings []MultiMapping `json:"guideline-mappings,omitempty" yaml:"guideline-mappings,omitempty"`
 
-	// A list for associated key principle ids
-	PrincipleMappings []MultiMapping `json:"principle-mappings,omitempty" yaml:"principle-mappings,omitempty"`
-
-	// This is akin to related controls, but using more explicit terminology
-	SeeAlso []string `json:"see-also,omitempty" yaml:"see-also,omitempty"`
+	ThreatMappings []MultiMapping `json:"threat-mappings,omitempty" yaml:"threat-mappings,omitempty"`
 }
 
-// Rationale provides contextual information to help with development and understanding of
-// guideline intent.
-type Rationale struct {
-	// Negative results expected from the guideline's lack of implementation
-	Risks []Risk `json:"risks" yaml:"risks"`
-
-	// Positive results expected from the guideline's implementation
-	Outcomes []Outcome `json:"outcomes" yaml:"outcomes"`
-}
-
-type Risk struct {
-	Title string `json:"title" yaml:"title"`
-
-	Description string `json:"description" yaml:"description"`
-}
-
-type Outcome struct {
-	Title string `json:"title" yaml:"title"`
-
-	Description string `json:"description" yaml:"description"`
-}
-
-// Parts include sub-statements of a guideline that can be assessed individually
-type Part struct {
+type AssessmentRequirement struct {
 	Id string `json:"id" yaml:"id"`
-
-	Title string `json:"title,omitempty" yaml:"title,omitempty"`
 
 	Text string `json:"text" yaml:"text"`
 
-	Recommendations []string `json:"recommendations,omitempty" yaml:"recommendations,omitempty"`
+	Applicability []string `json:"applicability" yaml:"applicability"`
+
+	Recommendation string `json:"recommendation,omitempty" yaml:"recommendation,omitempty"`
 }
 
 // MultiMapping represents a mapping to an external reference with one or more entries.
@@ -188,40 +160,6 @@ type MappingEntry struct {
 	Strength int64 `json:"strength" yaml:"strength"`
 
 	Remarks string `json:"remarks,omitempty" yaml:"remarks,omitempty"`
-}
-
-type ControlFamily struct {
-	Id string `json:"id" yaml:"id"`
-
-	Title string `json:"title" yaml:"title"`
-
-	Description string `json:"description" yaml:"description"`
-
-	Controls []Control `json:"controls" yaml:"controls"`
-}
-
-type Control struct {
-	Id string `json:"id" yaml:"id"`
-
-	Title string `json:"title" yaml:"title"`
-
-	Objective string `json:"objective" yaml:"objective"`
-
-	AssessmentRequirements []AssessmentRequirement `json:"assessment-requirements" yaml:"assessment-requirements"`
-
-	GuidelineMappings []MultiMapping `json:"guideline-mappings,omitempty" yaml:"guideline-mappings,omitempty"`
-
-	ThreatMappings []MultiMapping `json:"threat-mappings,omitempty" yaml:"threat-mappings,omitempty"`
-}
-
-type AssessmentRequirement struct {
-	Id string `json:"id" yaml:"id"`
-
-	Text string `json:"text" yaml:"text"`
-
-	Applicability []string `json:"applicability" yaml:"applicability"`
-
-	Recommendation string `json:"recommendation,omitempty" yaml:"recommendation,omitempty"`
 }
 
 type Threat struct {
@@ -333,7 +271,9 @@ type GuidanceDocument struct {
 	// Introductory text for the document to be used during rendering
 	FrontMatter string `json:"front-matter,omitempty" yaml:"front-matter,omitempty"`
 
-	Categories []Category `json:"categories,omitempty" yaml:"categories,omitempty"`
+	Families []Family `json:"families,omitempty" yaml:"families,omitempty"`
+
+	Guidelines []Guideline `json:"guidelines,omitempty" yaml:"guidelines,omitempty"`
 
 	// For inheriting from other guidance documents to create tailored documents/baselines
 	ImportedGuidelines []MultiMapping `json:"imported-guidelines,omitempty" yaml:"imported-guidelines,omitempty"`
@@ -348,6 +288,71 @@ type Exemption struct {
 	Reason string `json:"reason" yaml:"reason"`
 
 	Redirect MultiMapping `json:"redirect,omitempty" yaml:"redirect,omitempty"`
+}
+
+type Guideline struct {
+	Id string `json:"id" yaml:"id"`
+
+	Title string `json:"title" yaml:"title"`
+
+	Objective string `json:"objective,omitempty" yaml:"objective,omitempty"`
+
+	// Family id that this guideline belongs to
+	Family string `json:"family" yaml:"family"`
+
+	// Maps to fields commonly seen in controls with implementation guidance
+	Recommendations []string `json:"recommendations,omitempty" yaml:"recommendations,omitempty"`
+
+	// For control enhancements (ex. AC-2(1) in 800-53)
+	// The base-guideline-id is needed to achieve full context for the enhancement
+	BaseGuidelineID string `json:"base-guideline-id,omitempty" yaml:"base-guideline-id,omitempty"`
+
+	Rationale *Rationale `json:"rationale,omitempty" yaml:"rationale,omitempty"`
+
+	// Represents individual guideline parts/statements
+	GuidelineParts []Part `json:"guideline-parts,omitempty" yaml:"guideline-parts,omitempty"`
+
+	// Crosswalking this guideline to other guidelines in other documents
+	GuidelineMappings []MultiMapping `json:"guideline-mappings,omitempty" yaml:"guideline-mappings,omitempty"`
+
+	// A list for associated key principle ids
+	PrincipleMappings []MultiMapping `json:"principle-mappings,omitempty" yaml:"principle-mappings,omitempty"`
+
+	// This is akin to related controls, but using more explicit terminology
+	SeeAlso []string `json:"see-also,omitempty" yaml:"see-also,omitempty"`
+}
+
+// Rationale provides contextual information to help with development and understanding of
+// guideline intent.
+type Rationale struct {
+	// Negative results expected from the guideline's lack of implementation
+	Risks []Risk `json:"risks" yaml:"risks"`
+
+	// Positive results expected from the guideline's implementation
+	Outcomes []Outcome `json:"outcomes" yaml:"outcomes"`
+}
+
+type Risk struct {
+	Title string `json:"title" yaml:"title"`
+
+	Description string `json:"description" yaml:"description"`
+}
+
+type Outcome struct {
+	Title string `json:"title" yaml:"title"`
+
+	Description string `json:"description" yaml:"description"`
+}
+
+// Parts include sub-statements of a guideline that can be assessed individually
+type Part struct {
+	Id string `json:"id" yaml:"id"`
+
+	Title string `json:"title,omitempty" yaml:"title,omitempty"`
+
+	Text string `json:"text" yaml:"text"`
+
+	Recommendations []string `json:"recommendations,omitempty" yaml:"recommendations,omitempty"`
 }
 
 // Policy represents a policy document with metadata, contacts, scope, imports, implementation plan, risks, and adherence requirements.

@@ -171,7 +171,8 @@ func TestGuidanceDocument_LoadFile(t *testing.T) {
 				require.NoError(t, err, "unexpected error loading file")
 				assert.NotEmpty(t, g.Metadata.Id, "Guidance document ID should not be empty")
 				assert.NotEmpty(t, g.Title, "Guidance document title should not be empty")
-				assert.NotEmpty(t, g.Categories, "Guidance document should have at least one category")
+				assert.NotEmpty(t, g.Families, "Guidance document should have at least one family")
+				assert.NotEmpty(t, g.Guidelines, "Guidance document should have at least one guideline")
 			}
 		})
 	}
@@ -181,8 +182,10 @@ func TestGuidanceDocument_LoadFiles_AppendsData(t *testing.T) {
 	// Load a single file to use as baseline
 	singleDoc := &GuidanceDocument{}
 	require.NoError(t, singleDoc.LoadFile("file://test-data/good-aigf.yaml"))
-	require.Greater(t, len(singleDoc.Categories), 0,
-		"expected at least one category in good-aigf.yaml")
+	require.Greater(t, len(singleDoc.Families), 0,
+		"expected at least one family in good-aigf.yaml")
+	require.Greater(t, len(singleDoc.Guidelines), 0,
+		"expected at least one guideline in good-aigf.yaml")
 
 	// Load the same file twice to verify appending behavior
 	multiDoc := &GuidanceDocument{}
@@ -194,8 +197,10 @@ func TestGuidanceDocument_LoadFiles_AppendsData(t *testing.T) {
 
 	assert.Equal(t, singleDoc.Metadata, multiDoc.Metadata,
 		"first document's metadata should be preserved")
-	assert.Equal(t, len(singleDoc.Categories)*2, len(multiDoc.Categories),
-		"categories should be appended across multiple files")
+	assert.Equal(t, len(singleDoc.Families)*2, len(multiDoc.Families),
+		"families should be appended across multiple files")
+	assert.Equal(t, len(singleDoc.Guidelines)*2, len(multiDoc.Guidelines),
+		"guidelines should be appended across multiple files")
 }
 
 func TestGuidanceDocument_LoadFile_URI(t *testing.T) {
@@ -287,13 +292,15 @@ func TestCatalog_LoadFile(t *testing.T) {
 				assert.Error(t, err, "expected error but got none")
 			} else {
 				require.NoError(t, err, "unexpected error loading file")
-				assert.NotEmpty(t, c.ControlFamilies,
-					"catalog should have at least one control family")
-				if len(c.ControlFamilies) > 0 {
-					assert.NotEmpty(t, c.ControlFamilies[0].Title,
-						"control family title should not be empty")
-					assert.NotEmpty(t, c.ControlFamilies[0].Description,
-						"control family description should not be empty")
+				assert.NotEmpty(t, c.Families,
+					"catalog should have at least one family")
+				assert.NotEmpty(t, c.Controls,
+					"catalog should have at least one control")
+				if len(c.Families) > 0 {
+					assert.NotEmpty(t, c.Families[0].Title,
+						"family title should not be empty")
+					assert.NotEmpty(t, c.Families[0].Description,
+						"family description should not be empty")
 				}
 			}
 		})
@@ -369,8 +376,10 @@ func TestCatalog_LoadFiles(t *testing.T) {
 				assert.Error(t, err, "expected error but got none")
 			} else {
 				require.NoError(t, err, "unexpected error loading files")
-				assert.NotEmpty(t, c.ControlFamilies,
-					"catalog should have at least one control family")
+				assert.NotEmpty(t, c.Families,
+					"catalog should have at least one family")
+				assert.NotEmpty(t, c.Controls,
+					"catalog should have at least one control")
 			}
 		})
 	}
@@ -475,13 +484,15 @@ func TestCatalog_LoadNestedCatalog(t *testing.T) {
 				require.NoError(t, err, "unexpected error loading nested catalog")
 				assert.Equal(t, "FINOS Cloud Control Catalog", c.Title,
 					"catalog title should match expected value")
-				assert.NotEmpty(t, c.ControlFamilies,
-					"catalog should have at least one control family")
-				if len(c.ControlFamilies) > 0 {
-					assert.NotEmpty(t, c.ControlFamilies[0].Title,
-						"control family title should not be empty")
-					assert.NotEmpty(t, c.ControlFamilies[0].Description,
-						"control family description should not be empty")
+				assert.NotEmpty(t, c.Families,
+					"catalog should have at least one family")
+				assert.NotEmpty(t, c.Controls,
+					"catalog should have at least one control")
+				if len(c.Families) > 0 {
+					assert.NotEmpty(t, c.Families[0].Title,
+						"family title should not be empty")
+					assert.NotEmpty(t, c.Families[0].Description,
+						"family description should not be empty")
 				}
 			}
 		})

@@ -54,3 +54,10 @@ import "time"
 	title:       string
 	description: string
 }
+
+// Family represents a logical grouping of guidelines or controls which share a common purpose or function
+#Family: {
+	id:          string
+	title:       string
+	description: string
+}

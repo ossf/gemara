@@ -250,20 +250,18 @@ func findControlAndRequirement(catalog *gemara.Catalog, controlID, requirementID
 		return nil, nil
 	}
 
-	for _, family := range catalog.ControlFamilies {
-		for i := range family.Controls {
-			control := &family.Controls[i]
-			if control.Id == controlID {
-				// Found the control, now find the requirement
-				for j := range control.AssessmentRequirements {
-					requirement := &control.AssessmentRequirements[j]
-					if requirement.Id == requirementID {
-						return control, requirement
-					}
+	for i := range catalog.Controls {
+		control := &catalog.Controls[i]
+		if control.Id == controlID {
+			// Found the control, now find the requirement
+			for j := range control.AssessmentRequirements {
+				requirement := &control.AssessmentRequirements[j]
+				if requirement.Id == requirementID {
+					return control, requirement
 				}
-				// Control found but requirement not found
-				return control, nil
 			}
+			// Control found but requirement not found
+			return control, nil
 		}
 	}
 
