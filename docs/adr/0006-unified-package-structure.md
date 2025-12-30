@@ -1,14 +1,11 @@
 ---
 layout: page
+title: Unified Go SDK Package Structure
 ---
 
-# ADR-0001: Unified Go SDK Package Structure
-
-**Author:** @jpower432
-
-## Status
-
-Accepted
+- **ADR:** 0006
+- **Proposal Author(s):** @jpower432
+- **Status:** Accepted
 
 ## Context
 

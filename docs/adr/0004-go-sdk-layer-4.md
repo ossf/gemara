@@ -1,14 +1,11 @@
 ---
 layout: page
+title: Extend Go SDK for "Layer 4" Based on the Privateer Project
 ---
 
-# ADR-0004: Extend Go SDK for "Layer 4" Based on the Privateer Project
-
-**Proposal Author:** @eddie-knight
-
-## Status
-
-Accepted
+- **ADR:** 0004
+- **Proposal Author(s):** @eddie-knight
+- **Status:** Accepted
 
 ## Context
 

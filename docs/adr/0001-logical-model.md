@@ -1,14 +1,11 @@
 ---
 layout: page
+title: Create A Logical Model for GRC Engineering Activities
 ---
 
-# ADR-0001: Create A Logical Model for GRC Engineering Activities
-
-**Proposal Author:** @eddie-knight
-
-## Status
-
-Accepted
+- **ADR:** 0001
+- **Proposal Author(s):** @eddie-knight
+- **Status:** Accepted
 
 ## Context
 

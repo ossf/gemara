@@ -1,14 +1,11 @@
 ---
 layout: page
+title: Create Schemas for Each Layer in the Logical Model
 ---
 
-# ADR-0002: Create Schemas for Each Layer in the Logical Model
-
-**Proposal Author:** @eddie-knight
-
-## Status
-
-Accepted
+- **ADR:** 0002
+- **Proposal Author(s):** @eddie-knight
+- **Status:** Accepted
 
 ## Context
 

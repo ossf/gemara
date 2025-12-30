@@ -1,14 +1,11 @@
 ---
 layout: page
+title: Create Go SDK to Support "Layer 2" Authors and Consumers
 ---
 
-# ADR-0003: Create Go SDK to Support "Layer 2" Authors and Consumers
-
-**Proposal Author:** @eddie-knight
-
-## Status
-
-Accepted
+- **ADR:** 0003
+- **Proposal Author(s):** @eddie-knight
+- **Status:** Accepted
 
 ## Context
 

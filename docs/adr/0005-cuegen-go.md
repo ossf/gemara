@@ -1,14 +1,11 @@
 ---
 layout: page
+title: Enforce Automated Alignment from Schemas to SDK
 ---
 
-# ADR-0005: Extend Go SDK for "Layer 4" Based on the Privateer Project
-
-**Proposal Authors:** @eddie-knight, @trumant
-
-## Status
-
-Accepted
+- **ADR:** 0005
+- **Proposal Author(s):** @eddie-knight, @trumant
+- **Status:** Accepted
 
 ## Context
 

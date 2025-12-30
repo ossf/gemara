@@ -3,7 +3,19 @@
     <h3 class="sidebar-title">Quick Links</h3>
     <nav class="sidebar-nav">
       {%- for item in site.data.navigation -%}
-        <a href="{{ item.url | relative_url }}" class="sidebar-link">{{ item.title | escape }}</a>
+        {%- if item.title == "ADR" -%}
+          <details class="sidebar-details">
+            <summary class="sidebar-summary">{{ item.title | escape }}</summary>
+            <div class="sidebar-nested">
+              {%- assign adr_pages = site.pages | where_exp: "page", "page.path contains 'adr/' and page.path != 'adr.md' and page.path != 'adr.html' and page.path contains '.md'" | sort: "path" -%}
+              {%- for adr_page in adr_pages -%}
+                <a href="{{ adr_page.url | relative_url }}" class="sidebar-link sidebar-nested-link">{{ adr_page.title | default: adr_page.name | escape }}</a>
+              {%- endfor -%}
+            </div>
+          </details>
+        {%- else -%}
+          <a href="{{ item.url | relative_url }}" class="sidebar-link">{{ item.title | escape }}</a>
+        {%- endif -%}
       {%- endfor -%}
     </nav>
   </div>
