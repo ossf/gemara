@@ -2,7 +2,9 @@
 layout: page
 ---
 
-# ADR-0001: Unified Package Structure
+# ADR-0001: Unified Go SDK Package Structure
+
+**Author:** @jpower432
 
 ## Status
 
