@@ -68,6 +68,34 @@ html, body {
 }
 
 /* ============================================
+   Dark Mode Theme Variables
+   ============================================ */
+
+[data-theme="dark"] {
+  /* OpenSSF Brand Colors - adjusted for dark mode */
+  --openssf-purple: #a78bfa;
+  --openssf-purple-dark: #c4b5fd;
+  --openssf-purple-light: #8b5cf6;
+  --openssf-purple-lighter: #a78bfa;
+  --openssf-green: #34d399;
+  --openssf-green-light: #6ee7b7;
+
+  /* Neutral Colors - dark mode (warmer, less harsh) */
+  --color-bg-primary: #1a1b23;
+  --color-bg-secondary: #252732;
+  --color-bg-tertiary: #2f3142;
+  --color-border: #3d4054;
+  --color-border-light: #2f3142;
+  --color-text-primary: #e2e8f0;
+  --color-text-secondary: #94a3b8;
+  --color-text-tertiary: #64748b;
+
+  /* Shadows - adjusted for dark mode */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* ============================================
    Custom Font Definitions
    ============================================ */
 
@@ -134,8 +162,10 @@ html, body {
 body {
   font-family: "Cairo", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
   line-height: 1.6;
   font-size: 16px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -292,6 +322,7 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
   background: var(--color-bg-primary);
   box-shadow: var(--shadow-sm);
   padding: var(--spacing-lg) 0 var(--spacing-md) 0;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .header-top {
@@ -301,6 +332,7 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
   margin-bottom: var(--spacing-md);
   flex-wrap: wrap;
   gap: var(--spacing-lg);
+  position: relative;
 
   @media screen and (max-width: 768px) {
     flex-direction: column;
@@ -342,6 +374,95 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
 
   @media screen and (max-width: 768px) {
     text-align: left;
+  }
+}
+
+.theme-toggle {
+  flex: 0 0 auto;
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--color-border);
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: var(--openssf-purple);
+  font-size: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: var(--openssf-purple);
+    opacity: 0.1;
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease, height 0.4s ease;
+  }
+
+  &:hover {
+    background: var(--color-bg-tertiary);
+    border-color: var(--openssf-purple);
+    color: var(--openssf-purple);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: var(--shadow-md);
+
+    &::before {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: var(--shadow-sm);
+  }
+
+  &:focus {
+    outline: 3px solid var(--openssf-green);
+    outline-offset: 3px;
+  }
+
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  i {
+    display: block;
+    line-height: 1;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease, color 0.3s ease;
+  }
+
+  &:hover i {
+    transform: rotate(15deg) scale(1.1);
+  }
+
+  @media screen and (max-width: 768px) {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+    z-index: 10;
+  }
+
+  @media screen and (max-width: 600px) {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
   }
 }
 
@@ -492,6 +613,8 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 var(--spacing-lg);
+  background-color: var(--color-bg-primary);
+  transition: background-color 0.3s ease;
 
   @media screen and (max-width: 900px) {
     flex-direction: column;
@@ -503,6 +626,8 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
   padding: var(--spacing-xl) 0;
   flex: 1;
   min-width: 0; /* Allows flex item to shrink below content size */
+  background-color: var(--color-bg-primary);
+  transition: background-color 0.3s ease;
 }
 
 .home,
@@ -628,7 +753,7 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
   align-items: center;
   padding: var(--spacing-sm) var(--spacing-xl);
   border-radius: var(--radius-super);
-  color: #ffffff;
+  color: var(--color-text-primary);
   font-family: "IBMPlexSans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   position: relative;
 
@@ -757,6 +882,14 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
       rgba(114, 83, 237, 0.05) 100%);
   }
 
+  [data-theme="dark"] & {
+    &:hover {
+      background: linear-gradient(180deg,
+        var(--color-bg-primary) 0%,
+        rgba(167, 139, 250, 0.1) 100%);
+    }
+  }
+
   &:visited {
     color: inherit;
   }
@@ -860,16 +993,34 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
   border: 1px solid rgba(4, 238, 95, 0.3);
 }
 
+[data-theme="dark"] .badge-stable {
+  background: rgba(52, 211, 153, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+}
+
 .badge-evolving {
   background: rgba(114, 83, 237, 0.15);
   color: var(--openssf-purple-dark);
   border: 1px solid rgba(114, 83, 237, 0.3);
 }
 
+[data-theme="dark"] .badge-evolving {
+  background: rgba(167, 139, 250, 0.2);
+  color: var(--openssf-purple);
+  border: 1px solid rgba(167, 139, 250, 0.4);
+}
+
 .badge-active {
   background: rgba(69, 32, 140, 0.15);
   color: var(--openssf-purple-dark);
   border: 1px solid rgba(69, 32, 140, 0.3);
+}
+
+[data-theme="dark"] .badge-active {
+  background: rgba(139, 92, 246, 0.2);
+  color: var(--openssf-purple-light);
+  border: 1px solid rgba(139, 92, 246, 0.4);
 }
 
 /* ============================================
