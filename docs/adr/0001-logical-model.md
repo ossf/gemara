@@ -15,7 +15,7 @@ Both the FINOS _Common Cloud Controls (CCC)_ and OpenSSF's _Open Source Project 
 
 ## Action
 
-Create a commmunity-defined model in a version-controlled project that can be extended with supplemental resources such as schemas and SDKs.
+Create a community-defined model in a version-controlled project that can be extended with supplemental resources such as schemas and SDKs.
 
 ## Consequences
 

@@ -13,7 +13,7 @@ As noted in ADR-0002, much automation work has been done by the _FINOS Common Cl
 
 ## Action
 
-Take the best elements from each project's CI tooling and bring them together into a single SDK. Support those two projects as they migrate their existing tooling to the new SDK. This will be a Go module with a package dedicated to Layer 2 documents. It should be exstensible in a way that allows additional packages for other documents in the future.
+Take the best elements from each project's CI tooling and bring them together into a single SDK. Support those two projects as they migrate their existing tooling to the new SDK. This will be a Go module with a package dedicated to Layer 2 documents. It should be extensible in a way that allows additional packages for other documents in the future.
 
 ## Consequences
 
