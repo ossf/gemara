@@ -10,7 +10,9 @@
           {%- assign index_file = dir_name | append: ".md" -%}
           {%- assign index_file_html = dir_name | append: ".html" -%}
           <details class="sidebar-details">
-            <summary class="sidebar-summary">{{ item.title | escape }}</summary>
+            <summary class="sidebar-summary">
+              <a href="{{ item.url | relative_url }}" class="sidebar-summary-link" onclick="event.stopPropagation();">{{ item.title | escape }}</a>
+            </summary>
             <div class="sidebar-nested">
               {%- assign child_pages = site.pages | sort: "path" -%}
               {%- for child_page in child_pages -%}

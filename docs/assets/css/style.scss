@@ -592,22 +592,26 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
     list-style: none;
     cursor: pointer;
     user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
     &::-webkit-details-marker {
       display: none;
     }
 
-    &::before {
+    &::after {
       content: "▶";
       display: inline-block;
-      margin-right: var(--spacing-xs);
+      margin-left: var(--spacing-xs);
       transition: transform 0.2s ease;
       font-size: 0.75em;
       color: var(--color-text-tertiary);
+      flex-shrink: 0;
     }
   }
 
-  &[open] summary::before {
+  &[open] summary::after {
     transform: rotate(90deg);
   }
 }
@@ -625,6 +629,22 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
     background: var(--color-bg-tertiary);
     color: var(--openssf-purple);
     border-bottom: none !important;
+  }
+}
+
+.sidebar-summary-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: none !important;
+  flex: 1;
+
+  &:hover {
+    color: inherit;
+    border-bottom: none !important;
+  }
+
+  &:visited {
+    color: inherit;
   }
 }
 
