@@ -584,6 +584,91 @@ a[href^="http"]:not([href*="gemara"]):not([href*="openssf"]):not(.social-media-l
   }
 }
 
+.sidebar-details {
+  margin: 0;
+  padding: 0;
+
+  summary {
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::after {
+      content: "▶";
+      display: inline-block;
+      margin-left: var(--spacing-xs);
+      transition: transform 0.2s ease;
+      font-size: 0.75em;
+      color: var(--color-text-tertiary);
+      flex-shrink: 0;
+    }
+  }
+
+  &[open] summary::after {
+    transform: rotate(90deg);
+  }
+}
+
+.sidebar-summary {
+  font-weight: 500;
+  display: block;
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  border-bottom: none !important;
+
+  &:hover {
+    background: var(--color-bg-tertiary);
+    color: var(--openssf-purple);
+    border-bottom: none !important;
+  }
+}
+
+.sidebar-summary-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: none !important;
+  flex: 1;
+
+  &:hover {
+    color: inherit;
+    border-bottom: none !important;
+  }
+
+  &:visited {
+    color: inherit;
+  }
+}
+
+.sidebar-nested {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-xs);
+  margin-left: var(--spacing-md);
+  padding-left: var(--spacing-md);
+  border-left: 2px solid var(--color-border-light);
+}
+
+.sidebar-nested-link {
+  font-size: 0.9rem;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  color: var(--color-text-secondary);
+
+  &:hover {
+    color: var(--openssf-purple);
+    background: var(--color-bg-tertiary);
+  }
+}
+
 /* ============================================
    Logo and Title (Homepage)
    ============================================ */

@@ -15,10 +15,6 @@ Architecture Decision Records document important architectural decisions made in
 - The consequences (positive, negative, and neutral)
 - Alternatives that were considered
 
-## ADR Index
-
-- [ADR-0001: Unified Package Structure](./adr/0001-unified-package-structure.html) - Decision to consolidate layer-based packages into a single unified `gemara` package
-
 ## Format
 
 ADRs follow the format described at [adr.github.io](https://adr.github.io/), with the following structure:
