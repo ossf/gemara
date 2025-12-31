@@ -15,7 +15,64 @@ import (
 	oscalUtils "github.com/ossf/gemara/internal/oscal"
 )
 
-func TestCatalogFromGuidanceDocument(t *testing.T) {
+func TestFromGuidance(t *testing.T) {
+	goodAIFG, err := goodAIGFExample()
+	require.NoError(t, err)
+
+	tests := []struct {
+		name        string
+		guidance    gemara.GuidanceDocument
+		catalogHref string
+		wantErr     bool
+	}{
+		{
+			name:        "valid guidance document",
+			guidance:    goodAIFG,
+			catalogHref: "test-catalog.json",
+			wantErr:     false,
+		},
+		{
+			name:        "error when catalogHref is empty",
+			guidance:    goodAIFG,
+			catalogHref: "",
+			wantErr:     true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			catalog, profile, err := FromGuidance(&tt.guidance, tt.catalogHref)
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+
+			// Validate catalog
+			catalogModel := oscalTypes.OscalModels{Catalog: &catalog}
+			assert.NoError(t, oscalUtils.Validate(catalogModel))
+			assert.NotEmpty(t, catalog.UUID)
+
+			// Validate profile
+			profileModel := oscalTypes.OscalModels{Profile: &profile}
+			assert.NoError(t, oscalUtils.Validate(profileModel))
+			assert.NotEmpty(t, profile.UUID)
+
+			// Verify catalogHref is in imports
+			assert.NotEmpty(t, profile.Imports)
+			hasProvidedImport := false
+			for _, imp := range profile.Imports {
+				if imp.Href == tt.catalogHref && imp.IncludeAll != nil {
+					hasProvidedImport = true
+					break
+				}
+			}
+			assert.True(t, hasProvidedImport, "profile should have provided catalogHref in imports")
+		})
+	}
+}
+
+func TestToCatalogFromGuidance(t *testing.T) {
 	goodAIFG, err := goodAIGFExample()
 	require.NoError(t, err)
 
@@ -119,6 +176,73 @@ func TestCatalogFromGuidanceDocument(t *testing.T) {
 								},
 							},
 						},
+						{
+							Class: "FINOS-AIR",
+							ID:    "air-det-004",
+							Title: "Example Detective Control 004",
+							Parts: &[]oscalTypes.Part{
+								{
+									Name: "statement",
+									ID:   "air-det-004_smt",
+								},
+								{
+									Name: "assessment-objective",
+									ID:   "air-det-004_obj",
+								},
+								{
+									Name:  "overview",
+									ID:    "air-det-004_ovw",
+									Prose: "Placeholder control for testing references.",
+								},
+							},
+						},
+						{
+							Class: "FINOS-AIR",
+							ID:    "air-det-015",
+							Title: "Example Detective Control 015",
+							Parts: &[]oscalTypes.Part{
+								{
+									Name: "statement",
+									ID:   "air-det-015_smt",
+								},
+								{
+									Name: "assessment-objective",
+									ID:   "air-det-015_obj",
+								},
+								{
+									Name:  "overview",
+									ID:    "air-det-015_ovw",
+									Prose: "Placeholder control for testing references.",
+								},
+							},
+						},
+					},
+				},
+				{
+					Class: "family",
+					ID:    "PREV",
+					Title: "Preventive",
+					Controls: &[]oscalTypes.Control{
+						{
+							Class: "FINOS-AIR",
+							ID:    "air-prev-005",
+							Title: "Example Preventive Control 005",
+							Parts: &[]oscalTypes.Part{
+								{
+									Name: "statement",
+									ID:   "air-prev-005_smt",
+								},
+								{
+									Name: "assessment-objective",
+									ID:   "air-prev-005_obj",
+								},
+								{
+									Name:  "overview",
+									ID:    "air-prev-005_ovw",
+									Prose: "Placeholder control for testing references.",
+								},
+							},
+						},
 					},
 				},
 			},
@@ -133,16 +257,21 @@ func TestCatalogFromGuidanceDocument(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			catalog, err := CatalogFromGuidanceDocument(&tt.guidance)
+			catalog, _, err := FromGuidance(&tt.guidance, "test-catalog.json")
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
-				oscalDocument := oscalTypes.OscalModels{
-					Catalog: &catalog,
-				}
-				err = oscalUtils.Validate(oscalDocument)
+				catalogModel := oscalTypes.OscalModels{Catalog: &catalog}
+				err = oscalUtils.Validate(catalogModel)
 				assert.NoError(t, err)
-				if diff := cmp.Diff(tt.wantGroups, *catalog.Groups, cmpopts.IgnoreFields(oscalTypes.Link{}, "Href")); diff != "" {
+				// Sort slices to ignore order when comparing
+				sortGroups := cmpopts.SortSlices(func(a, b oscalTypes.Group) bool {
+					return a.ID < b.ID
+				})
+				sortControls := cmpopts.SortSlices(func(a, b oscalTypes.Control) bool {
+					return a.ID < b.ID
+				})
+				if diff := cmp.Diff(tt.wantGroups, *catalog.Groups, cmpopts.IgnoreFields(oscalTypes.Link{}, "Href"), sortGroups, sortControls); diff != "" {
 					t.Errorf("group mismatch (-want +got):\n%s", diff)
 				}
 			}
@@ -150,7 +279,7 @@ func TestCatalogFromGuidanceDocument(t *testing.T) {
 	}
 }
 
-func TestProfileFromGuidanceDocument(t *testing.T) {
+func TestToProfileFromGuidance(t *testing.T) {
 	goodAIFG, err := goodAIGFExample()
 	require.NoError(t, err)
 
@@ -251,12 +380,10 @@ func TestProfileFromGuidanceDocument(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			profile, err := ProfileFromGuidanceDocument(&tt.guidance, "testHref", tt.options...)
+			_, profile, err := FromGuidance(&tt.guidance, "testHref", tt.options...)
 			require.NoError(t, err)
-			oscalDocument := oscalTypes.OscalModels{
-				Profile: &profile,
-			}
-			assert.NoError(t, oscalUtils.Validate(oscalDocument))
+			profileModel := oscalTypes.OscalModels{Profile: &profile}
+			assert.NoError(t, oscalUtils.Validate(profileModel))
 
 			assert.Equal(t, tt.wantImports, profile.Imports)
 		})
@@ -274,134 +401,4 @@ func goodAIGFExample() (gemara.GuidanceDocument, error) {
 		return gemara.GuidanceDocument{}, err
 	}
 	return l1Docs, nil
-}
-
-var testCases = []struct {
-	name          string
-	catalog       *gemara.Catalog
-	controlHREF   string
-	wantErr       bool
-	expectedTitle string
-}{
-	{
-		name: "Valid catalog with single control family",
-		catalog: &gemara.Catalog{
-			Metadata: gemara.Metadata{
-				Id:      "test-catalog",
-				Version: "devel",
-			},
-			Title: "Test Catalog",
-			Families: []gemara.Family{
-				{
-					Id:          "AC",
-					Title:       "access-control",
-					Description: "Controls for access management",
-				},
-			},
-			Controls: []gemara.Control{
-				{
-					Id:    "AC-01",
-					Family: "AC",
-					Title: "Access Control Policy",
-					AssessmentRequirements: []gemara.AssessmentRequirement{
-						{
-							Id:   "AC-01.1",
-							Text: "Develop and document access control policy",
-						},
-					},
-				},
-			},
-		},
-		controlHREF:   "https://baseline.openssf.org/versions/%s#%s",
-		wantErr:       false,
-		expectedTitle: "Test Catalog",
-	},
-	{
-		name: "Valid catalog with multiple control families",
-		catalog: &gemara.Catalog{
-			Metadata: gemara.Metadata{
-				Id:      "test-catalog-multi",
-				Version: "devel",
-			},
-			Title: "Test Catalog Multiple",
-			Families: []gemara.Family{
-				{
-					Id:          "AC",
-					Title:       "access-control",
-					Description: "Controls for access management",
-				},
-				{
-					Id:          "BR",
-					Title:       "business-requirements",
-					Description: "Controls for business requirements",
-				},
-			},
-			Controls: []gemara.Control{
-				{
-					Id:    "AC-01",
-					Family: "AC",
-					Title: "Access Control Policy",
-					AssessmentRequirements: []gemara.AssessmentRequirement{
-						{
-							Id:   "AC-01.1",
-							Text: "Develop and document access control policy",
-						},
-					},
-				},
-				{
-					Id:    "BR-01",
-					Family: "BR",
-					Title: "Business Requirements Policy",
-					AssessmentRequirements: []gemara.AssessmentRequirement{
-						{
-							Id:   "BR-01.1",
-							Text: "Define business requirements",
-						},
-					},
-				},
-			},
-		},
-		controlHREF:   "https://baseline.openssf.org/versions/%s#%s",
-		wantErr:       false,
-		expectedTitle: "Test Catalog Multiple",
-	},
-}
-
-func TestFromCatalog(t *testing.T) {
-	for _, tt := range testCases {
-		t.Run(tt.name, func(t *testing.T) {
-			oscalCatalog, err := FromCatalog(tt.catalog, tt.controlHREF)
-
-			if (err == nil) == tt.wantErr {
-				t.Errorf("ToOSCAL() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-
-			if tt.wantErr {
-				return
-			}
-
-			// Wrap oscal catalog
-			// Create the proper OSCAL document structure
-			oscalDocument := oscalTypes.OscalModels{
-				Catalog: &oscalCatalog,
-			}
-
-			// Create validation for the OSCAL catalog
-			assert.NoError(t, oscalUtils.Validate(oscalDocument))
-
-			// Compare each field
-			assert.NotEmpty(t, oscalCatalog.UUID)
-			assert.Equal(t, tt.expectedTitle, oscalCatalog.Metadata.Title)
-			assert.Equal(t, tt.catalog.Metadata.Version, oscalCatalog.Metadata.Version)
-			assert.Equal(t, len(tt.catalog.Families), len(*oscalCatalog.Groups))
-
-			// Compare each family
-			for i, family := range tt.catalog.Families {
-				groups := (*oscalCatalog.Groups)
-				group := groups[i]
-				assert.Equal(t, family.Id, group.ID)
-			}
-		})
-	}
 }
