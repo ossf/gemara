@@ -424,7 +424,7 @@ type Imports struct {
 
 // CatalogImport defines how to import control catalogs with optional exclusions, constraints, and assessment requirement modifications.
 type CatalogImport struct {
-	ReferenceId string `json:"reference-id,omitempty" yaml:"reference-id,omitempty"`
+	ReferenceId string `json:"reference-id" yaml:"reference-id"`
 
 	Exclusions []string `json:"exclusions,omitempty" yaml:"exclusions,omitempty"`
 
@@ -470,7 +470,7 @@ type ModType string
 
 // GuidanceImport defines how to import guidance documents with optional exclusions and constraints.
 type GuidanceImport struct {
-	ReferenceId string `json:"reference-id,omitempty" yaml:"reference-id,omitempty"`
+	ReferenceId string `json:"reference-id" yaml:"reference-id"`
 
 	Exclusions []string `json:"exclusions,omitempty" yaml:"exclusions,omitempty"`
 
