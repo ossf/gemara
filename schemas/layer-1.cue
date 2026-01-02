@@ -15,6 +15,18 @@ package schemas
 	families?: [...#Family] @go(Families)
 	guidelines?: [...#Guideline] @go(Guidelines)
 	exemptions?: [...#Exemption] @go(Exemptions)
+
+	// Guidelines that extend other guidelines must be in the same family as the
+	// extended guideline.
+	_validateExtensions: {
+		for guideline in guidelines if guideline.extends != _|_ {
+			if (guideline.extends."reference-id" == "" || guideline.extends."reference-id" == _|_) {
+				for extended in guidelines if extended.id == guideline.extends."entry-id" {
+					guideline.family == extended.family
+				}
+			}
+		}
+	}
 }
 
 #DocumentType: "Standard" | "Regulation" | "Best Practice" | "Framework"
