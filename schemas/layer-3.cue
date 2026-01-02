@@ -122,7 +122,7 @@ package schemas
 
 // GuidanceImport defines how to import guidance documents with optional exclusions and constraints.
 #GuidanceImport: {
-	"reference-id"?: string @go(ReferenceId)
+	"reference-id": string @go(ReferenceId)
 	exclusions?: [...string]
 	// Constraints allow policy authors to define ad hoc minimum requirements (e.g., "review at least annually").
 	constraints?: [...#Constraint]
@@ -130,7 +130,7 @@ package schemas
 
 // CatalogImport defines how to import control catalogs with optional exclusions, constraints, and assessment requirement modifications.
 #CatalogImport: {
-	"reference-id"?: string @go(ReferenceId)
+	"reference-id": string @go(ReferenceId)
 	exclusions?: [...string]
 	constraints?: [...#Constraint]
 	"assessment-requirement-modifications"?: [...#AssessmentRequirementModifier] @go(AssessmentRequirementModifications)
