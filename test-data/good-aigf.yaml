@@ -1,6 +1,6 @@
 metadata:
   id: FINOS-AIR
-  description: ""
+  description: "A comprehensive collection of risks and mitigations that support on-boarding, development of, and running Generative AI solutions"
   author:
     id: finos
     name: FINOS
@@ -15,9 +15,12 @@ metadata:
       title: ISO/IEC 42001 Information technology — Artificial intelligence — Management system
       version: "2023"
       url: "https://www.iso.org/standard/81230.html"
-title: AI Governance Framework
+title: FINOS AI Governance Framework
 document-type: Framework
-front-matter: The following framework has been developed by FINOS (Fintech Open Source Foundation).
+front-matter: |
+  AI, especially Generative AI, is reshaping financial services, enhancing products, client interactions, and productivity. However, challenges like hallucinations and model unpredictability make safe deployment complex. Rapid advancements require flexible governance.
+  Financial institutions are eager to adopt AI but face regulatory hurdles. Existing frameworks may not address AI’s unique risks, necessitating an adaptive governance model for safe and compliant integration.
+  The following framework has been developed by FINOS (Fintech Open Source Foundation) members, providing a comprehensive catalogue of risks and associated mitigations. We suggest using our heuristic risk identification framework to determine which risks are most relevant for a given use case.
 families:
   - id: DET
     title: Detective
