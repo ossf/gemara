@@ -11,9 +11,10 @@ metadata:
       title: NIST SP 800-53r5
       version: rev5
       url: "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-53r5.pdf#%5B%7B%22num%22%3A342%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C88%2C310%2C0%5D"
-    - id: AIR-PRIN
-      title: Example Principles Document for the Framework
-      version: 0.1.0
+    - id: ISO-42001
+      title: ISO/IEC 42001 Information technology — Artificial intelligence — Management system
+      version: "2023"
+      url: "https://www.iso.org/standard/81230.html"
 title: AI Governance Framework
 document-type: Framework
 front-matter: The following framework has been developed by FINOS (Fintech Open Source Foundation).
@@ -25,72 +26,126 @@ families:
     title: Preventive
     description: Prevention and Risk Mitigation
 guidelines:
-  - id: AIR-DET-011
-    family: DET
-    title: Human Feedback Loop for AI Systems
-    objective: A Human Feedback Loop is a critical detective and continuous improvement mechanism that involves systematically collecting, analyzing, and acting upon feedback provided by human users, subject matter experts (SMEs), or reviewers regarding an AI system's performance, outputs, or behavior.
+  - id: AIR-PREV-002
+    # Note: The "Challenges and Considerations" section from the original content has been elided; not sure where to put it
+    family: PREV
+    title: Data Filtering From External Knowledge Bases
+    objective: | # "Purpose" in the original content
+      This control addresses the critical need to sanitize, filter, and appropriately manage sensitive information when AI systems ingest data from internal knowledge sources such as wikis, document management systems, databases, or collaboration platforms (e.g., Confluence, SharePoint, internal websites). The primary objective is to prevent the inadvertent exposure, leakage, or manipulation of confidential organizational knowledge when this data is processed by AI models, converted into embeddings for vector databases, or used in Retrieval Augmented Generation (RAG) systems.
+      Given that many AI applications, particularly RAG systems, rely on internal knowledge bases to provide contextually relevant and organization-specific responses, ensuring that sensitive information within these sources is appropriately handled is paramount for maintaining data confidentiality and preventing unauthorized access.
     rationale:
-      risks: []
-      outcomes:
-        - title: Governance Support
-          description: Provides data for AI governance bodies to monitor impact and make decisions
-    guideline-parts:
-      - id: AIR-DET-011.1
-        title: Designing the Feedback Mechanism
-        text: Implementing an effective human feedback loop involves careful design of the mechanism.
-        recommendations:
-          - "Define Intended Use and KPIs:\nObjectives: Clearly document how feedback data will be utilized, such as for prompt fine-tuning, RAG document updates,model/data drift detection, or more advanced uses like Reinforcement Learning from Human Feedback (RLHF).\nKPI Alignment: Design feedback questions and metrics to align with the solution's key performance indicators (KPIs). For example, if accuracy is a KPI, feedback might involve users or SMEs annotating if an answer was correct."
-      - id: AIR-DET-011.2
-        title: Types of Feedback and Collection Methods
-        text: Implementing an effective human feedback loop involves clear collection processes.
-        recommendations:
-          - "Quantitative Feedback:\nDescription: Involves collecting structured responses that can be easily aggregated and measured, such as numerical ratings (e.g., \"Rate this response on a scale of 1-5 for helpfulness\"), categorical choices (e.g., \"Was this answer: Correct/Incorrect/Partially Correct\"), or binary responses (e.g., thumbs up/down).\nUse Cases: Effective for tracking trends, measuring against KPIs, and quickly identifying areas of high or low performance."
+      importance: | # "Importance and Benefits" in the original content
+        Implementing robust data filtering from external knowledge bases is a critical preventative measure that provides significant benefits:
+        - Prevention of Data Leakage: Significantly reduces the risk of sensitive organizational information being inadvertently exposed through AI system outputs or stored in less secure external services.
+        - Regulatory Compliance: Helps meet requirements under data protection regulations (e.g., GDPR, CCPA, GLBA) that mandate the protection of personal and sensitive business information.
+        - Intellectual Property Protection: Safeguards valuable trade secrets, strategic information, and proprietary data from unauthorized disclosure or competitive exposure.
+        - Reduced Attack Surface: By controlling the information that enters AI operational environments, organizations minimize the potential impact of AI-specific attacks like prompt injection or data extraction attempts.
+        - Enhanced Trust and Confidence: Builds stakeholder confidence in AI systems by demonstrating rigorous data protection practices.
+        - Compliance with Internal Data Governance: Supports adherence to internal data classification and handling policies within AI contexts.
+        - Mitigation of Insider Risk: Reduces the risk of sensitive information being accessed by unauthorized internal users through AI interfaces.
+        This control is particularly important given the evolving nature of AI technologies and the sophisticated ways they interact with and process large volumes of organizational information. A proactive approach to data sanitization helps maintain confidentiality, integrity, and compliance while enabling the organization to benefit from AI capabilities.
+      goals:
+        - "Proactive Data Sanitization: Apply filtering and anonymization techniques before data enters the AI processing pipeline, vector databases, or any external service endpoints (aligns with ISO 42001 A.7.6)."
+        - "Data Classification Awareness: Understand and respect the sensitivity levels and access controls associated with source data when determining appropriate filtering strategies (supports ISO 42001 A.7.4)."
+        - "Principle of Least Exposure: Only include data in AI systems that is necessary for the intended business function, and ensure that even this data is appropriately de-identified or masked when possible."
+        - "Defense in Depth: Implement multiple layers of filtering—at data ingestion, during processing, and at output generation—to create robust protection against data leakage."
+        - "Auditability and Transparency: Maintain clear documentation and audit trails of what data filtering processes have been applied and why (supports ISO 42001 A.7.2)."
+    see-also: # "Key Risks," "Related Mitigations," as well as in-line references from the original content
+      - AIR-MI-16
+      - AIR-RC-001
+      - AIR-SEC-009
+      - AIR-DET-016
+      - AIR-DET-001
+      - AIR-PREV-006
     guideline-mappings:
+      - reference-id: ISO-42001
+        entries:
+          - reference-id: A.7.2
+            remarks: Data for development and enhancement of AI system
+          - reference-id: A.7.3
+            remarks: Acquisition of data
+          - reference-id: B.7.4
+            remarks: Quality of data for AI systems
+          - reference-id: B.7.6
+            remarks: Data preparation
       - reference-id: NIST-800-53
         entries:
-          - reference-id: CA-7
-            strength: 7
-            remarks: This control is closely related to CA-7.
-          - reference-id: IR-6
-            strength: 5
-            remarks: This control has some relevance to IR-6.
-          - reference-id: PM-26
-            strength: 3
-            remarks: This control is loosely related to PM-26.
-          - reference-id: RA-5
-            strength: 7
-            remarks: This control is closely related to RA-5.
-          - reference-id: SI-2
-            strength: 5
-            remarks: This control has some relevance to SI-2.
-    principle-mappings:
-      - reference-id: AIR-PRIN
-        entries:
-          - reference-id: TIMELINESS
-            strength: 7
-            remarks: This principle emphasizes the importance of timely feedback.
-    see-also:
-      - AIR-DET-015
-      - AIR-DET-004
-      - AIR-PREV-005
-  - id: AIR-DET-004
-    family: DET
-    title: Example Detective Control 004
-    objective: Placeholder control for testing references.
-    rationale:
-      risks: []
-      outcomes: []
-  - id: AIR-DET-015
-    family: DET
-    title: Example Detective Control 015
-    objective: Placeholder control for testing references.
-    rationale:
-      risks: []
-      outcomes: []
-  - id: AIR-PREV-005
-    family: PREV
-    title: Example Preventive Control 005
-    objective: Placeholder control for testing references.
-    rationale:
-      risks: []
-      outcomes: []
+          - reference-id: AC-4 
+            remarks: Information Flow Enforcement
+          - reference-id: AC-22
+            remarks: Publicly Accessible Content
+          - reference-id: MP-6 
+            remarks: Media Sanitization
+          - reference-id: PT-2
+            remarks: Authority To Process Personally Identifiable Information
+          - reference-id: SI-4
+            remarks: System Monitoring
+          - reference-id: SI-12
+            remarks: Information Management And Retention
+          - reference-id: SI-15
+            remarks: Information Output Filtering
+          - reference-id: SI-19
+            remarks: De-identification
+    statements:
+      - id: AIR-PREV-002.1
+        title: Rigorous Data Cleansing and Anonymization at Ingestion
+        text: ""
+        recommendations:
+          - |
+            Pre-Processing Review and Cleansing:
+              - Process: Before any information from internal knowledge sources is ingested by an AI system (whether for training, vector database population, or real-time retrieval), it must undergo a thorough review and cleansing process.
+              - Objective: Identify and remove or appropriately anonymize sensitive details to ensure that data fed into the AI system is free from information that could pose a security or privacy risk if inadvertently exposed.
+          - |
+            Categories of Data to Target for Filtering:
+              - Personally Identifiable Information (PII): Names, contact details, financial account numbers, employee IDs, social security numbers, addresses, and other personal identifiers.
+              - Proprietary Business Information: Trade secrets, intellectual property, unreleased financial results, strategic plans, merger and acquisition details, customer lists, pricing strategies, and competitive intelligence.
+              - Sensitive Internal Operational Data: Security configurations, system architecture details, access credentials, internal process documentation not intended for broader access, incident reports, and audit findings.
+              - Confidential Customer Data: Account information, transaction details, credit scores, loan applications, investment portfolios, and personal financial information.
+              - Regulatory or Compliance-Sensitive Information: Legal advice, regulatory correspondence, compliance violations, investigation details, and privileged communications.
+          - |
+            Filtering and Anonymization Methods:
+              - Data Masking: Replace sensitive data fields with anonymized equivalents (e.g., “Employee12345” instead of “John Smith”).
+              - Redaction: Remove entire sections of documents that contain sensitive information.
+              - Generalization: Replace specific information with more general categories (e.g., “Major metropolitan area” instead of “New York City”).
+              - Tokenization: Replace sensitive data with non-sensitive tokens that can be mapped back to the original data only through a secure, separate system.
+              - Synthetic Data Generation: For training purposes, generate synthetic data that maintains statistical properties of the original data without exposing actual sensitive information.
+      - id: AIR-PREV-002.2
+        title: Segregation for Highly Sensitive Data
+        text: ""
+        recommendations:
+          - |
+            Isolated AI Systems for Critical Data:
+              - Concept: For datasets or knowledge sources containing exceptionally sensitive information that cannot be adequately protected through standard cleansing or anonymization techniques, implement separate, isolated AI systems or environments.
+              - Implementation: Create distinct AI models and associated data stores (e.g., separate vector databases for RAG systems) with much stricter access controls, enhanced encryption, and limited network connectivity.
+              - Benefit: Ensures that only explicitly authorized personnel or tightly controlled AI processes can interact with highly sensitive data, minimizing the risk of broader exposure.
+          - |
+            Access Domain-Based Segregation:
+              - Strategy: Segment data and AI system access based on clearly defined access domains that mirror the organization’s existing data classification and access control structures.
+              - Implementation: Different user groups or business units may have access only to AI instances that contain data appropriate to their clearance level and business need.
+      - id: AIR-PREV-002.3
+        title: Filtering AI System Outputs (Secondary Defense)
+        text: ""
+        recommendations:
+          - |
+            Response Filtering and Validation:
+              - Rationale: As an additional layer of defense, responses and information generated by the AI system should be monitored and filtered before being presented to users or integrated into other systems.
+              - Function: Acts as a crucial safety net to detect and remove any sensitive data that might have inadvertently bypassed the initial input cleansing stages or was unexpectedly reconstructed or inferred by the AI model during its processing.
+              - Scope: Output filtering should apply the same principles and rules used for sanitizing input data, checking for PII, proprietary information, and other sensitive content.
+          - |
+            Contextual Output Analysis:
+              - Dynamic Filtering: Implement intelligent filtering that considers the context of the user’s query and their authorization level to determine what information should be included in the response.
+              - Confidence Scoring: Where technically feasible, implement systems that assess the confidence level of the AI’s output and flag responses that may contain uncertain or potentially sensitive information for human review.
+      - id: AIR-PREV-002.4
+        title: Integration with Source System Access Controls
+        text: ""
+        recommendations:
+          - "Respect Original Permissions: When possible, design the AI system to respect and replicate the original access control permissions from source systems (see MI-16 Preserving Access Controls)."
+          - "Dynamic Source Querying: For real-time RAG systems, consider querying source systems dynamically while respecting user permissions, rather than pre-processing all data indiscriminately."
+
+      - id: AIR-PREV-002.5
+        title: Monitoring and Continuous Improvement
+        text: Periodically audit the effectiveness of data filtering processes by sampling processed data and checking for any sensitive information that may have been missed. Establish mechanisms for users and reviewers to report instances where sensitive information may have been inappropriately exposed, using this feedback to improve filtering algorithms and processes. Stay informed about new types of data leakage vectors and attack techniques that might affect AI systems, and update filtering strategies accordingly.
+        recommendations:
+          - "Regular Review of Filtering Effectiveness: Periodically audit the effectiveness of data filtering processes by sampling processed data and checking for any sensitive information that may have been missed."
+          - "Feedback Loop Integration: Establish mechanisms for users and reviewers to report instances where sensitive information may have been inappropriately exposed, using this feedback to improve filtering algorithms and processes."
+          - "Threat Intelligence Integration: Stay informed about new types of data leakage vectors and attack techniques that might affect AI systems, and update filtering strategies accordingly."
