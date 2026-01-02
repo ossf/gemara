@@ -79,6 +79,7 @@ func TestToCatalogFromGuidance(t *testing.T) {
 		guidance   gemara.GuidanceDocument
 		wantGroups []oscalTypes.Group
 		wantErr    bool
+		assertFunc func(*testing.T, oscalTypes.Catalog)
 	}{
 		{
 			name:     "Good AIGF",
@@ -251,6 +252,38 @@ func TestToCatalogFromGuidance(t *testing.T) {
 			guidance: gemara.GuidanceDocument{},
 			wantErr:  true,
 		},
+		{
+			name:     "Success/MultiLevelNestedControls",
+			guidance: guidanceWithMultiLevelNested(),
+			wantErr:  false,
+			assertFunc: func(t *testing.T, catalog oscalTypes.Catalog) {
+				require.NotNil(t, catalog.Groups)
+				groups := *catalog.Groups
+				require.Len(t, groups, 1)
+
+				acGroup := groups[0]
+				assert.Equal(t, "AC", acGroup.ID)
+				require.NotNil(t, acGroup.Controls)
+				controls := *acGroup.Controls
+				require.Len(t, controls, 1)
+
+				ac1 := controls[0]
+				assert.Equal(t, "ac-1", ac1.ID)
+				require.NotNil(t, ac1.Controls)
+				ac1Children := *ac1.Controls
+				require.Len(t, ac1Children, 1)
+
+				ac1Enh := ac1Children[0]
+				assert.Equal(t, "ac-1-enh", ac1Enh.ID)
+				require.NotNil(t, ac1Enh.Controls)
+				ac1EnhChildren := *ac1Enh.Controls
+				require.Len(t, ac1EnhChildren, 1)
+
+				ac1Enh2 := ac1EnhChildren[0]
+				assert.Equal(t, "ac-1-enh-2", ac1Enh2.ID)
+				assert.Nil(t, ac1Enh2.Controls)
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -262,15 +295,19 @@ func TestToCatalogFromGuidance(t *testing.T) {
 				catalogModel := oscalTypes.OscalModels{Catalog: &catalog}
 				err = oscalUtils.Validate(catalogModel)
 				assert.NoError(t, err)
-				// Sort slices to ignore order when comparing
-				sortGroups := cmpopts.SortSlices(func(a, b oscalTypes.Group) bool {
-					return a.ID < b.ID
-				})
-				sortControls := cmpopts.SortSlices(func(a, b oscalTypes.Control) bool {
-					return a.ID < b.ID
-				})
-				if diff := cmp.Diff(tt.wantGroups, *catalog.Groups, cmpopts.IgnoreFields(oscalTypes.Link{}, "Href"), sortGroups, sortControls); diff != "" {
-					t.Errorf("group mismatch (-want +got):\n%s", diff)
+				if tt.assertFunc != nil {
+					tt.assertFunc(t, catalog)
+				} else {
+					// Sort slices to ignore order when comparing
+					sortGroups := cmpopts.SortSlices(func(a, b oscalTypes.Group) bool {
+						return a.ID < b.ID
+					})
+					sortControls := cmpopts.SortSlices(func(a, b oscalTypes.Control) bool {
+						return a.ID < b.ID
+					})
+					if diff := cmp.Diff(tt.wantGroups, *catalog.Groups, cmpopts.IgnoreFields(oscalTypes.Link{}, "Href"), sortGroups, sortControls); diff != "" {
+						t.Errorf("group mismatch (-want +got):\n%s", diff)
+					}
 				}
 			}
 		})

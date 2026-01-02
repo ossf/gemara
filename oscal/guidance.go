@@ -55,6 +55,10 @@ func FromGuidance(g *gemara.GuidanceDocument, guidanceDocHref string, opts ...Ge
 	// Group guidelines by family
 	guidelinesByFamily := make(map[string][]gemara.Guideline)
 	for _, guideline := range g.Guidelines {
+		// Skip guidelines that extend external controls - these belong only in the profile as alterations
+		if guideline.Extends != nil && guideline.Extends.ReferenceId != "" {
+			continue
+		}
 		guidelinesByFamily[guideline.Family] = append(guidelinesByFamily[guideline.Family], guideline)
 	}
 
@@ -120,24 +124,79 @@ func createControlGroup(g *gemara.GuidanceDocument, family gemara.Family, guidel
 	}
 
 	controlMap := make(map[string]oscal.Control)
+	parentChildMap := make(map[string][]string)
+	childControlIds := make(map[string]struct{})
+
+	// Create all controls and track parent-child relationships
 	for _, guideline := range guidelines {
 		control, parent := guidelineToControl(g, guideline, resourcesMap)
+		controlMap[control.ID] = control
 
-		if parent == "" {
-			controlMap[control.ID] = control
-		} else {
-			parentControl := controlMap[parent]
-			if parentControl.Controls == nil {
-				parentControl.Controls = &[]oscal.Control{}
-			}
-			*parentControl.Controls = append(*parentControl.Controls, control)
-			controlMap[parent] = parentControl
+		if parent != "" {
+			parentChildMap[parent] = append(parentChildMap[parent], control.ID)
+			childControlIds[control.ID] = struct{}{}
 		}
 	}
 
+	// Link children to their parents using a queue strategy
+	queue := make([]string, 0, len(parentChildMap))
+	processed := make(map[string]bool)
+
+	for parentId := range parentChildMap {
+		queue = append(queue, parentId)
+	}
+
+	for len(queue) > 0 {
+		parentId := queue[0]
+		queue = queue[1:]
+
+		if processed[parentId] {
+			continue
+		}
+
+		parentControl, exists := controlMap[parentId]
+		if !exists {
+			// Drop orphaned controls
+			processed[parentId] = true
+			continue
+		}
+
+		childIds := parentChildMap[parentId]
+		allChildrenReady := true
+
+		// Check if any children are themselves parents that haven't been processed yet
+		for _, childId := range childIds {
+			if _, isParent := parentChildMap[childId]; isParent && !processed[childId] {
+				allChildrenReady = false
+				break
+			}
+		}
+
+		if !allChildrenReady {
+			// Add back to queue to process later
+			queue = append(queue, parentId)
+			continue
+		}
+
+		if parentControl.Controls == nil {
+			parentControl.Controls = &[]oscal.Control{}
+		}
+		children := make([]oscal.Control, 0, len(childIds))
+		for _, childId := range childIds {
+			if childControl, exists := controlMap[childId]; exists {
+				children = append(children, childControl)
+			}
+		}
+		parentControl.Controls = &children
+		controlMap[parentId] = parentControl
+		processed[parentId] = true
+	}
+
 	controls := make([]oscal.Control, 0, len(controlMap))
-	for _, control := range controlMap {
-		controls = append(controls, control)
+	for id, control := range controlMap {
+		if _, isChild := childControlIds[id]; !isChild {
+			controls = append(controls, control)
+		}
 	}
 
 	group.Controls = oscalUtils.NilIfEmpty(controls)
@@ -308,7 +367,7 @@ func processExternalControls(guidelines []gemara.Guideline, importMap map[string
 	alterationMap := make(map[string]*oscal.Alteration)
 
 	for _, guideline := range guidelines {
-		// Do not process guideline that extend local controls.
+		// Do not process guidelines that extend local controls.
 		// This is handled in catalogs.
 		if guideline.Extends == nil || guideline.Extends.ReferenceId == "" || guideline.Extends.EntryId == "" {
 			continue

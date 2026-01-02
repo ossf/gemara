@@ -174,6 +174,65 @@ func guidanceWithLocalExtends() gemara.GuidanceDocument {
 	}
 }
 
+// guidanceWithMultiLevelNested returns a guidance document with multi-level nested local extensions (AC-1 -> AC-1-ENH -> AC-1-ENH-2).
+func guidanceWithMultiLevelNested() gemara.GuidanceDocument {
+	return gemara.GuidanceDocument{
+		Title: "Test Guidance",
+		Metadata: gemara.Metadata{
+			Id:      "TEST-GUIDE",
+			Version: "1.0.0",
+			Author: gemara.Actor{
+				Id:   "test-author",
+				Name: "Test Author",
+				Type: gemara.Human,
+			},
+		},
+		DocumentType: gemara.DocumentType("Framework"),
+		Families: []gemara.Family{
+			{
+				Id:    "AC",
+				Title: "Access Control",
+			},
+		},
+		Guidelines: []gemara.Guideline{
+			{
+				Id:       "AC-1",
+				Title:    "Base Control",
+				Family:   "AC",
+				Objective: "Base control objective",
+			},
+			{
+				Id:     "AC-1-ENH",
+				Title:  "First Enhancement",
+				Family: "AC",
+				Extends: &gemara.SingleMapping{
+					EntryId: "AC-1",
+				},
+				Statements: []gemara.Statement{
+					{
+						Id:   "1",
+						Text: "First enhancement statement",
+					},
+				},
+			},
+			{
+				Id:     "AC-1-ENH-2",
+				Title:  "Second Enhancement",
+				Family: "AC",
+				Extends: &gemara.SingleMapping{
+					EntryId: "AC-1-ENH",
+				},
+				Statements: []gemara.Statement{
+					{
+						Id:   "1",
+						Text: "Second enhancement statement",
+					},
+				},
+			},
+		},
+	}
+}
+
 // guidanceWithImports returns a copy of the provided guidance document with an additional mapping reference added.
 func guidanceWithImports(base gemara.GuidanceDocument) gemara.GuidanceDocument {
 	mapping := gemara.MappingReference{
