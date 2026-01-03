@@ -30,11 +30,10 @@ guidelines:
     title: Human Feedback Loop for AI Systems
     objective: A Human Feedback Loop is a critical detective and continuous improvement mechanism that involves systematically collecting, analyzing, and acting upon feedback provided by human users, subject matter experts (SMEs), or reviewers regarding an AI system's performance, outputs, or behavior.
     rationale:
-      risks: []
-      outcomes:
-        - title: Governance Support
-          description: Provides data for AI governance bodies to monitor impact and make decisions
-    guideline-parts:
+      importance: A Human Feedback Loop is critical for ensuring AI systems operate effectively and safely by incorporating human judgment and expertise into continuous improvement processes.
+      goals:
+        - "Governance Support: Provides data for AI governance bodies to monitor impact and make decisions"
+    statements:
       - id: AIR-DET-011.1
         title: Designing the Feedback Mechanism
         text: Implementing an effective human feedback loop involves careful design of the mechanism.
@@ -78,19 +77,19 @@ guidelines:
     title: Example Detective Control 004
     objective: Placeholder control for testing references.
     rationale:
-      risks: []
-      outcomes: []
+      importance: Placeholder control for testing references.
+      goals: []
   - id: AIR-DET-015
     family: DET
     title: Example Detective Control 015
     objective: Placeholder control for testing references.
     rationale:
-      risks: []
-      outcomes: []
+      importance: Placeholder control for testing references.
+      goals: []
   - id: AIR-PREV-005
     family: PREV
     title: Example Preventive Control 005
     objective: Placeholder control for testing references.
     rationale:
-      risks: []
-      outcomes: []
+      importance: Placeholder control for testing references.
+      goals: []

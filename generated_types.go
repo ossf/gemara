@@ -260,13 +260,11 @@ type AssessmentLog struct {
 }
 
 type GuidanceDocument struct {
-	Metadata Metadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
-
 	Title string `json:"title" yaml:"title"`
 
-	DocumentType DocumentType `json:"document-type" yaml:"document-type"`
+	Metadata Metadata `json:"metadata" yaml:"metadata"`
 
-	Exemptions []Exemption `json:"exemptions,omitempty" yaml:"exemptions,omitempty"`
+	DocumentType DocumentType `json:"document-type" yaml:"document-type"`
 
 	// Introductory text for the document to be used during rendering
 	FrontMatter string `json:"front-matter,omitempty" yaml:"front-matter,omitempty"`
@@ -275,21 +273,12 @@ type GuidanceDocument struct {
 
 	Guidelines []Guideline `json:"guidelines,omitempty" yaml:"guidelines,omitempty"`
 
-	// For inheriting from other guidance documents to create tailored documents/baselines
-	ImportedGuidelines []MultiMapping `json:"imported-guidelines,omitempty" yaml:"imported-guidelines,omitempty"`
-
-	ImportedPrinciples []MultiMapping `json:"imported-principles,omitempty" yaml:"imported-principles,omitempty"`
+	Exemptions []Exemption `json:"exemptions,omitempty" yaml:"exemptions,omitempty"`
 }
 
 type DocumentType string
 
-// Exemption represents an exemption with a reason and optional redirect
-type Exemption struct {
-	Reason string `json:"reason" yaml:"reason"`
-
-	Redirect MultiMapping `json:"redirect,omitempty" yaml:"redirect,omitempty"`
-}
-
+// Guideline represents a single guideline within a guidance document
 type Guideline struct {
 	Id string `json:"id" yaml:"id"`
 
@@ -303,49 +292,37 @@ type Guideline struct {
 	// Maps to fields commonly seen in controls with implementation guidance
 	Recommendations []string `json:"recommendations,omitempty" yaml:"recommendations,omitempty"`
 
-	// For control enhancements (ex. AC-2(1) in 800-53)
-	// The base-guideline-id is needed to achieve full context for the enhancement
-	BaseGuidelineID string `json:"base-guideline-id,omitempty" yaml:"base-guideline-id,omitempty"`
+	// Extends allows you to add supplemental guidance within a local guidance document
+	// like a control enhancement or from an imported guidance document.
+	Extends *SingleMapping `json:"extends,omitempty" yaml:"extends,omitempty"`
+
+	// Applicability specifies the contexts in which this guideline applies.
+	Applicability []string `json:"applicability,omitempty" yaml:"applicability,omitempty"`
 
 	Rationale *Rationale `json:"rationale,omitempty" yaml:"rationale,omitempty"`
 
-	// Represents individual guideline parts/statements
-	GuidelineParts []Part `json:"guideline-parts,omitempty" yaml:"guideline-parts,omitempty"`
+	Statements []Statement `json:"statements,omitempty" yaml:"statements,omitempty"`
 
-	// Crosswalking this guideline to other guidelines in other documents
 	GuidelineMappings []MultiMapping `json:"guideline-mappings,omitempty" yaml:"guideline-mappings,omitempty"`
 
 	// A list for associated key principle ids
 	PrincipleMappings []MultiMapping `json:"principle-mappings,omitempty" yaml:"principle-mappings,omitempty"`
 
-	// This is akin to related controls, but using more explicit terminology
+	// SeeAlso lists related guideline IDs within the same Guidance document.
 	SeeAlso []string `json:"see-also,omitempty" yaml:"see-also,omitempty"`
 }
 
 // Rationale provides contextual information to help with development and understanding of
 // guideline intent.
 type Rationale struct {
-	// Negative results expected from the guideline's lack of implementation
-	Risks []Risk `json:"risks" yaml:"risks"`
+	Importance string `json:"importance" yaml:"importance"`
 
-	// Positive results expected from the guideline's implementation
-	Outcomes []Outcome `json:"outcomes" yaml:"outcomes"`
+	Goals []string `json:"goals" yaml:"goals"`
 }
 
-type Risk struct {
-	Title string `json:"title" yaml:"title"`
-
-	Description string `json:"description" yaml:"description"`
-}
-
-type Outcome struct {
-	Title string `json:"title" yaml:"title"`
-
-	Description string `json:"description" yaml:"description"`
-}
-
-// Parts include sub-statements of a guideline that can be assessed individually
-type Part struct {
+// Statement represents a structural sub-requirement within a guideline
+// They do not increase strictness and all statements within a guideline apply together.
+type Statement struct {
 	Id string `json:"id" yaml:"id"`
 
 	Title string `json:"title,omitempty" yaml:"title,omitempty"`
@@ -353,6 +330,18 @@ type Part struct {
 	Text string `json:"text" yaml:"text"`
 
 	Recommendations []string `json:"recommendations,omitempty" yaml:"recommendations,omitempty"`
+}
+
+// Exemption represents those who are exempt from the full guidance document.
+type Exemption struct {
+	// Description identifies who or what is exempt from the full guidance
+	Description string `json:"description" yaml:"description"`
+
+	// Reason explains why the exemption is granted
+	Reason string `json:"reason" yaml:"reason"`
+
+	// Redirect points to alternative guidelines or controls that should be followed instead
+	Redirect *MultiMapping `json:"redirect,omitempty" yaml:"redirect,omitempty"`
 }
 
 // Policy represents a policy document with metadata, contacts, scope, imports, implementation plan, risks, and adherence requirements.
