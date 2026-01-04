@@ -1,11 +1,9 @@
 package oscal
 
 import (
-	"os"
 	"testing"
 
 	oscalTypes "github.com/defenseunicorns/go-oscal/src/types/oscal-1-1-3"
-	"github.com/goccy/go-yaml"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/ossf/gemara"
@@ -81,6 +79,7 @@ func TestToCatalogFromGuidance(t *testing.T) {
 		guidance   gemara.GuidanceDocument
 		wantGroups []oscalTypes.Group
 		wantErr    bool
+		assertFunc func(*testing.T, oscalTypes.Catalog)
 	}{
 		{
 			name:     "Good AIGF",
@@ -253,6 +252,38 @@ func TestToCatalogFromGuidance(t *testing.T) {
 			guidance: gemara.GuidanceDocument{},
 			wantErr:  true,
 		},
+		{
+			name:     "Success/MultiLevelNestedControls",
+			guidance: guidanceWithMultiLevelNested(),
+			wantErr:  false,
+			assertFunc: func(t *testing.T, catalog oscalTypes.Catalog) {
+				require.NotNil(t, catalog.Groups)
+				groups := *catalog.Groups
+				require.Len(t, groups, 1)
+
+				acGroup := groups[0]
+				assert.Equal(t, "AC", acGroup.ID)
+				require.NotNil(t, acGroup.Controls)
+				controls := *acGroup.Controls
+				require.Len(t, controls, 1)
+
+				ac1 := controls[0]
+				assert.Equal(t, "ac-1", ac1.ID)
+				require.NotNil(t, ac1.Controls)
+				ac1Children := *ac1.Controls
+				require.Len(t, ac1Children, 1)
+
+				ac1Enh := ac1Children[0]
+				assert.Equal(t, "ac-1-enh", ac1Enh.ID)
+				require.NotNil(t, ac1Enh.Controls)
+				ac1EnhChildren := *ac1Enh.Controls
+				require.Len(t, ac1EnhChildren, 1)
+
+				ac1Enh2 := ac1EnhChildren[0]
+				assert.Equal(t, "ac-1-enh-2", ac1Enh2.ID)
+				assert.Nil(t, ac1Enh2.Controls)
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -264,90 +295,57 @@ func TestToCatalogFromGuidance(t *testing.T) {
 				catalogModel := oscalTypes.OscalModels{Catalog: &catalog}
 				err = oscalUtils.Validate(catalogModel)
 				assert.NoError(t, err)
-				// Sort slices to ignore order when comparing
-				sortGroups := cmpopts.SortSlices(func(a, b oscalTypes.Group) bool {
-					return a.ID < b.ID
-				})
-				sortControls := cmpopts.SortSlices(func(a, b oscalTypes.Control) bool {
-					return a.ID < b.ID
-				})
-				if diff := cmp.Diff(tt.wantGroups, *catalog.Groups, cmpopts.IgnoreFields(oscalTypes.Link{}, "Href"), sortGroups, sortControls); diff != "" {
-					t.Errorf("group mismatch (-want +got):\n%s", diff)
+				if tt.assertFunc != nil {
+					tt.assertFunc(t, catalog)
+				} else {
+					// Sort slices to ignore order when comparing
+					sortGroups := cmpopts.SortSlices(func(a, b oscalTypes.Group) bool {
+						return a.ID < b.ID
+					})
+					sortControls := cmpopts.SortSlices(func(a, b oscalTypes.Control) bool {
+						return a.ID < b.ID
+					})
+					if diff := cmp.Diff(tt.wantGroups, *catalog.Groups, cmpopts.IgnoreFields(oscalTypes.Link{}, "Href"), sortGroups, sortControls); diff != "" {
+						t.Errorf("group mismatch (-want +got):\n%s", diff)
+					}
 				}
 			}
 		})
 	}
 }
 
-func TestToProfileFromGuidance(t *testing.T) {
+func TestProfileFromGuidanceDocument(t *testing.T) {
 	goodAIFG, err := goodAIGFExample()
 	require.NoError(t, err)
 
-	guidanceWithImports := goodAIFG
-	// Add some shared guidelines
-	mapping := gemara.MappingReference{
-		Id:          "EXP",
-		Description: "Example",
-		Version:     "0.1.0",
-		Url:         "https://example.com",
-	}
-
-	importedGuidelines := gemara.MultiMapping{
-		ReferenceId: "EXP",
-		Entries: []gemara.MappingEntry{
-			{
-				ReferenceId: "EX-1",
-			},
-			{
-				// Intentionally adding a control that
-				// needs to be normalized
-				ReferenceId: "EX-1(2)",
-			},
-			{
-				ReferenceId: "EX-2",
-			},
-		},
-	}
-	guidanceWithImports.Metadata.MappingReferences = append(guidanceWithImports.Metadata.MappingReferences, mapping)
-	guidanceWithImports.ImportedGuidelines = append(guidanceWithImports.ImportedGuidelines, importedGuidelines)
+	guidanceWithImports := guidanceWithImports(goodAIFG)
+	guidanceWithExternalExtends := guidanceWithExternalExtends()
+	guidanceWithMerging := guidanceWithMerging()
+	guidanceWithLocalExtends := guidanceWithLocalExtends()
 
 	tests := []struct {
-		name        string
-		guidance    gemara.GuidanceDocument
-		options     []GenerateOption
-		wantImports []oscalTypes.Import
+		name               string
+		guidance           gemara.GuidanceDocument
+		options            []GenerateOption
+		wantModify         bool
+		wantAlterations    int
+		wantImports        int
+		wantImportControls bool
+		assertFunc         func(*testing.T, oscalTypes.Profile)
 	}{
 		{
-			name:     "Success/LocalOnly",
-			guidance: goodAIFG,
-			wantImports: []oscalTypes.Import{
-				{
-					Href:       "testHref",
-					IncludeAll: &oscalTypes.IncludeAll{},
-				},
-			},
+			name:               "Success/LocalOnly",
+			guidance:           goodAIFG,
+			wantModify:         false,
+			wantImports:        1,
+			wantImportControls: false,
 		},
 		{
-			name:     "Success/WithImports",
-			guidance: guidanceWithImports,
-			wantImports: []oscalTypes.Import{
-				{
-					Href: "https://example.com",
-					IncludeControls: &[]oscalTypes.SelectControlById{
-						{
-							WithIds: &[]string{
-								"ex-1",
-								"ex-1.2",
-								"ex-2",
-							},
-						},
-					},
-				},
-				{
-					Href:       "testHref",
-					IncludeAll: &oscalTypes.IncludeAll{},
-				},
-			},
+			name:               "Success/WithImports",
+			guidance:           guidanceWithImports,
+			wantModify:         false,
+			wantImports:        1,
+			wantImportControls: false,
 		},
 		{
 			name:     "Success/WithImportOverride",
@@ -357,24 +355,43 @@ func TestToProfileFromGuidance(t *testing.T) {
 					"EXP": "https://example.com/oscal",
 				}),
 			},
-			wantImports: []oscalTypes.Import{
-				{
-					Href: "https://example.com/oscal",
-					IncludeControls: &[]oscalTypes.SelectControlById{
-						{
-							WithIds: &[]string{
-								"ex-1",
-								"ex-1.2",
-								"ex-2",
-							},
-						},
-					},
-				},
-				{
-					Href:       "testHref",
-					IncludeAll: &oscalTypes.IncludeAll{},
-				},
+			wantModify:         false,
+			wantImports:        1,
+			wantImportControls: false,
+		},
+		{
+			name:     "Success/WithExternalExtends",
+			guidance: guidanceWithExternalExtends,
+			options: []GenerateOption{
+				WithOSCALImports(map[string]string{
+					"NIST-800-53": "https://nist.gov/800-53",
+				}),
 			},
+			wantModify:         true,
+			wantAlterations:    1,
+			wantImports:        2,
+			wantImportControls: true,
+		},
+		{
+			name:     "Success/WithMerging",
+			guidance: guidanceWithMerging,
+			options: []GenerateOption{
+				WithOSCALImports(map[string]string{
+					"NIST-800-53": "https://nist.gov/800-53",
+				}),
+			},
+			wantModify:         true,
+			wantAlterations:    1,
+			wantImports:        2,
+			wantImportControls: true,
+			assertFunc:         assertMergedParts,
+		},
+		{
+			name:               "Success/WithLocalExtends",
+			guidance:           guidanceWithLocalExtends,
+			wantModify:         false,
+			wantImports:        1,
+			wantImportControls: false,
 		},
 	}
 
@@ -382,23 +399,74 @@ func TestToProfileFromGuidance(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			_, profile, err := FromGuidance(&tt.guidance, "testHref", tt.options...)
 			require.NoError(t, err)
-			profileModel := oscalTypes.OscalModels{Profile: &profile}
-			assert.NoError(t, oscalUtils.Validate(profileModel))
+			oscalDocument := oscalTypes.OscalModels{
+				Profile: &profile,
+			}
+			assert.NoError(t, oscalUtils.Validate(oscalDocument))
 
-			assert.Equal(t, tt.wantImports, profile.Imports)
+			if tt.wantModify {
+				require.NotNil(t, profile.Modify)
+				require.NotNil(t, profile.Modify.Alters)
+				assert.Equal(t, tt.wantAlterations, len(*profile.Modify.Alters))
+
+				alterations := *profile.Modify.Alters
+				assert.Equal(t, "ac-1", alterations[0].ControlId)
+				require.NotNil(t, alterations[0].Adds)
+				assert.Greater(t, len(*alterations[0].Adds), 0)
+			} else {
+				assert.Nil(t, profile.Modify)
+			}
+
+			assert.Equal(t, tt.wantImports, len(profile.Imports))
+
+			hasControlImport := false
+			for _, imp := range profile.Imports {
+				if imp.IncludeControls != nil {
+					hasControlImport = true
+					selectors := *imp.IncludeControls
+					assert.Greater(t, len(selectors), 0)
+					if len(selectors) > 0 {
+						assert.NotNil(t, selectors[0].WithIds)
+						controlIds := *selectors[0].WithIds
+						assert.Contains(t, controlIds, "ac-1")
+					}
+				}
+			}
+			assert.Equal(t, tt.wantImportControls, hasControlImport)
+
+			if tt.assertFunc != nil {
+				tt.assertFunc(t, profile)
+			}
 		})
 	}
 }
 
-func goodAIGFExample() (gemara.GuidanceDocument, error) {
-	testdataPath := "../test-data/good-aigf.yaml"
-	data, err := os.ReadFile(testdataPath)
-	if err != nil {
-		return gemara.GuidanceDocument{}, err
+func assertMergedParts(t *testing.T, profile oscalTypes.Profile) {
+	require.NotNil(t, profile.Modify)
+	require.NotNil(t, profile.Modify.Alters)
+	alterations := *profile.Modify.Alters
+	require.NotNil(t, alterations[0].Adds)
+	require.Greater(t, len(*alterations[0].Adds), 0)
+
+	firstAddition := (*alterations[0].Adds)[0]
+	require.NotNil(t, firstAddition.Parts)
+	parts := *firstAddition.Parts
+
+	assert.GreaterOrEqual(t, len(parts), 2, "Merged parts should have parts from both guidelines")
+	hasFirstStatement := false
+	hasSecondStatement := false
+	for _, part := range parts {
+		if part.Name == "statement" && part.Parts != nil {
+			for _, subPart := range *part.Parts {
+				if subPart.Prose == "First statement" {
+					hasFirstStatement = true
+				}
+				if subPart.Prose == "Second statement" {
+					hasSecondStatement = true
+				}
+			}
+		}
 	}
-	var l1Docs gemara.GuidanceDocument
-	if err := yaml.Unmarshal(data, &l1Docs); err != nil {
-		return gemara.GuidanceDocument{}, err
-	}
-	return l1Docs, nil
+	assert.True(t, hasFirstStatement, "First statement should be present in merged parts")
+	assert.True(t, hasSecondStatement, "Second statement should be present in merged parts")
 }
