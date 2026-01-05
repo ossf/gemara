@@ -521,7 +521,7 @@ type AcceptedMethod struct {
 
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 
-	Actor Actor `json:"actor,omitempty" yaml:"actor,omitempty"`
+	Executor Actor `json:"executor,omitempty" yaml:"executor,omitempty"`
 }
 
 // AssessmentPlan defines how a specific assessment requirement is evaluated.
