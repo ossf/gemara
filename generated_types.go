@@ -157,7 +157,9 @@ type MultiMapping struct {
 type MappingEntry struct {
 	ReferenceId string `json:"reference-id" yaml:"reference-id"`
 
-	Strength int64 `json:"strength" yaml:"strength"`
+	// Strength quantifies the degree of correlation or relationship between the mapped items.
+	// Range: 1-10. Zero value means not yet quantified.
+	Strength int64 `json:"strength,omitempty" yaml:"strength,omitempty"`
 
 	Remarks string `json:"remarks,omitempty" yaml:"remarks,omitempty"`
 }
