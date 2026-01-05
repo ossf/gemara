@@ -35,6 +35,8 @@ package schemas
 // MappingEntry represents a single entry within a mapping
 #MappingEntry: {
 	"reference-id": string @go(ReferenceId)
-	strength:       int & >=1 & <=10
-	remarks?:       string
+	// Strength quantifies the degree of correlation or relationship between the mapped items.
+	// Range: 1-10. Zero value means not yet quantified.
+	strength?: int & >=1 & <=10
+	remarks?:  string
 }
