@@ -107,7 +107,7 @@ package schemas
 #AcceptedMethod: {
 	type:         #MethodType | string
 	description?: string
-	actor?:       #Actor
+	executor?:    #Actor
 }
 
 #MethodType: "manual" | "behavioral" | "automated" | "autoremediation" | "gate"
