@@ -4,11 +4,11 @@ As a developing project, Gemara aims to have a quick development cycle where dec
 
 Gemara has no formal collegiate body in charge of steering. Decisions are guided by the consensus of community members who have achieved maintainer status.
 
-While maintainer consensus shall be the process for decision making, all issues and proposals shall be governed by the project's [Guiding Governance Principles](#guiding-governance-principles).
+While maintainer consensus shall be the process for decision making, all issues and proposals shall be governed by the project's [Guiding Governance Principles].
 
 ## Guiding Governance Principles
 
-Any issues or proposals brought to the project's maintainers shall be framed in the [Guiding Governance Principles](#guiding-governance-principles).
+Any issues or proposals brought to the project's maintainers shall be framed in the [Guiding Governance Principles].
 Proposals not adhering to said principles shall not be considered for consensus.
 
 ### Follow Layer-Based Architecture
@@ -46,6 +46,15 @@ Community members may become maintainer candidates through:
 
 Nominations are submitted via pull request to update Gemara's [MAINTAINERS.md]. After validation, [maintainer consensus] is sought. Upon consensus, the PR is merged to confirm the new maintainer.
 
+#### Responsibilities & Privileges
+
+Maintainers guide the project's technical direction and make decisions through [maintainer consensus]. Maintainers must uphold the [Guiding Governance Principles] and ensure all proposals align with them.
+
+- Maintainers can review, approve, and merge pull requests.
+- Maintainers have access to repository management settings.
+- Maintainers have binding votes in [maintainer consensus] decisions.
+- Maintainers can form [sponsoring committees] to nominate new maintainers and Community Managers.
+
 #### Continued Maintainer Status
 
 Maintainer status requires regular activity and adherence to the [OpenSSF Code of Conduct](https://openssf.org/community/code-of-conduct/).
@@ -62,7 +71,7 @@ Community members may become Community Managers through:
 - Nomination by a [sponsoring committee] at any time.
 - Self-nomination after actively contributing to Gemara in areas such as moderation, event organization, content creation, and user support.
 
-Nominations are submitted via pull request to update Gemara's [MAINTAINERS.md] under `Community Managers`. After validation, there must be **unanimous approval** from all active maintainers. Upon consensus, the PR is merged to confirm the new maintainer.
+Nominations are submitted via pull request to update Gemara's [MAINTAINERS.md] under `Community Managers`. After validation, there must be **unanimous approval** from all active maintainers. Upon consensus, the PR is merged to confirm the new community manager.
 
 Removal requires approval from at least 66% of active maintainers.
 
@@ -91,3 +100,4 @@ This document was adapted from the Security Baseline Governance [documentation](
 [MAINTAINERS.md]: ./MAINTAINERS.md
 [maintainer consensus]: #maintainer-consensus
 [Sponsoring Committee]: #sponsoring-committees
+[Guiding Governance Principles]: #guiding-governance-principles
