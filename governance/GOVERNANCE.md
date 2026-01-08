@@ -62,10 +62,9 @@ Community members may become Community Managers through:
 - Nomination by a [sponsoring committee] at any time.
 - Self-nomination after actively contributing to Gemara in areas such as moderation, event organization, content creation, and user support.
 
-Nominations are submitted via pull request to update Gemara's [MAINTAINERS.md] under `Community Managers`.
+Nominations are submitted via pull request to update Gemara's [MAINTAINERS.md] under `Community Managers`. After validation, there must be **unanimous approval** from all active maintainers. Upon consensus, the PR is merged to confirm the new maintainer.
 
-- **Appointment:** Requires **unanimous approval** from all active maintainers.
-- **Removal:** Requires approval from at least 66% of active maintainers.
+Removal requires approval from at least 66% of active maintainers.
 
 #### Responsibilities & Privileges
 
