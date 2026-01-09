@@ -4,11 +4,11 @@ As a developing project, Gemara aims to have a quick development cycle where dec
 
 Gemara has no formal collegiate body in charge of steering. Decisions are guided by the consensus of community members who have achieved maintainer status.
 
-While maintainer consensus shall be the process for decision making, all issues and proposals shall be governed by the project's [Guiding Governance Principles](#guiding-governance-principles).
+While maintainer consensus shall be the process for decision making, all issues and proposals shall be governed by the project's [Guiding Governance Principles].
 
 ## Guiding Governance Principles
 
-Any issues or proposals brought to the project's maintainers shall be framed in the [Guiding Governance Principles](#guiding-governance-principles).
+Any issues or proposals brought to the project's maintainers shall be framed in the [Guiding Governance Principles].
 Proposals not adhering to said principles shall not be considered for consensus.
 
 ### Follow Layer-Based Architecture
@@ -35,7 +35,9 @@ In the context of this document, "maintainer consensus" means collecting approva
 
 This document does not prescribe a method of voting. Any mechanism that enables the collection of positive/negative votes associated with an identity may be used. Examples of this include voting through "thumbs up/down" emojis or with "+1" comments in issues.
 
-## Maintainer Status
+## Contributor Roles
+
+### Maintainer Role
 
 Community members may become maintainer candidates through:
 
@@ -44,19 +46,48 @@ Community members may become maintainer candidates through:
 
 Nominations are submitted via pull request to update Gemara's [MAINTAINERS.md]. After validation, [maintainer consensus] is sought. Upon consensus, the PR is merged to confirm the new maintainer.
 
-### Sponsoring Committees
+#### Responsibilities & Privileges
 
-A sponsoring committee must have at least two members. When maintainers represent three or more organizations, committee members must be from different organizations.
+Maintainers guide the project's technical direction and make decisions through [maintainer consensus]. Maintainers must uphold the [Guiding Governance Principles] and ensure all proposals align with them.
 
-### Continued Maintainer Status
+- Maintainers can review, approve, and merge pull requests.
+- Maintainers have access to repository management settings.
+- Maintainers have binding votes in [maintainer consensus] decisions.
+- Maintainers can form [sponsoring committees] to nominate new maintainers and Community Managers.
+
+#### Continued Maintainer Status
 
 Maintainer status requires regular activity and adherence to the [OpenSSF Code of Conduct](https://openssf.org/community/code-of-conduct/).
 
-### Emeritus Maintainers
+#### Emeritus Maintainers
 
 Emeritus maintainers are listed in a separate section on Gemara's [MAINTAINERS.md].
 A maintainer may be given Emeritus status after six months of inactivity (e.g., no pull request or issue interactions) or may self-assign Emeritus status via pull request.
 A maintainer may return from Emeritus status through [maintainer consensus] and a pull request.
+
+### Community Manager Role
+
+Community members may become Community Managers through:
+- Nomination by a [sponsoring committee] at any time.
+- Self-nomination after actively contributing to Gemara in areas such as moderation, event organization, content creation, and user support.
+
+Nominations are submitted via pull request to update Gemara's [MAINTAINERS.md] under `Community Managers`. After validation, there must be **unanimous approval** from all active maintainers. Upon consensus, the PR is merged to confirm the new community manager.
+
+Removal of a community manager requires [maintainer consensus] on a corresponding pull request.
+
+#### Responsibilities & Privileges
+
+Community Managers manage community engagement and outreach without maintainer responsibilities.
+
+- Community Managers receive access to Gemara community tools (GitHub Pages, social media accounts, etc.).
+- The nature of the role is neutral facilitator; thus, they **do not** have a binding vote in [maintainer consensus].
+
+### Sponsoring Committees
+
+To nominate a community member as a candidate for a role, a group of maintainers may file a nomination. The committee shall meet the following criteria to be qualified to file the nomination:
+
+- The number of members in the committee shall not be less than two (2).
+- Whenever the number of organizations with maintainers in the project is more than two (2), committee members shall be from different organizations.
 
 ## Revisions to the Governance Model
 
@@ -69,3 +100,4 @@ This document was adapted from the Security Baseline Governance [documentation](
 [MAINTAINERS.md]: ./MAINTAINERS.md
 [maintainer consensus]: #maintainer-consensus
 [Sponsoring Committee]: #sponsoring-committees
+[Guiding Governance Principles]: #guiding-governance-principles
