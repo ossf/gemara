@@ -73,7 +73,7 @@ Community members may become Community Managers through:
 
 Nominations are submitted via pull request to update Gemara's [MAINTAINERS.md] under `Community Managers`. After validation, there must be **unanimous approval** from all active maintainers. Upon consensus, the PR is merged to confirm the new community manager.
 
-Removal requires approval from at least 66% of active maintainers.
+Removal of a community manager requires [maintainer consensus] on a corresponding pull request.
 
 #### Responsibilities & Privileges
 
