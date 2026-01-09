@@ -6,4 +6,8 @@
 - Eddie Knight, Sonatype (@eddie-knight)
 - Travis Truman, CVS Health (@trumant)
 
+## Community Managers
+
+- Hannah Braswell, Red Hat (@hbraswelrh)
+
 Additions and status changes may be made via the processes outlined in the [governance](./GOVERNANCE.md) document.
