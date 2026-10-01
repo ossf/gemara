@@ -33,21 +33,21 @@ categories:
       - "performance"
 change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
 version-resolver:
+  # Dependabot applies "major", "minor", and "patch" labels to its PRs when
+  # those labels exist in the repo. A dependency's semver bump says nothing
+  # about this project's API, so only human-applied labels drive the resolver.
   major:
     labels:
       - "breaking"
-      - "major"
   minor:
     labels:
       - "feature"
       - "enhancement"
-      - "minor"
   patch:
     labels:
       - "fix"
       - "documentation"
       - "maintenance"
-      - "patch"
   default: patch
 autolabeler:
   - label: "automation"
