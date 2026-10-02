@@ -138,6 +138,16 @@ mappings:
           requirement strengthens the CRA 2.4 relationship by providing
           machine-readable exploitability data beyond basic disclosure.
 
+  - id: CRA-2.4-VM04
+    source: "2.4"
+    relationship: subsumed-by
+    targets:
+      - entry-id: OSPS-VM-04
+        confidence-level: High
+        rationale: >
+          CRA 2.4 is narrower than OSPS-VM-04's VEX documentation scope,
+          so the target entry subsumes the source.
+
   - id: GV01-no-match
     source: OSPS-GV-01
     relationship: no-match
