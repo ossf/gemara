@@ -101,6 +101,8 @@ package gemara
 	"equivalent" |
 	// source fully contains the target's scope and more
 	"subsumes" |
+	// target fully contains the source's scope and more
+	"subsumed-by" |
 	// source has no counterpart in the target artifact
 	"no-match" |
 	// source and target are related but the nature is unspecified
