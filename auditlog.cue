@@ -97,6 +97,9 @@ import "list"
 
 	// description explains what this evidence represents
 	description?: string
+
+	// retention records the obligations governing how long this evidence must be kept
+	retention?: #Retention @go(Retention,optional=nillable)
 }
 
 // _EvidenceStrict layers the "at least one of payload or source" rule on top of #Evidence
@@ -113,3 +116,48 @@ import "list"
 // recommended values include artifact types already known to Gemara (e.g.
 // EvaluationLog, EnforcementLog) plus categories for common evidence forms.
 #EvidenceType: #ArtifactType | string @go(-)
+
+// Retention records the obligations governing how long referenced evidence must
+// be kept, and any preservation holds suspending their disposition.
+// Conflicting obligations are recorded side by side rather than reconciled by the producer.
+#Retention: {
+	// obligations records each retention rule that applies to this evidence and
+	// the instant it resolves to
+	obligations?: [#RetentionObligationRef, ...#RetentionObligationRef]
+
+	// holds records preservation holds in effect when this artifact was published.
+	// While any entry lacks released, the referenced evidence must not be destroyed,
+	// regardless of any effective instant in obligations, including a maximum.
+	// Absence of this field is not evidence that no hold exists: a hold issued after
+	// publication cannot appear in an immutable artifact.
+	holds?: [#PreservationHold, ...#PreservationHold]
+
+	if holds != _|_ {
+		_uniqueHoldIds: {for i, h in holds {(h.id): i}}
+	}
+}
+
+// RetentionObligationRef ties a resolved instant to the obligation that produced it.
+#RetentionObligationRef: {
+	// obligation references a retention-obligations entry in the governing Policy
+	obligation: #EntryMapping
+
+	// effective is the instant this obligation resolves to for this evidence
+	effective: #Datetime
+}
+
+// PreservationHold records a legal, regulatory, or investigatory hold that
+// suspends disposition of the referenced evidence.
+#PreservationHold: {
+	// id uniquely identifies this hold within the citation
+	id: string
+
+	// matter references the legal matter, regulatory order, or hold notice
+	matter: #EntryMapping
+
+	// issued is when the hold took effect
+	issued: #Datetime
+
+	// released is when the hold was lifted; absent means in effect at publication
+	released?: #Datetime
+}

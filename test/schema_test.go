@@ -82,6 +82,15 @@ func TestSchemaValidation(t *testing.T) {
 		// Policy — positive
 		{"valid policy", "./test-data/good-policy.yaml", "#Policy", false, ""},
 		{"valid security policy", "./test-data/good-security-policy.yml", "#Policy", false, ""},
+		{"policy with retention floor, ceiling and declared anchor", "./test-data/good-policy-retention.yaml", "#Policy", false, ""},
+
+		// Policy — negative (retention)
+		{"retention obligation measured from an undeclared anchor", "./test-data/bad-policy-retention-undeclared-anchor.yaml", "#Policy", true, `does not satisfy list.Contains("employee-separation")`},
+		{"retention duration below day precision", "./test-data/bad-policy-retention-subday-duration.yaml", "#Policy", true, `invalid value "PT1H"`},
+		{"retention duration with no components", "./test-data/bad-policy-retention-empty-duration.yaml", "#Policy", true, `invalid value "P"`},
+		{"duplicate retention obligation id", "./test-data/bad-policy-retention-duplicate-obligation-id.yaml", "#Policy", true, `_uniqueRetentionObligationIds."RET-AUDIT-7Y"`},
+		{"duplicate retention anchor id", "./test-data/bad-policy-retention-duplicate-anchor-id.yaml", "#Policy", true, `_uniqueRetentionAnchorIds."matter-closed"`},
+		{"retention anchor redeclaring collected-at", "./test-data/bad-policy-retention-redeclared-collected-at.yaml", "#Policy", true, `_uniqueRetentionAnchorIds."collected-at"`},
 
 		// ControlCatalog — negative
 		{"invalid YAML", "./test-data/bad.yaml", "#ControlCatalog", true, ""},
@@ -123,6 +132,7 @@ func TestSchemaValidation(t *testing.T) {
 		// AuditLog — positive
 		{"valid audit log", "./test-data/good-audit-log.yaml", "#AuditLog", false, ""},
 		{"audit log evidence mapping with both coordinate and entry-id", "./test-data/good-audit-log-coordinate-and-entry-id.yaml", "#AuditLog", false, ""},
+		{"audit log evidence under conflicting retention obligations and a hold", "./test-data/good-audit-log-retention.yaml", "#AuditLog", false, ""},
 
 		// AuditLog — negative
 		{"audit log missing summary criteria and results", "./test-data/bad-audit-log.yaml", "#AuditLog", true, ""},
@@ -132,6 +142,8 @@ func TestSchemaValidation(t *testing.T) {
 		{"audit log mapping reference url with no scheme", "./test-data/bad-audit-log-url-no-scheme.yaml", "#AuditLog", true, ""},
 		{"audit log mapping reference url with a non-alphabetic scheme", "./test-data/bad-audit-log-url-invalid-scheme.yaml", "#AuditLog", true, ""},
 		{"audit log target uri with no scheme", "./test-data/bad-audit-log-uri-no-scheme.yaml", "#AuditLog", true, ""},
+		{"retention obligation reference without an effective instant", "./test-data/bad-audit-log-retention-missing-effective.yaml", "#AuditLog", true, "obligations.1.effective"},
+		{"duplicate preservation hold id", "./test-data/bad-audit-log-retention-duplicate-hold-id.yaml", "#AuditLog", true, `_uniqueHoldIds."HOLD-01"`},
 
 		// CapabilityCatalog — negative
 		{"capability with invalid group", "./test-data/bad-capability-invalid-group.yaml", "#CapabilityCatalog", true, ""},
