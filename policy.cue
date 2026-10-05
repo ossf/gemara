@@ -99,9 +99,15 @@ package gemara
 // Adherence defines evaluation methods, assessment plans, enforcement methods, and non-compliance notifications.
 #Adherence: {
 	"evaluation-methods"?: [#AcceptedMethod & {type: #EvaluationMethodType}, ...#AcceptedMethod & {type: #EvaluationMethodType}] @go(EvaluationMethods)
-	"assessment-plans"?: [#AssessmentPlan, ...#AssessmentPlan] @go(AssessmentPlans)
+	AP="assessment-plans"?: [#AssessmentPlan, ...#AssessmentPlan] @go(AssessmentPlans)
 	"enforcement-methods"?: [#AcceptedMethod & {type: #EnforcementMethodType}, ...#AcceptedMethod & {type: #EnforcementMethodType}] @go(EnforcementMethods)
 	"non-compliance"?: string @go(NonCompliance)
+
+	// An assessment log names the plan it ran under by id, so a plan id must name one
+	// plan within a policy.
+	if AP != _|_ {
+		_uniquePlanIds: {for i, p in AP {"\(p.id)": i}}
+	}
 }
 
 // AssessmentPlan defines how a specific assessment requirement is evaluated.
@@ -141,6 +147,10 @@ package gemara
 	// Method ranks within one assessment plan must be unique, so that a rank-based
 	// conflict resolution has a total order to work with.
 	_uniqueRanks: {for i, m in EM if m.rank != _|_ {"\(m.rank)": i}}
+
+	// An assessment log names the method that produced it by id, so a method id must
+	// name one method within its plan.
+	_uniqueMethodIds: {for i, m in EM {"\(m.id)": i}}
 }
 
 // AcceptedMethod defines a method for evaluation or enforcement.
