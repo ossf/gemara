@@ -117,24 +117,13 @@ import "list"
 // EvaluationLog, EnforcementLog) plus categories for common evidence forms.
 #EvidenceType: #ArtifactType | string @go(-)
 
-// Retention records the obligations governing how long referenced evidence must
-// be kept, and any preservation holds suspending their disposition.
+// Retention records the resolved policy obligations governing referenced evidence.
+// Each effective instant is a snapshot for this evidence at publication.
 // Conflicting obligations are recorded side by side rather than reconciled by the producer.
 #Retention: {
 	// obligations records each retention rule that applies to this evidence and
 	// the instant it resolves to
 	obligations?: [#RetentionObligationRef, ...#RetentionObligationRef]
-
-	// holds records preservation holds in effect when this artifact was published.
-	// While any entry lacks released, the referenced evidence must not be destroyed,
-	// regardless of any effective instant in obligations, including a maximum.
-	// Absence of this field is not evidence that no hold exists: a hold issued after
-	// publication cannot appear in an immutable artifact.
-	holds?: [#PreservationHold, ...#PreservationHold]
-
-	if holds != _|_ {
-		_uniqueHoldIds: {for i, h in holds {(h.id): i}}
-	}
 }
 
 // RetentionObligationRef ties a resolved instant to the obligation that produced it.
@@ -144,20 +133,4 @@ import "list"
 
 	// effective is the instant this obligation resolves to for this evidence
 	effective: #Datetime
-}
-
-// PreservationHold records a legal, regulatory, or investigatory hold that
-// suspends disposition of the referenced evidence.
-#PreservationHold: {
-	// id uniquely identifies this hold within the citation
-	id: string
-
-	// matter references the legal matter, regulatory order, or hold notice
-	matter: #EntryMapping
-
-	// issued is when the hold took effect
-	issued: #Datetime
-
-	// released is when the hold was lifted; absent means in effect at publication
-	released?: #Datetime
 }

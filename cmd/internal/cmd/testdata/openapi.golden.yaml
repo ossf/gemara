@@ -1689,32 +1689,6 @@ components:
       - adherence
       type: object
       x-status: experimental
-    PreservationHold:
-      description: |-
-        PreservationHold records a legal, regulatory, or investigatory hold that
-        suspends disposition of the referenced evidence.
-      properties:
-        id:
-          description: id uniquely identifies this hold within the citation
-          type: string
-        issued:
-          allOf:
-          - $ref: "#/components/schemas/Datetime"
-          description: issued is when the hold took effect
-        matter:
-          allOf:
-          - $ref: "#/components/schemas/EntryMapping"
-          description: matter references the legal matter, regulatory order, or hold notice
-        released:
-          allOf:
-          - $ref: "#/components/schemas/Datetime"
-          description: released is when the hold was lifted; absent means in effect at publication
-      required:
-      - id
-      - matter
-      - issued
-      type: object
-      x-status: experimental
     Principle:
       description: Principle represents a foundational value or tenet that guides governance, design, and operational decisions
       properties:
@@ -1883,16 +1857,10 @@ components:
       x-status: experimental
     Retention:
       description: |-
-        Retention records the obligations governing how long referenced evidence must
-        be kept, and any preservation holds suspending their disposition.
+        Retention records the resolved policy obligations governing referenced evidence.
+        Each effective instant is a snapshot for this evidence at publication.
         Conflicting obligations are recorded side by side rather than reconciled by the producer.
       properties:
-        holds:
-          description: "holds records preservation holds in effect when this artifact was published.\nWhile any entry lacks released, the referenced evidence must not be destroyed,\nregardless of any effective instant in obligations, including a maximum.\nAbsence of this field is not evidence that no hold exists: a hold issued after\npublication cannot appear in an immutable artifact."
-          items:
-            $ref: "#/components/schemas/PreservationHold"
-          minItems: 1
-          type: array
         obligations:
           description: |-
             obligations records each retention rule that applies to this evidence and

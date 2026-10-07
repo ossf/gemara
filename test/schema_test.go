@@ -132,7 +132,7 @@ func TestSchemaValidation(t *testing.T) {
 		// AuditLog — positive
 		{"valid audit log", "./test-data/good-audit-log.yaml", "#AuditLog", false, ""},
 		{"audit log evidence mapping with both coordinate and entry-id", "./test-data/good-audit-log-coordinate-and-entry-id.yaml", "#AuditLog", false, ""},
-		{"audit log evidence under conflicting retention obligations and a hold", "./test-data/good-audit-log-retention.yaml", "#AuditLog", false, ""},
+		{"audit log evidence with resolved conflicting retention obligations", "./test-data/good-audit-log-retention.yaml", "#AuditLog", false, ""},
 
 		// AuditLog — negative
 		{"audit log missing summary criteria and results", "./test-data/bad-audit-log.yaml", "#AuditLog", true, ""},
@@ -143,7 +143,7 @@ func TestSchemaValidation(t *testing.T) {
 		{"audit log mapping reference url with a non-alphabetic scheme", "./test-data/bad-audit-log-url-invalid-scheme.yaml", "#AuditLog", true, ""},
 		{"audit log target uri with no scheme", "./test-data/bad-audit-log-uri-no-scheme.yaml", "#AuditLog", true, ""},
 		{"retention obligation reference without an effective instant", "./test-data/bad-audit-log-retention-missing-effective.yaml", "#AuditLog", true, "obligations.1.effective"},
-		{"duplicate preservation hold id", "./test-data/bad-audit-log-retention-duplicate-hold-id.yaml", "#AuditLog", true, `_uniqueHoldIds."HOLD-01"`},
+		{"mutable preservation holds excluded from retention snapshots", "./test-data/bad-audit-log-retention-holds.yaml", "#AuditLog", true, "holds: field not allowed"},
 
 		// CapabilityCatalog — negative
 		{"capability with invalid group", "./test-data/bad-capability-invalid-group.yaml", "#CapabilityCatalog", true, ""},

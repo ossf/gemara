@@ -98,18 +98,6 @@ results:
             - obligation:
                 reference-id: records-policy
                 entry-id: RET-PII-MAX
-          holds:
-            - id: HOLD-01
-              matter:
-                reference-id: hold-register
-                entry-id: "3:24-cv-01234"
-              issued: "2026-03-01T00:00:00Z"
-            - id: HOLD-02
-              matter:
-                reference-id: hold-register
-                entry-id: "INV-2025-17"
-              issued: "2025-09-01T00:00:00Z"
-              released: "2026-01-15T00:00:00Z"
     recommendations:
       - id: REC-01
         text: "Add user guide references to the Security Insights file and publish basic user documentation."
