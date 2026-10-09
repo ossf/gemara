@@ -48,10 +48,10 @@ package gemara
 #ExecutionEnvironment: {
 	// digests pins the content the actor runs, one entry per component such as an
 	// image manifest or a plugin binary; the actor's uri and version name it
-	digests?: [#Digest, ...#Digest]
+	digests?: [#Digest, ...#Digest] @go(Digests,type=[]string)
 
 	// config-digest pins the configuration the actor runs with
-	"config-digest"?: #Digest @go(ConfigDigest)
+	"config-digest"?: #Digest @go(ConfigDigest,type=string)
 
 	// observation-vantage states where the actor observes its targets from
 	"observation-vantage"?: #ObservationVantage @go(ObservationVantage)

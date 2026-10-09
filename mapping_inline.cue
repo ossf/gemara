@@ -57,7 +57,7 @@ package gemara
 }
 
 // Digest is a cryptographic hash of some content in the form algorithm:encoded (e.g. sha256:abc123...)
-#Digest: =~"^[a-z0-9]+(?:[+._-][a-z0-9]+)*:[a-zA-Z0-9=_-]+$" @go(Digest)
+#Digest: =~"^[a-z0-9]+(?:[+._-][a-z0-9]+)*:[a-zA-Z0-9=_-]+$" @go(-)
 
 // EvidenceMapping identifies the source from which evidence was collected.
 // reference-id names the MappingReference; coordinate or entry-id gives
@@ -76,7 +76,7 @@ package gemara
 	"entry-id"?: string @go(EntryId)
 
 	// digest is a cryptographic hash of the observed content at collection time
-	digest?: #Digest
+	digest?: #Digest @go(Digest,type=string)
 
 	// remarks is prose regarding this evidence reference
 	remarks?: string
